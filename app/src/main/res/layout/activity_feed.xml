@@ -1,0 +1,44 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    tools:context=".ui.activity.feed.FeedActivity">
+
+
+    <FrameLayout
+        android:id="@+id/Menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+
+        <RelativeLayout
+            android:id="@+id/FeedNameLayout"
+            android:layout_width="0dip"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/FeedName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                tools:text="@string/feed_name" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/ButtonsLayout"
+            android:layout_width="0dip"
+            android:layout_height="match_parent">
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>

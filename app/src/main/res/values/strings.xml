@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ParserRSS</string>
+    <string name="feed_name">Feed</string>
 </resources>
