@@ -1,23 +1,23 @@
-package ru.iandreyshev.parserrss.ui.activity.feed;
+package ru.iandreyshev.parserrss.ui.activities.article;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import ru.iandreyshev.parserrss.presentation.view.feed.FeedView;
-import ru.iandreyshev.parserrss.presentation.presenter.feed.FeedPresenter;
+import ru.iandreyshev.parserrss.presentation.view.article.ArticleView;
+import ru.iandreyshev.parserrss.presentation.presenter.article.ArticlePresenter;
+
 import ru.iandreyshev.parserrss.R;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class FeedActivity extends MvpAppCompatActivity implements FeedView {
-    public static final String TAG = "FeedActivity";
+public class ArticleActivity extends MvpAppCompatActivity implements ArticleView {
     @InjectPresenter
-    FeedPresenter feedPresenter;
+    ArticlePresenter mArticlePresenter;
 
     public static Intent getIntent(final Context context) {
-        Intent intent = new Intent(context, FeedActivity.class);
+        Intent intent = new Intent(context, ArticleActivity.class);
 
         return intent;
     }
@@ -25,6 +25,6 @@ public class FeedActivity extends MvpAppCompatActivity implements FeedView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
+        setContentView(R.layout.activity_article);
     }
 }

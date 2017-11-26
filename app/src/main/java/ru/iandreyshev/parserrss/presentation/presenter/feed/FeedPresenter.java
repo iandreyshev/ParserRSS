@@ -7,5 +7,7 @@ import com.arellomobile.mvp.MvpPresenter;
 
 @InjectViewState
 public class FeedPresenter extends MvpPresenter<FeedView> {
-
+    public void openSettings() {
+        getViewState().openSettings();
+    }
 }
