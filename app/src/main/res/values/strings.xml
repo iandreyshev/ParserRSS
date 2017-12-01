@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ParserRSS</string>
+    <string name="feed_name">Feed</string>
+    <string name="feed_message">Message</string>
+    <string name="favorites_button_description">Favorites</string>
+    <string name="settings_button_description">Settings</string>
+    <string name="article_image_description">Settings</string>
 </resources>
