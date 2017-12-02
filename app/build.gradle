@@ -37,6 +37,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     compile 'com.arello-mobile:moxy:1.5.3'
     compile 'com.arello-mobile:moxy-app-compat:1.5.3'
+    compile 'com.android.support:support-v4:26.1.0'
 
     annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'

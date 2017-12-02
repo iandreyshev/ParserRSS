@@ -8,5 +8,7 @@ import com.arellomobile.mvp.MvpPresenter;
 
 @InjectViewState
 public class ArticlePresenter extends MvpPresenter<ArticleView> {
-
+    public void onBackButtonClick() {
+        getViewState().openFeed();
+    }
 }
