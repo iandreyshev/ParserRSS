@@ -1,8 +1,14 @@
 package ru.iandreyshev.parserrss.presentation.presenter.feed;
 
-import ru.iandreyshev.parserrss.models.feed.Article;
+import android.os.AsyncTask;
+
+import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.app.App;
+import ru.iandreyshev.parserrss.models.article.Article;
+import ru.iandreyshev.parserrss.models.article.IArticleInfo;
+import ru.iandreyshev.parserrss.models.feed.Feed;
 import ru.iandreyshev.parserrss.presentation.view.feed.FeedView;
-import ru.iandreyshev.parserrss.util.FeedItemPref;
+import ru.iandreyshev.parserrss.app.util.DataSaver;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -14,30 +20,28 @@ public class FeedPresenter extends MvpPresenter<FeedView> {
     }
 
     public void onRefresh() {
+        getViewState().clearFeed();
+
         for (int i = 0; i < 10; ++i) {
-            addItem();
+            getViewState().addArticle(new Article(
+                    0,
+                    App.getRes().getString(R.string.article_sample_title),
+                    App.getRes().getString(R.string.article_sample_text)
+            ));
         }
+
+        getViewState().setRefreshing(false);
     }
 
-    public void onItemClick(int id) {
-        FeedItemPref.save(getNewArticle());
+    public void onItemClick(IArticleInfo article) {
+        DataSaver.save(article);
         getViewState().openArticle();
     }
 
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
+        getViewState().addFeed(new Feed(0, "Feed name", ""));
         onRefresh();
-    }
-
-    private void addItem() {
-        getViewState().addItem(getNewArticle());
-    }
-
-    private Article getNewArticle() {
-        return new Article(
-                1,
-                "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
     }
 }

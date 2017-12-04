@@ -5,9 +5,11 @@ import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-public interface SettingsView extends MvpView {
-    void openFeed();
+import java.util.List;
 
+import ru.iandreyshev.parserrss.models.feed.IFeedInfo;
+
+public interface SettingsView extends MvpView {
     @StateStrategyType(SkipStrategy.class)
-    void openAddingForm();
+    void openFeed();
 }

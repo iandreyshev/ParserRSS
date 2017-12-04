@@ -11,4 +11,7 @@ public class SettingsPresenter extends MvpPresenter<SettingsView> {
     public void onLeaveButtonClick() {
         getViewState().openFeed();
     }
+
+    public void addNewFeed(String url) {
+    }
 }

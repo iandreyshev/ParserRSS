@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.feed.IFeedItem;
+import ru.iandreyshev.parserrss.models.article.IArticleInfo;
 import ru.iandreyshev.parserrss.presentation.view.article.ArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.article.ArticlePresenter;
 
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.ui.activity.feed.FeedActivity;
-import ru.iandreyshev.parserrss.util.FeedItemPref;
+import ru.iandreyshev.parserrss.app.util.DataSaver;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -36,8 +36,9 @@ public class ArticleActivity extends MvpAppCompatActivity implements ArticleView
         return intent;
     }
 
+    @Override
     public void openFeed() {
-        Intent intent = new Intent(this, FeedActivity.class);
+        Intent intent = FeedActivity.getIntent(this);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         startActivity(intent);
@@ -55,11 +56,11 @@ public class ArticleActivity extends MvpAppCompatActivity implements ArticleView
     }
 
     private void loadContent() {
-        if (!FeedItemPref.isSaved()) {
+        if (!DataSaver.isArticleExist()) {
             openFeed();
         }
 
-        IFeedItem item = FeedItemPref.get();
+        IArticleInfo item = DataSaver.get();
         title.setText(item.getTitle());
         text.setText(item.getText());
     }

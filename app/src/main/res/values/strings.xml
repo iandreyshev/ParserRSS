@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name">ParserRSS</string>
+
     <string name="feed_name">Feed</string>
     <string name="feed_message">Message</string>
-    <string name="settings_title">Options</string>
     <string name="feed_list_empty">Feed is empty</string>
+
+    <string name="article_sample_title">Sample name</string>
+    <string name="article_sample_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In id purus sed mi maximus molestie. Pellentesque blandit imperdiet felis, non posuere risus pretium sed. Etiam vel tortor dolor. Fusce egestas viverra elementum. Aliquam est nisl, mattis eu molestie mollis, malesuada eget metus. Morbi vel lobortis libero. Donec dapibus arcu tempor dapibus finibus.
+        Mauris rhoncus in magna nec interdum. Proin pretium cursus maximus. Proin tincidunt turpis eu viverra hendrerit. Phasellus est ante, suscipit quis sapien et, aliquet ornare risus. Vestibulum vitae felis orci. Curabitur at lorem volutpat, fringilla est ac, pellentesque quam. Proin elementum molestie diam, non scelerisque enim vulputate non. In pellentesque sed orci tincidunt malesuada. Pellentesque fermentum cursus arcu id tincidunt. Curabitur eleifend sollicitudin leo, id feugiat turpis.
+        Fusce in egestas ipsum. Phasellus sed orci velit. Nullam ornare, lorem a dictum consequat, odio justo dignissim ipsum, eu feugiat lacus nisl ut est. Aenean aliquet pretium nisl, in convallis enim molestie id. Nunc non lectus mauris. Mauris rutrum eros eget velit volutpat, vel dictum sem iaculis. Praesent facilisis ut erat at aliquet. Sed finibus ac justo ac tristique. Nulla pulvinar ligula ut nisi sodales porttitor.
+        Phasellus scelerisque lectus pharetra eros hendrerit, ut venenatis leo pellentesque. Duis enim dolor, molestie ac ullamcorper non, volutpat faucibus nisi. Nulla facilisi. Nunc nec arcu ut arcu egestas facilisis. Duis sed metus in elit dapibus porta. Vivamus non nibh ante. Sed arcu nibh, mollis sit amet nisi nec, blandit ultrices sem. Phasellus sit amet vehicula justo, ac iaculis erat. Mauris pellentesque felis at semper vestibulum.</string>
+    <string name="settings_title">Options</string>
 </resources>

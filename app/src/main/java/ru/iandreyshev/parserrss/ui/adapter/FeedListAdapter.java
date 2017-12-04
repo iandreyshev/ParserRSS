@@ -1,39 +1,82 @@
 package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
+import java.util.List;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.feed.IFeedItem;
+import ru.iandreyshev.parserrss.models.article.IArticleInfo;
 
-public class FeedListAdapter extends ArrayAdapter<IFeedItem> {
-    private Callable<Integer> onItemClick;
+public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
+    private LayoutInflater inflater;
+    private List<IArticleInfo> list;
+    private IOnFeedItemClickListener listener;
 
-    public FeedListAdapter(@NonNull Context context, int resource) {
-        super(context, resource);
+    public FeedListAdapter(Context context) {
+        list = new ArrayList<>();
+        inflater = LayoutInflater.from(context);
+    }
+
+    public void setOnItemClickListener(IOnFeedItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public void add(IArticleInfo item) {
+        list.add(item);
+        notifyItemChanged(list.size());
+    }
+
+    public void clear() {
+        list.clear();
+        notifyDataSetChanged();
     }
 
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext())
-                    .inflate(R.layout.feed_item, parent, false);
+    public FeedListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.feed_item, parent, false);
+        final ViewHolder holder = new ViewHolder(view);
+        view.setOnClickListener(clickedView -> {
+            listener.onItemClick(clickedView, holder.content);
+        });
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        if (position < 0 || position >= list.size()) {
+            return;
         }
 
-        TextView itemTitle = convertView.findViewById(R.id.item_title);
-        itemTitle.setText(getItem(position).getTitle());
+        holder.setContent(list.get(position));
+    }
 
-        TextView itemText = convertView.findViewById(R.id.item_text);
-        itemText.setText(getItem(position).getText());
+    @Override
+    public int getItemCount() {
+        return list.size();
+    }
 
-        return convertView;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        IArticleInfo content;
+        TextView title;
+        TextView text;
+
+        ViewHolder(View view) {
+            super(view);
+
+            title = view.findViewById(R.id.item_title);
+            text = view.findViewById(R.id.item_text);
+        }
+
+        void setContent(IArticleInfo content) {
+            this.content = content;
+            title.setText(content.getTitle());
+            text.setText(content.getText());
+        }
     }
 }

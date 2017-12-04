@@ -29,15 +29,12 @@ public class SettingsActivity extends MvpAppCompatActivity implements SettingsVi
         return intent;
     }
 
+    @Override
     public void openFeed() {
-        Intent intent = new Intent(this, FeedActivity.class);
+        Intent intent = FeedActivity.getIntent(this);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         startActivity(intent);
-    }
-
-    public void openAddingForm() {
-
     }
 
     @Override
