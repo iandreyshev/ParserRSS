@@ -13,13 +13,15 @@ import ru.iandreyshev.parserrss.presentation.presenter.settings.SettingsPresente
 import com.arellomobile.mvp.MvpAppCompatActivity;
 
 import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.ui.activity.BaseActivity;
 import ru.iandreyshev.parserrss.ui.activity.feed.FeedActivity;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class SettingsActivity extends MvpAppCompatActivity implements SettingsView {
+public class SettingsActivity extends BaseActivity implements SettingsView {
     @InjectPresenter
     SettingsPresenter settingsPresenter;
+
     @BindView(R.id.settings_leave_button)
     ImageButton leaveButton;
 

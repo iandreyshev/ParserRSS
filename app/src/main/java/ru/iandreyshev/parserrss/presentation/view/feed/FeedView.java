@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.presentation.view.feed;
 
-import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
@@ -8,8 +7,9 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import ru.iandreyshev.parserrss.models.article.IArticleInfo;
 import ru.iandreyshev.parserrss.models.feed.IFeedInfo;
+import ru.iandreyshev.parserrss.presentation.view.BaseView;
 
-public interface FeedView extends MvpView {
+public interface FeedView extends BaseView {
     @StateStrategyType(SkipStrategy.class)
     void openSettings();
 

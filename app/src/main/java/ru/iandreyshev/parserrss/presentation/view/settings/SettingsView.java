@@ -8,8 +8,9 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.models.feed.IFeedInfo;
+import ru.iandreyshev.parserrss.presentation.view.BaseView;
 
-public interface SettingsView extends MvpView {
+public interface SettingsView extends BaseView {
     @StateStrategyType(SkipStrategy.class)
     void openFeed();
 }

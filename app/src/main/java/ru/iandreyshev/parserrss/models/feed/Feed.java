@@ -18,8 +18,8 @@ public class Feed implements IFeedInfo {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int value) {
+        this.id = value;
     }
 
     @Override
@@ -27,16 +27,15 @@ public class Feed implements IFeedInfo {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String value) {
+        this.name = value;
     }
 
-    @Override
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrl(String value) {
+        this.url = value;
     }
 }

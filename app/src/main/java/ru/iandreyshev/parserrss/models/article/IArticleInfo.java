@@ -1,5 +1,7 @@
 package ru.iandreyshev.parserrss.models.article;
 
+import android.graphics.Bitmap;
+
 import java.util.Date;
 
 public interface IArticleInfo {
@@ -7,7 +9,7 @@ public interface IArticleInfo {
     Date getDate();
     String getTitle();
     String getText();
-    String getImage();
+    Bitmap getImage();
     boolean isDateExist();
     boolean isImageExist();
 }

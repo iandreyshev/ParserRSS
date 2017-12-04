@@ -3,7 +3,10 @@ package ru.iandreyshev.parserrss.ui.activity.article;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -13,13 +16,14 @@ import ru.iandreyshev.parserrss.presentation.view.article.ArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.article.ArticlePresenter;
 
 import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.ui.activity.BaseActivity;
 import ru.iandreyshev.parserrss.ui.activity.feed.FeedActivity;
 import ru.iandreyshev.parserrss.app.util.DataSaver;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class ArticleActivity extends MvpAppCompatActivity implements ArticleView {
+public class ArticleActivity extends BaseActivity implements ArticleView {
     @InjectPresenter
     ArticlePresenter articlePresenter;
 
@@ -27,8 +31,12 @@ public class ArticleActivity extends MvpAppCompatActivity implements ArticleView
     TextView title;
     @BindView(R.id.article_text)
     TextView text;
-    @BindView(R.id.article_back_button)
-    ImageButton backButton;
+    @BindView(R.id.article_date)
+    TextView date;
+    @BindView(R.id.article_image)
+    ImageView image;
+    @BindView(R.id.article_button_layout)
+    ConstraintLayout backButton;
 
     public static Intent getIntent(final Context context) {
         Intent intent = new Intent(context, ArticleActivity.class);
@@ -60,9 +68,21 @@ public class ArticleActivity extends MvpAppCompatActivity implements ArticleView
             openFeed();
         }
 
-        IArticleInfo item = DataSaver.get();
-        title.setText(item.getTitle());
-        text.setText(item.getText());
+        final IArticleInfo article = DataSaver.get();
+        title.setText(article.getTitle());
+        text.setText(article.getText());
+
+        if (article.isDateExist()) {
+            date.setText(article.getDate().toString());
+        } else {
+            date.setVisibility(View.GONE);
+        }
+
+        if (article.isImageExist()) {
+
+        } else {
+            image.setVisibility(View.GONE);
+        }
     }
 
     private void initButtonsListeners() {

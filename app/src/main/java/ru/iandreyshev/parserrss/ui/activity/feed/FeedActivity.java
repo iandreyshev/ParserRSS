@@ -17,6 +17,7 @@ import ru.iandreyshev.parserrss.models.feed.IFeedInfo;
 import ru.iandreyshev.parserrss.presentation.view.feed.FeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.feed.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.ui.activity.BaseActivity;
 import ru.iandreyshev.parserrss.ui.activity.article.ArticleActivity;
 import ru.iandreyshev.parserrss.ui.activity.settings.SettingsActivity;
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter;
@@ -24,13 +25,12 @@ import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter;
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class FeedActivity extends MvpAppCompatActivity implements FeedView, SwipeRefreshLayout.OnRefreshListener {
+public class FeedActivity extends BaseActivity implements FeedView, SwipeRefreshLayout.OnRefreshListener {
     @InjectPresenter
     FeedPresenter feedPresenter;
+
     @BindView(R.id.feed_name)
     TextView feedName;
-    @BindView(R.id.feed_favorites_button)
-    ImageButton favoritesButton;
     @BindView(R.id.feed_settings_button)
     ImageButton settingsButton;
     @BindView(R.id.feed_items_list)

@@ -25,8 +25,8 @@ public class FeedPresenter extends MvpPresenter<FeedView> {
         for (int i = 0; i < 10; ++i) {
             getViewState().addArticle(new Article(
                     0,
-                    App.getRes().getString(R.string.article_sample_title),
-                    App.getRes().getString(R.string.article_sample_text)
+                    "Article name",
+                    "Article text. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
             ));
         }
 

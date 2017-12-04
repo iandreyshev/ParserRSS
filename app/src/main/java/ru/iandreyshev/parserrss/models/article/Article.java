@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.article;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import java.util.Date;
@@ -9,7 +10,7 @@ public class Article implements IArticleInfo {
     private Date date;
     private String title;
     private String text;
-    private String image;
+    private Bitmap image;
 
     public Article(int id, @NonNull String title, @NonNull String text) {
         this.id = id;
@@ -27,8 +28,8 @@ public class Article implements IArticleInfo {
         return this.date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(Date value) {
+        this.date = value;
     }
 
     @Override
@@ -36,8 +37,8 @@ public class Article implements IArticleInfo {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setText(String value) {
+        this.text = value;
     }
 
     @Override
@@ -45,17 +46,17 @@ public class Article implements IArticleInfo {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(String value) {
+        this.title = value;
     }
 
     @Override
-    public String getImage() {
+    public Bitmap getImage() {
         return image;
     }
 
-    public void setImage(String value) {
-        this.image = image;
+    public void setImage(Bitmap value) {
+        this.image = value;
     }
 
     @Override

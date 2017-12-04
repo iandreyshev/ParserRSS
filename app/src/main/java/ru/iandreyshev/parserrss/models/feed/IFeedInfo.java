@@ -4,6 +4,4 @@ public interface IFeedInfo {
     int getId();
 
     String getName();
-
-    String getUrl();
 }
