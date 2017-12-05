@@ -16,25 +16,23 @@ import ru.iandreyshev.parserrss.models.article.IArticleInfo;
 public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
     private LayoutInflater inflater;
     private List<IArticleInfo> list;
-    private IOnFeedItemClickListener listener;
+    private IOnItemClickListener listener;
 
     public FeedListAdapter(Context context) {
         list = new ArrayList<>();
         inflater = LayoutInflater.from(context);
     }
 
-    public void setOnItemClickListener(IOnFeedItemClickListener listener) {
+    public void setOnItemClickListener(IOnItemClickListener<IArticleInfo> listener) {
         this.listener = listener;
     }
 
-    public void add(IArticleInfo item) {
-        list.add(item);
-        notifyItemChanged(list.size());
-    }
-
-    public void clear() {
-        list.clear();
-        notifyDataSetChanged();
+    public void setItems(List<IArticleInfo> newItems) {
+        clear();
+        for (IArticleInfo item : newItems) {
+            list.add(item);
+            notifyItemChanged(list.size());
+        }
     }
 
     @Override
@@ -59,6 +57,11 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    private void clear() {
+        list.clear();
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

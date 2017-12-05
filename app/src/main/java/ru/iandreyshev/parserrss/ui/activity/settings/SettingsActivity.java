@@ -7,10 +7,8 @@ import android.widget.ImageButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.presentation.view.settings.SettingsView;
+import ru.iandreyshev.parserrss.presentation.view.settings.ISettingsView;
 import ru.iandreyshev.parserrss.presentation.presenter.settings.SettingsPresenter;
-
-import com.arellomobile.mvp.MvpAppCompatActivity;
 
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.ui.activity.BaseActivity;
@@ -18,7 +16,7 @@ import ru.iandreyshev.parserrss.ui.activity.feed.FeedActivity;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class SettingsActivity extends BaseActivity implements SettingsView {
+public class SettingsActivity extends BaseActivity implements ISettingsView {
     @InjectPresenter
     SettingsPresenter settingsPresenter;
 
@@ -34,8 +32,7 @@ public class SettingsActivity extends BaseActivity implements SettingsView {
     @Override
     public void openFeed() {
         Intent intent = FeedActivity.getIntent(this);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
 

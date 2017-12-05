@@ -13,19 +13,22 @@ import butterknife.BindView;
 
 import butterknife.ButterKnife;
 import ru.iandreyshev.parserrss.models.article.IArticleInfo;
+import ru.iandreyshev.parserrss.models.feed.Feed;
 import ru.iandreyshev.parserrss.models.feed.IFeedInfo;
-import ru.iandreyshev.parserrss.presentation.view.feed.FeedView;
+import ru.iandreyshev.parserrss.presentation.view.feed.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.feed.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.ui.activity.BaseActivity;
 import ru.iandreyshev.parserrss.ui.activity.article.ArticleActivity;
 import ru.iandreyshev.parserrss.ui.activity.settings.SettingsActivity;
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter;
+import ru.iandreyshev.parserrss.ui.adapter.IOnItemClickListener;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class FeedActivity extends BaseActivity implements FeedView, SwipeRefreshLayout.OnRefreshListener {
+import java.util.List;
+
+public class FeedActivity extends BaseActivity implements IFeedView {
     @InjectPresenter
     FeedPresenter feedPresenter;
 
@@ -37,7 +40,9 @@ public class FeedActivity extends BaseActivity implements FeedView, SwipeRefresh
     RecyclerView itemsList;
     @BindView(R.id.feed_refresh_layout)
     SwipeRefreshLayout swipeLayout;
+
     FeedListAdapter itemsAdapter;
+    FeedListListener feedListener = new FeedListListener();
 
     public static Intent getIntent(final Context context) {
         Intent intent = new Intent(context, FeedActivity.class);
@@ -57,28 +62,13 @@ public class FeedActivity extends BaseActivity implements FeedView, SwipeRefresh
     public void openArticle() {
         final Intent intent = ArticleActivity.getIntent(this);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
         startActivity(intent);
     }
 
     @Override
-    public void addArticle(IArticleInfo item) {
-        itemsAdapter.add(item);
-    }
-
-    @Override
-    public void addFeed(IFeedInfo feed) {
-
-    }
-
-    @Override
-    public void clearFeed() {
-        itemsAdapter.clear();
-    }
-
-    @Override
-    public void onRefresh() {
-        feedPresenter.onRefresh();
+    public void updateFeedList(IFeedInfo feed, List<IArticleInfo> newList) {
+        itemsAdapter.setItems(newList);
+        setRefreshing(false);
     }
 
     @Override
@@ -99,10 +89,11 @@ public class FeedActivity extends BaseActivity implements FeedView, SwipeRefresh
     }
 
     private void initItemsList() {
+        if (itemsAdapter != null) {
+            return;
+        }
         itemsAdapter = new FeedListAdapter(this);
-        itemsAdapter.setOnItemClickListener((View view, IArticleInfo item) -> {
-            feedPresenter.onItemClick(item);
-        });
+        itemsAdapter.setOnItemClickListener(feedListener);
         itemsList.setAdapter(itemsAdapter);
     }
 
@@ -113,6 +104,18 @@ public class FeedActivity extends BaseActivity implements FeedView, SwipeRefresh
     }
 
     private void initRefreshListener() {
-        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setOnRefreshListener(feedListener);
+    }
+
+    private class FeedListListener implements SwipeRefreshLayout.OnRefreshListener, IOnItemClickListener<IArticleInfo> {
+        @Override
+        public void onRefresh() {
+            feedPresenter.onRefresh(new Feed(0, "", ""));
+        }
+
+        @Override
+        public void onItemClick(View view, IArticleInfo item) {
+            feedPresenter.onItemClick(item);
+        }
     }
 }

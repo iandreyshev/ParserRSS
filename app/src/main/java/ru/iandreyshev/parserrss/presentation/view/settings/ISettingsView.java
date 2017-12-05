@@ -1,11 +1,11 @@
-package ru.iandreyshev.parserrss.presentation.view.article;
+package ru.iandreyshev.parserrss.presentation.view.settings;
 
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-import ru.iandreyshev.parserrss.presentation.view.BaseView;
+import ru.iandreyshev.parserrss.presentation.view.IBaseView;
 
-public interface ArticleView extends BaseView {
+public interface ISettingsView extends IBaseView {
     @StateStrategyType(SkipStrategy.class)
     void openFeed();
 }

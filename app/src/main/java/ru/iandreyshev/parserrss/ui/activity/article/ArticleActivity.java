@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.iandreyshev.parserrss.models.article.IArticleInfo;
-import ru.iandreyshev.parserrss.presentation.view.article.ArticleView;
+import ru.iandreyshev.parserrss.presentation.view.article.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.article.ArticlePresenter;
 
 import ru.iandreyshev.parserrss.R;
@@ -20,10 +19,9 @@ import ru.iandreyshev.parserrss.ui.activity.BaseActivity;
 import ru.iandreyshev.parserrss.ui.activity.feed.FeedActivity;
 import ru.iandreyshev.parserrss.app.util.DataSaver;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class ArticleActivity extends BaseActivity implements ArticleView {
+public class ArticleActivity extends BaseActivity implements IArticleView {
     @InjectPresenter
     ArticlePresenter articlePresenter;
 
@@ -47,8 +45,7 @@ public class ArticleActivity extends BaseActivity implements ArticleView {
     @Override
     public void openFeed() {
         Intent intent = FeedActivity.getIntent(this);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
 
@@ -79,7 +76,7 @@ public class ArticleActivity extends BaseActivity implements ArticleView {
         }
 
         if (article.isImageExist()) {
-
+            image.setImageBitmap(article.getImage());
         } else {
             image.setVisibility(View.GONE);
         }
