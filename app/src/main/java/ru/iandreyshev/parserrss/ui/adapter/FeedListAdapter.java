@@ -16,7 +16,7 @@ import ru.iandreyshev.parserrss.models.article.IArticleInfo;
 public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
     private LayoutInflater inflater;
     private List<IArticleInfo> list;
-    private IOnItemClickListener listener;
+    private IOnItemClickListener<IArticleInfo> listener;
 
     public FeedListAdapter(Context context) {
         list = new ArrayList<>();

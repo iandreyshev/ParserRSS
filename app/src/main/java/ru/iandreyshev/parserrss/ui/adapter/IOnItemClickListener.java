@@ -4,6 +4,6 @@ import android.view.View;
 
 import ru.iandreyshev.parserrss.models.article.IArticleInfo;
 
-public interface IOnItemClickListener<T> {
-    void onItemClick(View view, T item);
+public interface IOnItemClickListener<TItem> {
+    void onItemClick(View view, TItem item);
 }
