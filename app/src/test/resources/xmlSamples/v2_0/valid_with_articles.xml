@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+    <channel>
+        <title>Feed title</title>
+        <description>Feed description</description>
+        <link>http://domain.com</link>
+
+        <item>
+            <title>Article title</title>
+            <description>Article text</description>
+            <link>http://domain.com</link>
+        </item>
+
+        <item>
+            <title>Article title</title>
+            <description>Article text</description>
+            <link>http://domain.com</link>
+        </item>
+
+    </channel>
+
+</rss>

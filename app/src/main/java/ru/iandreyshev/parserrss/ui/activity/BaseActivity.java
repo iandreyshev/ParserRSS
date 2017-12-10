@@ -4,6 +4,8 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 
+import java.io.Serializable;
+
 import ru.iandreyshev.parserrss.presentation.view.IBaseView;
 
 public abstract class BaseActivity extends MvpAppCompatActivity implements IBaseView {

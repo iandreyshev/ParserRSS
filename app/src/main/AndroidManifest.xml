@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.iandreyshev.parserrss">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,14 +13,13 @@
         android:theme="@style/AppTheme"
         android:screenOrientation="portrait"
         android:name=".app.App">
-        <activity android:name=".ui.activity.feed.FeedActivity">
+        <activity android:name=".ui.activity.FeedActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.article.ArticleActivity" />
-        <activity android:name=".ui.activity.settings.SettingsActivity" />
+        <activity android:name=".ui.activity.ArticleActivity" />
     </application>
 
 </manifest>
