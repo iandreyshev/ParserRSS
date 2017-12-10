@@ -14,53 +14,53 @@ import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.article.IArticleInfo;
 
 public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
-    private LayoutInflater inflater;
-    private List<IArticleInfo> list;
-    private IOnItemClickListener<IArticleInfo> listener;
+    private LayoutInflater mInflater;
+    private List<IArticleInfo> mList;
+    private IOnItemClickListener<IArticleInfo> mListener;
 
     public FeedListAdapter(Context context) {
-        list = new ArrayList<>();
-        inflater = LayoutInflater.from(context);
+        mList = new ArrayList<>();
+        mInflater = LayoutInflater.from(context);
     }
 
     public void setOnItemClickListener(IOnItemClickListener<IArticleInfo> listener) {
-        this.listener = listener;
+        this.mListener = listener;
     }
 
     public void setItems(List<IArticleInfo> newItems) {
         clear();
         for (IArticleInfo item : newItems) {
-            list.add(item);
-            notifyItemChanged(list.size());
+            mList.add(item);
+            notifyItemChanged(mList.size());
         }
     }
 
     @Override
     public FeedListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.feed_item, parent, false);
+        View view = mInflater.inflate(R.layout.feed_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
         view.setOnClickListener(clickedView -> {
-            listener.onItemClick(clickedView, holder.content);
+            mListener.onItemClick(clickedView, holder.content);
         });
         return holder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (position < 0 || position >= list.size()) {
+        if (position < 0 || position >= mList.size()) {
             return;
         }
 
-        holder.setContent(list.get(position));
+        holder.setContent(mList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mList.size();
     }
 
     private void clear() {
-        list.clear();
+        mList.clear();
         notifyDataSetChanged();
     }
 

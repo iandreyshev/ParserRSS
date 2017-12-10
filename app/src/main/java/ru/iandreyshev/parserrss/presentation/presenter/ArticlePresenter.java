@@ -1,7 +1,7 @@
-package ru.iandreyshev.parserrss.presentation.presenter.article;
+package ru.iandreyshev.parserrss.presentation.presenter;
 
 
-import ru.iandreyshev.parserrss.presentation.view.article.IArticleView;
+import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -10,5 +10,9 @@ import com.arellomobile.mvp.MvpPresenter;
 public class ArticlePresenter extends MvpPresenter<IArticleView> {
     public void onBackButtonClick() {
         getViewState().openFeed();
+    }
+
+    public void onErrorLoadArticle() {
+
     }
 }

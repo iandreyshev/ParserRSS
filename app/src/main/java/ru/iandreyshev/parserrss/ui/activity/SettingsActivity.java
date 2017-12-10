@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.ui.activity.settings;
+package ru.iandreyshev.parserrss.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,32 +7,29 @@ import android.widget.ImageButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.presentation.view.settings.ISettingsView;
-import ru.iandreyshev.parserrss.presentation.presenter.settings.SettingsPresenter;
+import ru.iandreyshev.parserrss.presentation.view.ISettingsView;
+import ru.iandreyshev.parserrss.presentation.presenter.SettingsPresenter;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.ui.activity.BaseActivity;
-import ru.iandreyshev.parserrss.ui.activity.feed.FeedActivity;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 public class SettingsActivity extends BaseActivity implements ISettingsView {
     @InjectPresenter
-    SettingsPresenter settingsPresenter;
+    SettingsPresenter mSettingsPresenter;
 
     @BindView(R.id.settings_leave_button)
-    ImageButton leaveButton;
+    ImageButton mLeaveButton;
 
     public static Intent getIntent(final Context context) {
-        Intent intent = new Intent(context, SettingsActivity.class);
-
-        return intent;
+        return new Intent(context, SettingsActivity.class);
     }
 
     @Override
     public void openFeed() {
-        Intent intent = FeedActivity.getIntent(this);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        Intent intent = FeedActivity.getIntent(this)
+                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
         startActivity(intent);
     }
 
@@ -42,6 +39,6 @@ public class SettingsActivity extends BaseActivity implements ISettingsView {
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
 
-        leaveButton.setOnClickListener(view -> settingsPresenter.onLeaveButtonClick());
+        mLeaveButton.setOnClickListener(view -> mSettingsPresenter.onLeaveButtonClick());
     }
 }
