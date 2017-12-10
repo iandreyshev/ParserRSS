@@ -1,11 +1,20 @@
 <resources>
     <string name="app_name">ParserRSS</string>
 
-    <string name="feed_name">Feed</string>
+    <string name="feed_title">Feed</string>
     <string name="feed_message">Message</string>
     <string name="feed_list_empty">Feed is empty</string>
 
     <string name="article_exit_button_title">back to feed</string>
 
     <string name="settings_title">Options</string>
+
+    <string name="feed_options_add">Add</string>
+    <string name="feed_options_info">Info</string>
+    <string name="feed_options_delete">Delete</string>
+
+    <string name="add_feed_dialog_title">New feed</string>
+    <string name="add_feed_dialog_link_placeholder">URL</string>
+    <string name="add_feed_dialog_submit_button">OK</string>
+    <string name="add_feed_dialog_cancel_button">Cancel</string>
 </resources>
