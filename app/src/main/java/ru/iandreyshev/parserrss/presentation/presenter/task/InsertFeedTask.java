@@ -1,7 +1,7 @@
 package ru.iandreyshev.parserrss.presentation.presenter.task;
 
 import ru.iandreyshev.parserrss.app.NetWorker;
-import ru.iandreyshev.parserrss.app.ParserRSS;
+import ru.iandreyshev.parserrss.app.parserRss.ParserRss;
 import ru.iandreyshev.parserrss.models.feed.Feed;
 import ru.iandreyshev.parserrss.models.feed.IFeedInfo;
 
@@ -31,12 +31,12 @@ public class InsertFeedTask extends Task<String, Void, IFeedInfo, InsertFeedTask
                 break;
         }
 
-        final ParserRSS parserRSS = new ParserRSS();
+        final ParserRss parserRSS = new ParserRss();
         parserRSS.parse(newWorker.getResponseAsText());
 
-        if (!parserRSS.isSuccess()) {
-            cancel(Status.InvalidXmlFormat);
-        }
+        //if (!parserRSS.isSuccess()) {
+        //    cancel(Status.InvalidXmlFormat);
+        //}
 
         return new Feed(0, "Feed", newWorker.getUrl());
     }
