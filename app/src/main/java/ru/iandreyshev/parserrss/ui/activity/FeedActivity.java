@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,12 +25,13 @@ import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter;
 import ru.iandreyshev.parserrss.ui.adapter.IOnItemClickListener;
 import ru.iandreyshev.parserrss.ui.fragment.AddFeedDialog;
+import ru.iandreyshev.parserrss.ui.fragment.IOnSubmitAddingListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.List;
 
-public class FeedActivity extends BaseActivity implements IFeedView {
+public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAddingListener {
     @InjectPresenter
     FeedPresenter mFeedPresenter;
 
@@ -48,14 +50,6 @@ public class FeedActivity extends BaseActivity implements IFeedView {
     }
 
     @Override
-    public void openSettings() {
-        final Intent intent = SettingsActivity.getIntent(this);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-
-        startActivity(intent);
-    }
-
-    @Override
     public void openArticle(IArticleInfo article) {
         final Intent intent = ArticleActivity.getIntent(this)
                 .putExtra(getResources().getString(R.string.const_article_bundle_key), article)
@@ -67,17 +61,6 @@ public class FeedActivity extends BaseActivity implements IFeedView {
     @Override
     public void openAddingFeedDialog() {
         AddFeedDialog dialog = new AddFeedDialog();
-        dialog.setOnSubmitListener((DialogInterface dialogInterface, int which) -> {
-            try {
-                EditText urlField = dialog.getView().findViewById(R.id.add_feed_dialog_url_field);
-                mFeedPresenter.onSubmitAddingFeed(urlField.toString());
-            } catch (Exception ex) {
-
-                // TODO: error log
-
-                dialogInterface.cancel();
-            }
-        });
         dialog.show(getSupportFragmentManager(), "");
     }
 
@@ -155,6 +138,16 @@ public class FeedActivity extends BaseActivity implements IFeedView {
     }
 
     private void onCancelFromAdding() {
+    }
+
+    @Override
+    public void onSubmit(DialogInterface dialogInterface, String url) {
+        try {
+            mFeedPresenter.onSubmitAddingFeed(url);
+        } catch (Exception ex) {
+            // TODO: error log
+            dialogInterface.cancel();
+        }
     }
 
     private class FeedListListener

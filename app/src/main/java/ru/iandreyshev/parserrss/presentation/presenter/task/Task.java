@@ -34,27 +34,48 @@ public abstract class Task<TParams, TProcess, TResult, TError> extends AsyncTask
         mOnProcessListener.onProcessEvent(process);
     }
 
-    protected final void cancel(TError error) {
+    protected final void setError(TError error) {
         mError = error;
-        cancel(false);
     }
 
     @Override
     protected final void onPostExecute(TResult result) {
         super.onPostExecute(result);
-        successEvent(result);
+
+        if (mError == null) {
+            successEvent(result);
+        }
+    }
+
+    @Override
+    protected final void onCancelled(TResult object) {
+        super.onCancelled(object);
+        handleOnCancelled();
     }
 
     @Override
     protected final void onCancelled() {
-        errorEvent(mError);
+        super.onCancelled();
+        handleOnCancelled();
+    }
+
+    private void handleOnCancelled() {
+        System.out.println("On cancelled");
+
+        if (mError != null) {
+            errorEvent(mError);
+        }
     }
 
     private void errorEvent(TError error) {
-        mOnErrorListener.onErrorEvent(error);
+        if (mOnErrorListener != null) {
+            mOnErrorListener.onErrorEvent(error);
+        }
     }
 
     private void successEvent(TResult result) {
-        mOnSuccessListener.onSuccessEvent(result);
+        if (mOnSuccessListener != null) {
+            mOnSuccessListener.onSuccessEvent(result);
+        }
     }
 }

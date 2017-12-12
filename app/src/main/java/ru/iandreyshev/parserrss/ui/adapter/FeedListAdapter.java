@@ -39,9 +39,9 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
     public FeedListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.feed_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
-        view.setOnClickListener(clickedView -> {
-            mListener.onItemClick(clickedView, holder.content);
-        });
+        view.setOnClickListener(clickedView ->
+            mListener.onItemClick(clickedView, holder.content)
+        );
         return holder;
     }
 

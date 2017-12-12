@@ -42,7 +42,15 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    compile 'org.jdom:jdom2:2.0.6'
+    compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
 
     annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }
+
+task copyResDirectoryToClasses(type: Copy){
+    from "${projectDir}/src/test/res"
+    into "${buildDir}/intermediates/classes/test/debug/res"
+}
+

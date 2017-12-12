@@ -18,6 +18,7 @@ import java.util.List;
 @InjectViewState
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
     private RefreshFeedTask mRefreshTask = new RefreshFeedTask();
+    private InsertFeedTask mInsertTask = new InsertFeedTask();
     private IFeedInfo mFeed;
 
     public void onRefresh() {
@@ -31,6 +32,22 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     }
 
     public void onSubmitAddingFeed(final String url) {
+        System.out.println("URL: " + url);
+
+        if (!mInsertTask.isCancelled() && mInsertTask.getStatus() == AsyncTask.Status.RUNNING) {
+            return;
+        }
+
+        mInsertTask = new InsertFeedTask();
+
+        System.out.println("Start task");
+        InsertTaskListener listener = new InsertTaskListener();
+
+        mInsertTask.setSuccessListener(listener)
+                .setErrorListener(listener)
+                .execute(url);
+
+        getViewState().startProgressBar(true);
     }
 
     public void onItemClick(IArticleInfo article) {
@@ -78,13 +95,14 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
             IOnErrorListener<InsertFeedTask.Status> {
         @Override
         public void onSuccessEvent(IFeedInfo feedInfo) {
-            getViewState().setRefreshing(true);
-
+            getViewState().startProgressBar(false);
+            System.out.println(feedInfo.getTitle());
         }
 
         @Override
         public void onErrorEvent(InsertFeedTask.Status status) {
-
+            getViewState().startProgressBar(false);
+            System.out.println(status);
         }
     }
 }

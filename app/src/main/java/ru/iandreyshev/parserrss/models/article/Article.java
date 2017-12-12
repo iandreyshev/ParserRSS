@@ -3,8 +3,9 @@ package ru.iandreyshev.parserrss.models.article;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
-import java.io.IOException;
 import java.util.Date;
+
+import okhttp3.HttpUrl;
 
 public class Article implements IArticleInfo {
     private int mId;
@@ -12,9 +13,9 @@ public class Article implements IArticleInfo {
     private String mTitle;
     private String mText;
     private Bitmap mImage;
+    private HttpUrl mOriginUrl;
 
-    public Article(int id, @NonNull String title, @NonNull String text) {
-        setId(id);
+    public Article(@NonNull String title, @NonNull String text) {
         setTitle(title);
         setText(text);
     }
@@ -53,6 +54,15 @@ public class Article implements IArticleInfo {
 
     public void setTitle(@NonNull String title) {
         mTitle = title;
+    }
+
+    @Override
+    public HttpUrl getOriginUrl() {
+        return mOriginUrl;
+    }
+
+    public void setOriginUrl(@NonNull final HttpUrl originUrl) {
+        mOriginUrl = originUrl;
     }
 
     @Override

@@ -13,9 +13,6 @@ import ru.iandreyshev.parserrss.presentation.view.IBaseView;
 
 public interface IFeedView extends IBaseView {
     @StateStrategyType(SkipStrategy.class)
-    void openSettings();
-
-    @StateStrategyType(SkipStrategy.class)
     void openArticle(IArticleInfo article);
 
     @StateStrategyType(AddToEndStrategy.class)

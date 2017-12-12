@@ -10,6 +10,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class NetWorker {
     private static final int GOOD_RESPONSE_CODE = 200;
@@ -33,17 +34,13 @@ public class NetWorker {
     private Response mResponse;
     private HttpUrl mUrl;
 
-    public void send(final String url) {
-        mUrl = HttpUrl.parse(url);
-
-        if (mUrl == null) {
-            mStatus = Status.BadUrl;
-
+    public void sendGet(final String url) {
+        if (!prepareUrl(url)) {
             return;
         }
 
         send(new Request.Builder()
-                .url(url)
+                .url(mUrl)
                 .build());
     }
 
@@ -52,19 +49,24 @@ public class NetWorker {
     }
 
     public String getResponseAsText() {
-        try {
-            return mResponse.body().string();
+        try (final ResponseBody body = mResponse.body()) {
+
+            return body == null ? null : body.string();
+
         } catch (Exception ex) {
             return null;
         }
     }
 
     public Bitmap getResponseAsBitmap() {
-        Bitmap result = null;
+        try (final ResponseBody body = mResponse.body()) {
+            if (body == null) {
+                return null;
+            }
 
-        try {
-            InputStream stream = mResponse.body().byteStream();
-            result = BitmapFactory.decodeStream(stream);
+            final InputStream stream = body.byteStream();
+            final Bitmap result = BitmapFactory.decodeStream(stream);
+            stream.close();
 
             return result;
 
@@ -77,8 +79,20 @@ public class NetWorker {
         return mUrl;
     }
 
+    private boolean prepareUrl(final String url) {
+        mUrl = HttpUrl.parse(url);
+
+        if (mUrl == null) {
+            mStatus = Status.BadUrl;
+
+            return false;
+        }
+
+        return true;
+    }
+
     private void send(Request request) {
-        try (Response response = mClient.newCall(request).execute()) {
+        try (final Response response = mClient.newCall(request).execute()) {
 
             final boolean isResponseValid = response.code() == GOOD_RESPONSE_CODE;
             mStatus = isResponseValid ? Status.Success : Status.BadConnection;

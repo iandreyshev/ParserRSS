@@ -9,11 +9,11 @@ public class Feed implements IFeedInfo {
     private String mTitle;
     private String mDescription;
     private HttpUrl mUrl;
+    private HttpUrl mOriginUrl;
 
-    public Feed(int id, @NonNull String name, @NonNull HttpUrl url) {
-        setId(id);
-        setTitle(name);
-        setUrl(url);
+    public Feed(@NonNull final String title, @NonNull final String description) {
+        setTitle(title);
+        setDescription(description);
     }
 
     @Override
@@ -40,6 +40,15 @@ public class Feed implements IFeedInfo {
 
     public void setDescription(@NonNull final String description) {
         mDescription = description;
+    }
+
+    @Override
+    public HttpUrl getOriginUrl() {
+        return mOriginUrl;
+    }
+
+    public void setOriginUrl(@NonNull final HttpUrl originUrl) {
+        mOriginUrl = originUrl;
     }
 
     public HttpUrl getUrl() {
