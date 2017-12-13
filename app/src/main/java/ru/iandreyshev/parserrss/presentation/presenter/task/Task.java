@@ -1,6 +1,7 @@
 package ru.iandreyshev.parserrss.presentation.presenter.task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import ru.iandreyshev.parserrss.presentation.presenter.task.listeners.IOnErrorListener;
 import ru.iandreyshev.parserrss.presentation.presenter.task.listeners.IOnProcessListener;
@@ -30,10 +31,6 @@ public abstract class Task<TParams, TProcess, TResult, TError> extends AsyncTask
         return this;
     }
 
-    protected final void processEvent(TProcess process) {
-        mOnProcessListener.onProcessEvent(process);
-    }
-
     protected final void setError(TError error) {
         mError = error;
     }
@@ -43,26 +40,10 @@ public abstract class Task<TParams, TProcess, TResult, TError> extends AsyncTask
         super.onPostExecute(result);
 
         if (mError == null) {
+            Log.e("InsertTask", "Call success event");
             successEvent(result);
-        }
-    }
-
-    @Override
-    protected final void onCancelled(TResult object) {
-        super.onCancelled(object);
-        handleOnCancelled();
-    }
-
-    @Override
-    protected final void onCancelled() {
-        super.onCancelled();
-        handleOnCancelled();
-    }
-
-    private void handleOnCancelled() {
-        System.out.println("On cancelled");
-
-        if (mError != null) {
+        } else {
+            Log.e("InsertTask", "Call error event");
             errorEvent(mError);
         }
     }

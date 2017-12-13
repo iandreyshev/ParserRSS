@@ -20,10 +20,10 @@ final class Parser_2_0 extends Parser {
     }
 
     @Override
-    protected Feed parseChannel(@NonNull final Element channel) {
-        Feed feed = super.parseChannel(channel);
+    protected Feed parseFeed(@NonNull final Element channel) {
+        Feed feed = super.parseFeed(channel);
 
-        if (feed == null || feed.getOriginUrl() == null) {
+        if (feed == null || feed.getDescription() == null) {
             return null;
         }
 
@@ -34,7 +34,7 @@ final class Parser_2_0 extends Parser {
     protected Article parseItem(@NonNull final Element item) {
         Article article = super.parseItem(item);
 
-        if (article == null || article.getOriginUrl() == null) {
+        if (article == null || article.getText() == null) {
             return null;
         }
 
@@ -48,7 +48,7 @@ final class Parser_2_0 extends Parser {
             return false;
         }
 
-        final Feed feed = parseChannel(channel);
+        final Feed feed = parseFeed(channel);
 
         if (feed == null) {
             return false;
@@ -60,7 +60,7 @@ final class Parser_2_0 extends Parser {
     }
 
     private void initArticles(@NonNull final Element channel) {
-        List<Article> articles = parseItems(channel);
+        List<Article> articles = parseArticles(channel);
 
         if (articles == null) {
             return;

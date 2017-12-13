@@ -9,8 +9,10 @@ import java.util.List;
 import ru.iandreyshev.parserrss.models.article.Article;
 import ru.iandreyshev.parserrss.models.feed.Feed;
 
-interface IParserRss {
-    ParserRssResult parse(@NonNull final Document xml);
+public interface IParserRss {
+    void parse(@NonNull final Document xml);
+
+    void parseFeed(@NonNull final Document xml);
 
     ParserRssResult getResult();
 

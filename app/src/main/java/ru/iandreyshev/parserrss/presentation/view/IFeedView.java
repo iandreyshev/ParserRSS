@@ -21,9 +21,12 @@ public interface IFeedView extends IBaseView {
     @StateStrategyType(SkipStrategy.class)
     void setRefreshing(boolean isRefresh);
 
-    @StateStrategyType(AddToEndSingleStrategy.class)
+    @StateStrategyType(SkipStrategy.class)
     void openAddingFeedDialog();
 
     @StateStrategyType(SkipStrategy.class)
     void startProgressBar(boolean isStart);
+
+    @StateStrategyType(SkipStrategy.class)
+    void setFeed(IFeedInfo feed);
 }

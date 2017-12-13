@@ -1,9 +1,5 @@
 package ru.iandreyshev.parserrss.app;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.HttpUrl;
@@ -12,7 +8,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class NetWorker {
+public class HttpRequestHandler {
+    private static final String TAG = "NewWorker";
+
     private static final int GOOD_RESPONSE_CODE = 200;
     private static final int CONNECTION_TIMEOUT_SEC = 1;
     private static final int READ_TIMEOUT_SEC = 1;
@@ -23,15 +21,16 @@ public class NetWorker {
         Success,
         BadUrl,
         BadConnection,
+        PermissionDenied,
     }
 
     private OkHttpClient mClient = new OkHttpClient.Builder()
-            .connectTimeout(CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT_SEC, TimeUnit.SECONDS)
+            .connectTimeout(CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS)
             .writeTimeout(WRITE_TIMEOUT_SEC, TimeUnit.SECONDS)
             .build();
     private Status mStatus = Status.NotSend;
-    private Response mResponse;
+    private byte[] mBody;
     private HttpUrl mUrl;
 
     public void sendGet(final String url) {
@@ -39,8 +38,15 @@ public class NetWorker {
             return;
         }
 
+        sendGet(mUrl);
+    }
+
+    public void sendGet(final HttpUrl url) {
+        mUrl = url;
+
         send(new Request.Builder()
                 .url(mUrl)
+                .addHeader("content-type", "application/json")
                 .build());
     }
 
@@ -48,35 +54,16 @@ public class NetWorker {
         return mStatus;
     }
 
-    public String getResponseAsText() {
-        try (final ResponseBody body = mResponse.body()) {
-
-            return body == null ? null : body.string();
-
-        } catch (Exception ex) {
+    public byte[] getResponseBody() {
+        if (mStatus != Status.Success || mBody == null) {
             return null;
         }
+
+        return mBody;
     }
 
-    public Bitmap getResponseAsBitmap() {
-        try (final ResponseBody body = mResponse.body()) {
-            if (body == null) {
-                return null;
-            }
-
-            final InputStream stream = body.byteStream();
-            final Bitmap result = BitmapFactory.decodeStream(stream);
-            stream.close();
-
-            return result;
-
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public HttpUrl getUrl() {
-        return mUrl;
+    public String getUrl() {
+        return mUrl.toString();
     }
 
     private boolean prepareUrl(final String url) {
@@ -96,13 +83,16 @@ public class NetWorker {
 
             final boolean isResponseValid = response.code() == GOOD_RESPONSE_CODE;
             mStatus = isResponseValid ? Status.Success : Status.BadConnection;
-            mResponse = response;
 
+            try (final ResponseBody body = response.body()) {
+                mBody = body.bytes();
+            } catch (Exception ex) {
+            }
+
+        } catch (SecurityException ex) {
+            mStatus = Status.PermissionDenied;
         } catch (Exception ex) {
-
             mStatus = Status.BadConnection;
-            // TODO: create error log
-
         }
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import butterknife.BindView;
 
@@ -41,6 +40,8 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     SwipeRefreshLayout mSwipeLayout;
     @BindView(R.id.feed_toolbar)
     Toolbar mToolbar;
+    @BindView(R.id.feed_progress_bar)
+    ProgressBar mProgressBar;
 
     FeedListAdapter mItemsAdapter;
     FeedListListener mFeedListener = new FeedListListener();
@@ -66,7 +67,12 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
 
     @Override
     public void startProgressBar(boolean isStart) {
-        setProgressBarIndeterminateVisibility(isStart);
+        mProgressBar.setVisibility(isStart ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setFeed(IFeedInfo feed) {
+        mToolbar.setTitle(feed.getTitle());
     }
 
     @Override
@@ -92,10 +98,8 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
         switch (item.getItemId()) {
             case R.id.feed_options_add:
                 mFeedPresenter.onAddingButtonClick();
-                startProgressBar(true);
                 break;
             case R.id.feed_options_edit:
-                startProgressBar(false);
                 break;
         }
 
@@ -154,7 +158,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
             implements SwipeRefreshLayout.OnRefreshListener, IOnItemClickListener<IArticleInfo> {
         @Override
         public void onRefresh() {
-            mFeedPresenter.onRefresh();
+            mFeedPresenter.onRefreshFeed();
         }
 
         @Override

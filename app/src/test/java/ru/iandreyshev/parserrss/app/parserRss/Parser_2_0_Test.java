@@ -72,7 +72,7 @@ public class Parser_2_0_Test {
 
     @Test
     public void notParseArticlesInItemsNode() {
-        parseFileAndCheck("valid_with_articles_in_items_node");
+        parseFileAndCheck("invalid_with_articles_in_items_node");
 
         assertEquals(0, mParser.getArticles().size());
     }
@@ -87,7 +87,7 @@ public class Parser_2_0_Test {
 
             assertEquals(article.getTitle(), ARTICLE_TITLE);
             assertEquals(article.getText(), ARTICLE_TEXT);
-            assertNotNull(article.getOriginUrl());
+            assertNotNull(article.getUrl());
 
         }
     }

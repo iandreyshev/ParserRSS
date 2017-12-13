@@ -8,13 +8,11 @@ import java.util.Date;
 import okhttp3.HttpUrl;
 
 public interface IArticleInfo extends Serializable {
-    int getId();
-
     String getTitle();
 
     String getText();
 
-    HttpUrl getOriginUrl();
+    HttpUrl getUrl();
 
     Date getDate();
 

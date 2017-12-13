@@ -1,28 +1,16 @@
 package ru.iandreyshev.parserrss.models.feed;
 
-import android.support.annotation.NonNull;
-
 import okhttp3.HttpUrl;
 
 public class Feed implements IFeedInfo {
-    private int mId;
     private String mTitle;
+    private String mOriginUrl;
     private String mDescription;
-    private HttpUrl mUrl;
-    private HttpUrl mOriginUrl;
+    private String mUrl;
 
-    public Feed(@NonNull final String title, @NonNull final String description) {
+    public Feed(final String title, final HttpUrl originUrl) throws NullPointerException {
         setTitle(title);
-        setDescription(description);
-    }
-
-    @Override
-    public int getId() {
-        return mId;
-    }
-
-    public void setId(int value) {
-        mId = value;
+        mOriginUrl = originUrl.toString();
     }
 
     @Override
@@ -30,7 +18,7 @@ public class Feed implements IFeedInfo {
         return mTitle;
     }
 
-    public void setTitle(@NonNull final String value) {
+    public void setTitle(final String value) {
         mTitle = value;
     }
 
@@ -38,24 +26,20 @@ public class Feed implements IFeedInfo {
         return mDescription;
     }
 
-    public void setDescription(@NonNull final String description) {
+    public void setDescription(final String description) {
         mDescription = description;
     }
 
     @Override
     public HttpUrl getOriginUrl() {
-        return mOriginUrl;
-    }
-
-    public void setOriginUrl(@NonNull final HttpUrl originUrl) {
-        mOriginUrl = originUrl;
+        return HttpUrl.parse(mOriginUrl);
     }
 
     public HttpUrl getUrl() {
-        return mUrl;
+        return HttpUrl.parse(mUrl);
     }
 
-    public void setUrl(@NonNull final HttpUrl value) {
-        mUrl = value;
+    public void setUrl(final HttpUrl url) throws NullPointerException {
+        mUrl = url.toString();
     }
 }

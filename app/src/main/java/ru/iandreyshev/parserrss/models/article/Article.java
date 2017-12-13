@@ -8,25 +8,15 @@ import java.util.Date;
 import okhttp3.HttpUrl;
 
 public class Article implements IArticleInfo {
-    private int mId;
-    private Date mDate;
     private String mTitle;
+    private String mUrl;
     private String mText;
     private Bitmap mImage;
-    private HttpUrl mOriginUrl;
+    private Date mDate;
 
-    public Article(@NonNull String title, @NonNull String text) {
+    public Article(String title, HttpUrl link) {
         setTitle(title);
-        setText(text);
-    }
-
-    @Override
-    public int getId() {
-        return mId;
-    }
-
-    public void setId(int id) {
-        mId = id;
+        setUrl(link);
     }
 
     @Override
@@ -57,12 +47,12 @@ public class Article implements IArticleInfo {
     }
 
     @Override
-    public HttpUrl getOriginUrl() {
-        return mOriginUrl;
+    public HttpUrl getUrl() {
+        return HttpUrl.parse(mUrl);
     }
 
-    public void setOriginUrl(@NonNull final HttpUrl originUrl) {
-        mOriginUrl = originUrl;
+    public void setUrl(@NonNull final HttpUrl originUrl) {
+        mUrl = originUrl.toString();
     }
 
     @Override

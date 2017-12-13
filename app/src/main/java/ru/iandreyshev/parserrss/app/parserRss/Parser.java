@@ -23,14 +23,14 @@ abstract class Parser implements IParserRss {
     static final String ARTICLE_NODE_NAME = "item";
     static final String ARTICLE_TITLE_NODE_NAME = "title";
     static final String ARTICLE_DESCRIPTION_NODE_NAME = "description";
-    static final String ARTICLE_ORIGIN_NODE_NAME = "link";
+    static final String ARTICLE_URL_NODE_NAME = "link";
 
     private ParserRssResult mResult = ParserRssResult.NotParse;
     private Feed mFeed;
     private List<Article> mArticles = new ArrayList<>();
 
     @Override
-    public final ParserRssResult parse(@NonNull Document xml) {
+    public final void parse(@NonNull Document xml) {
         mResult = ParserRssResult.InvalidRssFormat;
 
         final Element root = xml.getRootElement();
@@ -38,8 +38,16 @@ abstract class Parser implements IParserRss {
         if (root != null && root.getName().toLowerCase().equals(ROOT_NODE_NAME)) {
             parseFromRoot(root);
         }
+    }
 
-        return getResult();
+    @Override
+    public void parseFeed(@NonNull Document xml) {
+        mResult = ParserRssResult.InvalidRssFormat;
+
+        final Element root = xml.getRootElement();
+
+        if (root != null && root.getName().toLowerCase().equals(ROOT_NODE_NAME)) {
+        }
     }
 
     @Override
@@ -68,30 +76,32 @@ abstract class Parser implements IParserRss {
         mArticles.addAll(article);
     }
 
-    protected Feed parseChannel(@NonNull final Element channelNode) {
-        final Element title = channelNode.getChild(FEED_TITLE_NODE_NAME);
-        final Element description = channelNode.getChild(FEED_DESCRIPTION_NODE_NAME);
+    protected Feed parseFeed(@NonNull final Element channelNode) {
+        final Element titleNode = channelNode.getChild(FEED_TITLE_NODE_NAME);
+        final Element urlNode = channelNode.getChild(FEED_ORIGIN_NODE_NAME);
 
-        if (title == null || description == null) {
+        if (titleNode == null || urlNode == null) {
+
             return null;
         }
 
-        final Feed feed = new Feed(title.getValue(), description.getValue());
+        final HttpUrl url = HttpUrl.parse(urlNode.getValue());
 
-        final Element origin = channelNode.getChild(FEED_ORIGIN_NODE_NAME);
+        if (url == null) {
+            return null;
+        }
 
-        if (origin != null) {
-            final HttpUrl originUrl = HttpUrl.parse(origin.getValue());
+        final Feed feed = new Feed(titleNode.getValue(), url);
+        final Element description = channelNode.getChild(FEED_DESCRIPTION_NODE_NAME);
 
-            if (originUrl != null) {
-                feed.setOriginUrl(originUrl);
-            }
+        if (description != null) {
+            feed.setDescription(description.getValue());
         }
 
         return feed;
     }
 
-    protected List<Article> parseItems(@NonNull final Element items) {
+    protected List<Article> parseArticles(@NonNull final Element items) {
         final List<Article> result = new ArrayList<>();
         final List<Element> itemsCollection = items.getChildren(ARTICLE_NODE_NAME);
 
@@ -99,8 +109,8 @@ abstract class Parser implements IParserRss {
             return null;
         }
 
-        for (final Element item : itemsCollection) {
-            final Article article = parseItem(item);
+        for (final Element itemNode : itemsCollection) {
+            final Article article = parseItem(itemNode);
 
             if (article != null) {
                 result.add(article);
@@ -111,23 +121,24 @@ abstract class Parser implements IParserRss {
     }
 
     protected Article parseItem(@NonNull final Element item) {
-        final Element title = item.getChild(ARTICLE_TITLE_NODE_NAME);
-        final Element description = item.getChild(ARTICLE_DESCRIPTION_NODE_NAME);
+        final Element titleNode = item.getChild(ARTICLE_TITLE_NODE_NAME);
+        final Element urlNode = item.getChild(ARTICLE_URL_NODE_NAME);
 
-        if (title == null || description == null) {
+        if (titleNode == null || urlNode == null) {
             return null;
         }
 
-        final Article article = new Article(title.getValue(), description.getValue());
-        final Element origin = item.getChild(ARTICLE_ORIGIN_NODE_NAME);
+        HttpUrl url = HttpUrl.parse(urlNode.getValue());
 
-        if (origin != null) {
-            final HttpUrl originUrl = HttpUrl.parse(origin.getValue());
+        if (url == null) {
+            return null;
+        }
 
-            if (originUrl != null) {
-                System.out.println("Set article origin url " + originUrl.toString());
-                article.setOriginUrl(originUrl);
-            }
+        final Article article = new Article(titleNode.getValue(), url);
+        final Element textNode = item.getChild(ARTICLE_DESCRIPTION_NODE_NAME);
+
+        if (textNode != null) {
+            article.setText(textNode.getText());
         }
 
         return article;

@@ -13,6 +13,13 @@
 
         </android.support.v7.widget.Toolbar>
 
+    <ProgressBar
+        android:id="@+id/feed_progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true" />
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/feed_refresh_layout"
         android:layout_width="match_parent"
