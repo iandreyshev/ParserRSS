@@ -1,21 +1,14 @@
 package ru.iandreyshev.parserrss.app;
 
-import android.support.annotation.NonNull;
-
-import java.util.List;
-
-import okhttp3.HttpUrl;
-import ru.iandreyshev.parserrss.app.parserRss.ParserRss;
-import ru.iandreyshev.parserrss.app.parserRss.ParserRssResult;
-import ru.iandreyshev.parserrss.models.article.Article;
-import ru.iandreyshev.parserrss.models.feed.Feed;
+import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
+import ru.iandreyshev.parserrss.models.web.Url;
 
 public class FeedLoader {
-    private Feed mFeed;
-    private List<Article> mArticles;
-    private Status mStatus;
+    private Rss mRss;
+    private State mStatus;
 
-    public enum Status {
+    public enum State {
         Success,
         InvalidUrl,
         BadConnection,
@@ -24,10 +17,10 @@ public class FeedLoader {
     }
 
     public void load(final String urlStr) {
-        final HttpUrl url = HttpUrl.parse(urlStr);
+        final Url url = Url.parse(urlStr);
 
         if (url == null) {
-            mStatus = Status.InvalidUrl;
+            mStatus = State.InvalidUrl;
 
             return;
         }
@@ -35,64 +28,53 @@ public class FeedLoader {
         load(url);
     }
 
-    public void load(final HttpUrl url) {
+    public void load(final Url url) {
         final String rssText = takeRssFromNet(url);
-
-        if (rssText == null) {
-            return;
-        }
-
         parseRss(rssText);
     }
 
-    public Status getStatus() {
+    public State getState() {
         return mStatus;
     }
 
-    public List<Article> getArticles() {
-        return mArticles;
+    public Rss getRss() {
+        return mRss;
     }
 
-    public Feed getFeed() {
-        return mFeed;
-    }
-
-    private String takeRssFromNet(final HttpUrl url) {
+    private String takeRssFromNet(final Url url) {
         final HttpRequestHandler requester = new HttpRequestHandler();
         requester.sendGet(url);
 
-        switch (requester.getStatus()) {
+        switch (requester.getState()) {
             case Success:
                 return new String(requester.getResponseBody());
 
             case BadUrl:
-                mStatus = Status.InvalidUrl;
+                mStatus = State.InvalidUrl;
                 break;
 
             case BadConnection:
-                mStatus = Status.BadConnection;
+                mStatus = State.BadConnection;
                 break;
 
             case PermissionDenied:
-                mStatus = Status.InternetPermissionDenied;
+                mStatus = State.InternetPermissionDenied;
                 break;
         }
 
         return null;
     }
 
-    private void parseRss(final String rss) {
-        ParserRss parser = new ParserRss();
-        parser.parse(rss);
+    private void parseRss(final String rssText) {
+        Rss rss = Rss.parse(rssText);
 
-        if (parser.getResult() != ParserRssResult.Success) {
-            mStatus = Status.InvalidFormat;
+        if (rss == null) {
+            mStatus = State.InvalidFormat;
 
             return;
         }
 
-        mStatus = Status.Success;
-        mFeed = parser.getFeed();
-        mArticles = parser.getArticles();
+        mRss = rss;
+        mStatus = State.Success;
     }
 }

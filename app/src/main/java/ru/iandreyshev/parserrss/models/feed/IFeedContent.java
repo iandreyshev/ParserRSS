@@ -1,11 +1,11 @@
 package ru.iandreyshev.parserrss.models.feed;
 
-import okhttp3.HttpUrl;
+import ru.iandreyshev.parserrss.models.web.Url;
 
-public interface IFeedInfo {
+public interface IFeedContent {
     String getTitle();
 
     String getDescription();
 
-    HttpUrl getOriginUrl();
+    String getOrigin();
 }

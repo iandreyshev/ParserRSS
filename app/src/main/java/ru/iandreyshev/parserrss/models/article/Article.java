@@ -5,36 +5,16 @@ import android.support.annotation.NonNull;
 
 import java.util.Date;
 
-import okhttp3.HttpUrl;
-
-public class Article implements IArticleInfo {
+public class Article implements IArticleContent {
     private String mTitle;
-    private String mUrl;
+    private String mOrigin;
     private String mText;
     private Bitmap mImage;
     private Date mDate;
 
-    public Article(String title, HttpUrl link) {
+    public Article(String title, String origin) {
         setTitle(title);
-        setUrl(link);
-    }
-
-    @Override
-    public Date getDate() {
-        return mDate;
-    }
-
-    public void setDate(@NonNull Date date) {
-        mDate = date;
-    }
-
-    @Override
-    public String getText() {
-        return mText;
-    }
-
-    public void setText(@NonNull String text) {
-        mText = text;
+        mOrigin = origin;
     }
 
     @Override
@@ -47,12 +27,26 @@ public class Article implements IArticleInfo {
     }
 
     @Override
-    public HttpUrl getUrl() {
-        return HttpUrl.parse(mUrl);
+    public String getOrigin() {
+        return mOrigin;
     }
 
-    public void setUrl(@NonNull final HttpUrl originUrl) {
-        mUrl = originUrl.toString();
+    @Override
+    public String getText() {
+        return mText;
+    }
+
+    public void setText(@NonNull String text) {
+        mText = text;
+    }
+
+    @Override
+    public Date getDate() {
+        return mDate;
+    }
+
+    public void setDate(@NonNull Date date) {
+        mDate = date;
     }
 
     @Override

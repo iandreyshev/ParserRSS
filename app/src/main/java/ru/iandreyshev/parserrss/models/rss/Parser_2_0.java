@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.app.parserRss;
+package ru.iandreyshev.parserrss.models.rss;
 
 import android.support.annotation.NonNull;
 
@@ -11,12 +11,14 @@ import ru.iandreyshev.parserrss.models.feed.Feed;
 
 final class Parser_2_0 extends Parser {
     @Override
-    protected void parseFromRoot(@NonNull final Element root) {
-        if (!initFeed(root)) {
+    protected void parseFromRoot(final Element root) {
+        final Element feed = root.getChild(NodeName.FEED);
+
+        if (!initFeed(feed)) {
             return;
         }
 
-        initArticles(root.getChild(FEED_NODE_NAME));
+        initArticles(feed);
     }
 
     @Override
@@ -41,14 +43,8 @@ final class Parser_2_0 extends Parser {
         return article;
     }
 
-    private boolean initFeed(@NonNull final Element root) {
-        final Element channel = root.getChild(FEED_NODE_NAME);
-
-        if (channel == null) {
-            return false;
-        }
-
-        final Feed feed = parseFeed(channel);
+    private boolean initFeed(final Element feedNode) {
+        final Feed feed = parseFeed(feedNode);
 
         if (feed == null) {
             return false;

@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.app.parserRss;
+package ru.iandreyshev.parserrss.models.rss;
 
 import org.jdom2.Document;
 import org.junit.Before;
@@ -31,7 +31,7 @@ public class Parser_2_0_Test {
 
         assertEquals(feed.getTitle(), RSS_TITLE);
         assertEquals(feed.getDescription(), RSS_DESCRIPTION);
-        assertNotNull(feed.getOriginUrl());
+        assertNotNull(feed.getOrigin());
     }
 
     @Test
@@ -45,22 +45,15 @@ public class Parser_2_0_Test {
     }
 
     @Test
-    public void notParseFeedOriginUrlIfTheyNotValidForOkHttp3() {
-        parseFile("invalid_with_invalid_feed_origin_url");
-
-        assertEquals(mParser.getResult(), ParserRssResult.InvalidRssFormat);
-    }
-
-    @Test
     public void notParseIfTitleIsAbsent() {
         parseFile("invalid_without_title");
 
-        assertEquals(mParser.getResult(), ParserRssResult.InvalidRssFormat);
+        assertEquals(mParser.getState(), Parser.State.InvalidFormat);
     }
 
     @Test
     public void returnNotParseStatusIfNotParseAnythingYet() {
-        assertEquals(mParser.getResult(), ParserRssResult.NotParse);
+        assertEquals(mParser.getState(), Parser.State.NotParse);
     }
 
     @Test
@@ -87,7 +80,7 @@ public class Parser_2_0_Test {
 
             assertEquals(article.getTitle(), ARTICLE_TITLE);
             assertEquals(article.getText(), ARTICLE_TEXT);
-            assertNotNull(article.getUrl());
+            assertNotNull(article.getOrigin());
 
         }
     }
@@ -103,7 +96,7 @@ public class Parser_2_0_Test {
     private void parseFileAndCheck(final String fileName) {
         parseFile(fileName);
 
-        assertEquals(mParser.getResult(), ParserRssResult.Success);
+        assertEquals(mParser.getState(), Parser.State.Success);
     }
 
     private String toPath(final String fileName) {

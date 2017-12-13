@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -16,12 +18,12 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.article.IArticleInfo;
-import ru.iandreyshev.parserrss.models.feed.IFeedInfo;
+import ru.iandreyshev.parserrss.models.article.IArticleContent;
+import ru.iandreyshev.parserrss.models.feed.IFeedContent;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter;
+import ru.iandreyshev.parserrss.ui.adapter.FeedAdapter;
 import ru.iandreyshev.parserrss.ui.adapter.IOnItemClickListener;
 import ru.iandreyshev.parserrss.ui.fragment.AddFeedDialog;
 import ru.iandreyshev.parserrss.ui.fragment.IOnSubmitAddingListener;
@@ -43,7 +45,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     @BindView(R.id.feed_progress_bar)
     ProgressBar mProgressBar;
 
-    FeedListAdapter mItemsAdapter;
+    FeedAdapter mItemsAdapter;
     FeedListListener mFeedListener = new FeedListListener();
 
     public static Intent getIntent(final Context context) {
@@ -51,7 +53,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
-    public void openArticle(IArticleInfo article) {
+    public void openArticle(IArticleContent article) {
         final Intent intent = ArticleActivity.getIntent(this)
                 .putExtra(getResources().getString(R.string.const_article_bundle_key), article)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -71,12 +73,12 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
-    public void setFeed(IFeedInfo feed) {
+    public void setFeed(IFeedContent feed) {
         mToolbar.setTitle(feed.getTitle());
     }
 
     @Override
-    public void updateFeedList(IFeedInfo feed, List<IArticleInfo> newList) {
+    public void updateFeedList(IFeedContent feed, List<IArticleContent> newList) {
         mItemsAdapter.setItems(newList);
         setRefreshing(false);
     }
@@ -129,9 +131,10 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
         if (mItemsAdapter != null) {
             return;
         }
-        mItemsAdapter = new FeedListAdapter(this);
+        mItemsAdapter = new FeedAdapter(this);
         mItemsAdapter.setOnItemClickListener(mFeedListener);
         mItemsList.setAdapter(mItemsAdapter);
+        mItemsList.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
     }
 
     private void initRefreshListener() {
@@ -154,15 +157,19 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
         }
     }
 
+    private class AddingDialogListener {
+
+    }
+
     private class FeedListListener
-            implements SwipeRefreshLayout.OnRefreshListener, IOnItemClickListener<IArticleInfo> {
+            implements SwipeRefreshLayout.OnRefreshListener, IOnItemClickListener<IArticleContent> {
         @Override
         public void onRefresh() {
             mFeedPresenter.onRefreshFeed();
         }
 
         @Override
-        public void onItemClick(View view, IArticleInfo item) {
+        public void onItemClick(View view, IArticleContent item) {
             mFeedPresenter.onItemClick(item);
         }
     }

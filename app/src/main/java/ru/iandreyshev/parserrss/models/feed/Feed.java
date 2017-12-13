@@ -1,25 +1,21 @@
 package ru.iandreyshev.parserrss.models.feed;
 
-import okhttp3.HttpUrl;
+import ru.iandreyshev.parserrss.models.web.Url;
 
-public class Feed implements IFeedInfo {
+public class Feed implements IFeedContent {
     private String mTitle;
-    private String mOriginUrl;
+    private String mOrigin;
     private String mDescription;
     private String mUrl;
 
-    public Feed(final String title, final HttpUrl originUrl) throws NullPointerException {
-        setTitle(title);
-        mOriginUrl = originUrl.toString();
+    public Feed(final String title, final String origin) throws NullPointerException {
+        mTitle = title;
+        mOrigin = origin;
     }
 
     @Override
     public String getTitle() {
         return mTitle;
-    }
-
-    public void setTitle(final String value) {
-        mTitle = value;
     }
 
     public String getDescription() {
@@ -31,15 +27,15 @@ public class Feed implements IFeedInfo {
     }
 
     @Override
-    public HttpUrl getOriginUrl() {
-        return HttpUrl.parse(mOriginUrl);
+    public String getOrigin() {
+        return mOrigin;
     }
 
-    public HttpUrl getUrl() {
-        return HttpUrl.parse(mUrl);
+    public Url getUrl() {
+        return Url.parse(mUrl);
     }
 
-    public void setUrl(final HttpUrl url) throws NullPointerException {
+    public void setUrl(final Url url) throws NullPointerException {
         mUrl = url.toString();
     }
 }

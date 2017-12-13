@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.article.IArticleInfo;
+import ru.iandreyshev.parserrss.models.article.IArticleContent;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
 
@@ -62,7 +62,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     }
 
     private boolean isIntentContainsArticle() {
-        IArticleInfo article;
+        IArticleContent article;
 
         try {
             article = getArticleFromIntent();
@@ -73,7 +73,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         return article != null;
     }
 
-    private void initContent(IArticleInfo article) {
+    private void initContent(IArticleContent article) {
         mTitle.setText(article.getTitle());
         mText.setText(article.getText());
 
@@ -90,9 +90,9 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         }
     }
 
-    private IArticleInfo getArticleFromIntent() {
+    private IArticleContent getArticleFromIntent() {
         final String key = getResources().getString(R.string.const_article_bundle_key);
-        return (IArticleInfo) getIntent().getSerializableExtra(key);
+        return (IArticleContent) getIntent().getSerializableExtra(key);
     }
 
     private void initButtonsListeners() {

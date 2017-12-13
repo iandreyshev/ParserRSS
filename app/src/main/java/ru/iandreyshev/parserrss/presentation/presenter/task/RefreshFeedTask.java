@@ -39,20 +39,18 @@ public class RefreshFeedTask
         FeedLoader loader = new FeedLoader();
         loader.load(mFeed.getUrl());
 
-        if (loader.getStatus() != FeedLoader.Status.Success) {
-            initErrorStatus(loader.getStatus());
+        if (loader.getState() != FeedLoader.State.Success) {
+            initErrorStatus(loader.getState());
 
             return this;
         }
 
-        mArticles = loader.getArticles();
-
-        Log.e("RefreshTask", Integer.toString(mArticles.size()));
+        mArticles = loader.getRss().getArticles();
 
         return this;
     }
 
-    private void initErrorStatus(final FeedLoader.Status loadStatus) {
+    private void initErrorStatus(final FeedLoader.State loadStatus) {
         switch (loadStatus) {
             case InternetPermissionDenied:
                 setError(ErrorStatus.InternetPermissionDenied);

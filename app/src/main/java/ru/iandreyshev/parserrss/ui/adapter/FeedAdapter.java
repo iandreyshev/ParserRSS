@@ -5,42 +5,43 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.article.IArticleInfo;
+import ru.iandreyshev.parserrss.models.article.IArticleContent;
 
-public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
+public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private LayoutInflater mInflater;
-    private List<IArticleInfo> mList;
-    private IOnItemClickListener<IArticleInfo> mListener;
+    private List<IArticleContent> mList;
+    private IOnItemClickListener<IArticleContent> mListener;
 
-    public FeedListAdapter(Context context) {
+    public FeedAdapter(Context context) {
         mList = new ArrayList<>();
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setOnItemClickListener(IOnItemClickListener<IArticleInfo> listener) {
+    public void setOnItemClickListener(IOnItemClickListener<IArticleContent> listener) {
         this.mListener = listener;
     }
 
-    public void setItems(List<IArticleInfo> newItems) {
+    public void setItems(List<IArticleContent> newItems) {
         clear();
-        for (IArticleInfo item : newItems) {
+        for (IArticleContent item : newItems) {
             mList.add(item);
             notifyItemChanged(mList.size());
         }
     }
 
     @Override
-    public FeedListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FeedAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.feed_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
         view.setOnClickListener(clickedView ->
-            mListener.onItemClick(clickedView, holder.content)
+            mListener.onItemClick(clickedView, holder.mContent)
         );
         return holder;
     }
@@ -65,21 +66,29 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        IArticleInfo content;
-        TextView title;
-        TextView text;
+        IArticleContent mContent;
+        TextView mTitle;
+        TextView mText;
+        ImageView mImage;
 
         ViewHolder(View view) {
             super(view);
 
-            title = view.findViewById(R.id.item_title);
-            text = view.findViewById(R.id.item_text);
+            mTitle = view.findViewById(R.id.item_title);
+            mText = view.findViewById(R.id.item_text);
+            mImage = view.findViewById(R.id.item_image);
         }
 
-        void setContent(IArticleInfo content) {
-            this.content = content;
-            title.setText(content.getTitle());
-            text.setText(content.getText());
+        void setContent(IArticleContent mContent) {
+            this.mContent = mContent;
+            mTitle.setText(mContent.getTitle());
+            mText.setText(mContent.getText());
+
+            if (mContent.isImageExist()) {
+                mImage.setImageBitmap(mContent.getImage());
+            } else {
+                mImage.setVisibility(View.GONE);
+            }
         }
     }
 }

@@ -5,14 +5,12 @@ import android.graphics.Bitmap;
 import java.io.Serializable;
 import java.util.Date;
 
-import okhttp3.HttpUrl;
-
-public interface IArticleInfo extends Serializable {
+public interface IArticleContent extends Serializable {
     String getTitle();
 
     String getText();
 
-    HttpUrl getUrl();
+    String getOrigin();
 
     Date getDate();
 

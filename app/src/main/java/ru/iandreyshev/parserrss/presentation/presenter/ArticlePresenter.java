@@ -13,6 +13,5 @@ public class ArticlePresenter extends MvpPresenter<IArticleView> {
     }
 
     public void onErrorLoadArticle() {
-
     }
 }

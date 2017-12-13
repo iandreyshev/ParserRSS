@@ -3,10 +3,10 @@ package ru.iandreyshev.parserrss.presentation.presenter.task;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.HttpUrl;
 import ru.iandreyshev.parserrss.app.FeedLoader;
 import ru.iandreyshev.parserrss.models.article.Article;
 import ru.iandreyshev.parserrss.models.feed.Feed;
+import ru.iandreyshev.parserrss.models.web.Url;
 
 public class InsertFeedTask
         extends Task<String, Void, IFeedTask, InsertFeedTask.ErrorStatus>
@@ -34,26 +34,26 @@ public class InsertFeedTask
 
     @Override
     protected IFeedTask doInBackground(String... urlCollection) {
-        HttpUrl url = HttpUrl.parse(urlCollection[0]);
+        Url url = Url.parse(urlCollection[0]);
 
         FeedLoader loader = new FeedLoader();
         loader.load(url);
 
-        if (loader.getStatus() != FeedLoader.Status.Success) {
-            initErrorStatus(loader.getStatus());
+        if (loader.getState() != FeedLoader.State.Success) {
+            initErrorStatus(loader.getState());
 
             return this;
         }
 
-        mFeed = loader.getFeed();
+        mFeed = loader.getRss().getFeed();
         mFeed.setUrl(url);
 
-        mArticles.addAll(loader.getArticles());
+        mArticles.addAll(loader.getRss().getArticles());
 
         return this;
     }
 
-    private void initErrorStatus(final FeedLoader.Status loadStatus) {
+    private void initErrorStatus(final FeedLoader.State loadStatus) {
         switch (loadStatus) {
             case InvalidUrl:
                 setError(ErrorStatus.InvalidUrl);

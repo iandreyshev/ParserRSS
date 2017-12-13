@@ -1,8 +1,7 @@
-package ru.iandreyshev.parserrss.app;
+package ru.iandreyshev.parserrss.models.web;
 
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -16,22 +15,21 @@ public class HttpRequestHandler {
     private static final int READ_TIMEOUT_SEC = 1;
     private static final int WRITE_TIMEOUT_SEC = 1;
 
-    public enum Status {
-        NotSend,
-        Success,
-        BadUrl,
-        BadConnection,
-        PermissionDenied,
-    }
-
     private OkHttpClient mClient = new OkHttpClient.Builder()
             .readTimeout(READ_TIMEOUT_SEC, TimeUnit.SECONDS)
             .connectTimeout(CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS)
             .writeTimeout(WRITE_TIMEOUT_SEC, TimeUnit.SECONDS)
             .build();
-    private Status mStatus = Status.NotSend;
+    private State mState;
     private byte[] mBody;
-    private HttpUrl mUrl;
+    private Url mUrl;
+
+    public enum State {
+        Success,
+        BadUrl,
+        BadConnection,
+        PermissionDenied,
+    }
 
     public void sendGet(final String url) {
         if (!prepareUrl(url)) {
@@ -41,21 +39,26 @@ public class HttpRequestHandler {
         sendGet(mUrl);
     }
 
-    public void sendGet(final HttpUrl url) {
+    public void sendGet(final Url url) {
+        if (url == null) {
+            mState = State.BadUrl;
+
+            return;
+        }
+
         mUrl = url;
 
         send(new Request.Builder()
-                .url(mUrl)
-                .addHeader("content-type", "application/json")
+                .url(mUrl.getInstance())
                 .build());
     }
 
-    public Status getStatus() {
-        return mStatus;
+    public State getState() {
+        return mState;
     }
 
     public byte[] getResponseBody() {
-        if (mStatus != Status.Success || mBody == null) {
+        if (mState != State.Success || mBody == null) {
             return null;
         }
 
@@ -67,10 +70,16 @@ public class HttpRequestHandler {
     }
 
     private boolean prepareUrl(final String url) {
-        mUrl = HttpUrl.parse(url);
+        if (url == null) {
+            mState = State.BadUrl;
+
+            return false;
+        }
+
+        mUrl = Url.parse(url);
 
         if (mUrl == null) {
-            mStatus = Status.BadUrl;
+            mState = State.BadUrl;
 
             return false;
         }
@@ -82,7 +91,7 @@ public class HttpRequestHandler {
         try (final Response response = mClient.newCall(request).execute()) {
 
             final boolean isResponseValid = response.code() == GOOD_RESPONSE_CODE;
-            mStatus = isResponseValid ? Status.Success : Status.BadConnection;
+            mState = isResponseValid ? State.Success : State.BadConnection;
 
             try (final ResponseBody body = response.body()) {
                 mBody = body.bytes();
@@ -90,9 +99,9 @@ public class HttpRequestHandler {
             }
 
         } catch (SecurityException ex) {
-            mStatus = Status.PermissionDenied;
+            mState = State.PermissionDenied;
         } catch (Exception ex) {
-            mStatus = Status.BadConnection;
+            mState = State.BadConnection;
         }
     }
 }
