@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,44 +16,61 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.article.IArticleContent;
-import ru.iandreyshev.parserrss.models.feed.IFeedContent;
+import ru.iandreyshev.parserrss.models.rss.IRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IRssFeed;
+import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.ui.adapter.FeedAdapter;
-import ru.iandreyshev.parserrss.ui.adapter.IOnItemClickListener;
+import ru.iandreyshev.parserrss.ui.adapter.FeedTabsAdapter;
+import ru.iandreyshev.parserrss.ui.adapter.IOnArticleClickListener;
+import ru.iandreyshev.parserrss.ui.adapter.IOnRefreshListener;
 import ru.iandreyshev.parserrss.ui.fragment.AddFeedDialog;
 import ru.iandreyshev.parserrss.ui.fragment.IOnSubmitAddingListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.List;
-
 public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAddingListener {
     @InjectPresenter
     FeedPresenter mFeedPresenter;
 
-    @BindView(R.id.feed_items_list)
-    RecyclerView mItemsList;
-    @BindView(R.id.feed_refresh_layout)
-    SwipeRefreshLayout mSwipeLayout;
     @BindView(R.id.feed_toolbar)
     Toolbar mToolbar;
     @BindView(R.id.feed_progress_bar)
     ProgressBar mProgressBar;
+    @BindView(R.id.feed_tabs_layout)
+    TabLayout mTabs;
+    @BindView(R.id.feed_view_pager)
+    ViewPager mPager;
 
-    FeedAdapter mItemsAdapter;
-    FeedListListener mFeedListener = new FeedListListener();
+    private FeedTabsAdapter mTabsAdapter;
+    private Menu mMenu;
+    private MenuItem mAddMenuItem;
+    private MenuItem mInfoMenuItem;
+    private MenuItem mDeleteMenuItem;
 
     public static Intent getIntent(final Context context) {
         return new Intent(context, FeedActivity.class);
     }
 
     @Override
-    public void openArticle(IArticleContent article) {
+    public void insertFeed(final Rss rss) {
+        mTabsAdapter.add(rss);
+        mPager.setCurrentItem(mTabsAdapter.getCount());
+    }
+
+    @Override
+    public void updateFeedList(final Rss rss) {
+    }
+
+    @Override
+    public void removeFeed(IRssFeed feed) {
+    }
+
+    @Override
+    public void openArticle(IRssArticle article) {
         final Intent intent = ArticleActivity.getIntent(this)
-                .putExtra(getResources().getString(R.string.const_article_bundle_key), article)
+                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, article)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         startActivity(intent);
@@ -73,24 +88,20 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
-    public void setFeed(IFeedContent feed) {
-        mToolbar.setTitle(feed.getTitle());
-    }
-
-    @Override
-    public void updateFeedList(IFeedContent feed, List<IArticleContent> newList) {
-        mItemsAdapter.setItems(newList);
-        setRefreshing(false);
-    }
-
-    @Override
-    public void setRefreshing(boolean isRefresh) {
-        mSwipeLayout.setRefreshing(isRefresh);
+    public void startRefresh(IRssFeed feed, boolean isStart) {
+        mTabsAdapter.startRefresh(feed, isStart);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.feed_options_menu, menu);
+        mMenu = menu;
+        mAddMenuItem = mMenu.findItem(R.id.feed_options_add);
+        mInfoMenuItem = mMenu.findItem(R.id.feed_options_info);
+        mDeleteMenuItem = mMenu.findItem(R.id.feed_options_delete);
+
+        mInfoMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
+        mDeleteMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
 
         return true;
     }
@@ -99,9 +110,11 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.feed_options_add:
-                mFeedPresenter.onAddingButtonClick();
+                openAddingFeedDialog();
                 break;
-            case R.id.feed_options_edit:
+            case R.id.feed_options_info:
+                break;
+            case R.id.feed_options_delete:
                 break;
         }
 
@@ -116,61 +129,45 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
 
         ButterKnife.bind(this);
 
-        startProgressBar(false);
         initToolbar();
         initTabsView();
-        initRefreshListener();
     }
 
     private void initToolbar() {
         mToolbar.setTitle(getResources().getString(R.string.feed_title));
         setSupportActionBar(mToolbar);
+        startProgressBar(false);
     }
 
     private void initTabsView() {
-        if (mItemsAdapter != null) {
-            return;
-        }
-        mItemsAdapter = new FeedAdapter(this);
-        mItemsAdapter.setOnItemClickListener(mFeedListener);
-        mItemsList.setAdapter(mItemsAdapter);
-        mItemsList.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-    }
+        final FeedListener listener = new FeedListener();
 
-    private void initRefreshListener() {
-        mSwipeLayout.setOnRefreshListener(mFeedListener);
-    }
+        mTabsAdapter = new FeedTabsAdapter(getSupportFragmentManager());
+        mTabsAdapter.setOnItemClickListener(listener);
+        mTabsAdapter.setOnRefreshListener(listener);
 
-    private void onSubmitAddingFeed() {
-    }
+        mPager.setAdapter(mTabsAdapter);
 
-    private void onCancelFromAdding() {
+        mTabs.setupWithViewPager(mPager, true);
     }
 
     @Override
     public void onSubmit(DialogInterface dialogInterface, String url) {
-        try {
-            mFeedPresenter.onSubmitAddingFeed(url);
-        } catch (Exception ex) {
-            // TODO: error log
-            dialogInterface.cancel();
-        }
+        mFeedPresenter.onSubmitAddingFeed(url);
     }
 
-    private class AddingDialogListener {
-
-    }
-
-    private class FeedListListener
-            implements SwipeRefreshLayout.OnRefreshListener, IOnItemClickListener<IArticleContent> {
+    private class FeedListener
+            implements
+            IOnRefreshListener,
+            IOnArticleClickListener {
         @Override
-        public void onRefresh() {
-            mFeedPresenter.onRefreshFeed();
-        }
-
-        @Override
-        public void onItemClick(View view, IArticleContent item) {
+        public void onItemClick(IRssArticle item) {
             mFeedPresenter.onItemClick(item);
+        }
+
+        @Override
+        public void onRefresh(IRssFeed feed) {
+            mFeedPresenter.onRefreshFeed(feed);
         }
     }
 }

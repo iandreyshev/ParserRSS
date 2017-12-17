@@ -1,11 +1,17 @@
 package ru.iandreyshev.parserrss.models.rss;
 
-import android.support.annotation.NonNull;
-
 import org.jdom2.Element;
+
+import java.util.List;
 
 final class Parser_0_91 extends Parser {
     @Override
-    protected void parseFromRoot(@NonNull Element root) {
+    protected RssFeed parseFeed(final Element root) {
+        return null;
+    }
+
+    @Override
+    protected List<RssArticle> parseArticles(final Element root) {
+        return null;
     }
 }

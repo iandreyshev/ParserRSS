@@ -1,67 +1,77 @@
 package ru.iandreyshev.parserrss.models.rss;
 
-import android.support.annotation.NonNull;
-
 import org.jdom2.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import ru.iandreyshev.parserrss.models.article.Article;
-import ru.iandreyshev.parserrss.models.feed.Feed;
-
 final class Parser_2_0 extends Parser {
+    private static final String FEED_NAME = "channel";
+    private static final String FEED_TITLE_NAME = "title";
+    private static final String FEED_ORIGIN_NAME = "link";
+    private static final String FEED_DESCRIPTION_NAME = "description";
+
+    private static final String ARTICLE_NAME = "item";
+    private static final String ARTICLE_TITLE_NAME = "title";
+    private static final String ARTICLE_ORIGIN_NAME = "link";
+    private static final String ARTICLE_DESCRIPTION_NAME = "description";
+
     @Override
-    protected void parseFromRoot(final Element root) {
-        final Element feed = root.getChild(NodeName.FEED);
+    protected RssFeed parseFeed(final Element root) {
+        final Element channel = root.getChild(FEED_NAME);
 
-        if (!initFeed(feed)) {
-            return;
-        }
-
-        initArticles(feed);
-    }
-
-    @Override
-    protected Feed parseFeed(@NonNull final Element channel) {
-        Feed feed = super.parseFeed(channel);
-
-        if (feed == null || feed.getDescription() == null) {
+        if (channel == null) {
             return null;
         }
 
-        return feed;
+        return parseChannel(channel);
     }
 
     @Override
-    protected Article parseItem(@NonNull final Element item) {
-        Article article = super.parseItem(item);
+    protected List<RssArticle> parseArticles(final Element root) {
+        final Element channel = root.getChild(FEED_NAME);
+        final List<Element> items = channel.getChildren(ARTICLE_NAME);
 
-        if (article == null || article.getText() == null) {
+        if (items == null) {
             return null;
         }
 
-        return article;
-    }
+        final List<RssArticle> result = new ArrayList<>();
 
-    private boolean initFeed(final Element feedNode) {
-        final Feed feed = parseFeed(feedNode);
-
-        if (feed == null) {
-            return false;
+        for (final Element article : items) {
+            result.add(parseArticle(article));
         }
 
-        setFeed(feed);
-
-        return true;
+        return result;
     }
 
-    private void initArticles(@NonNull final Element channel) {
-        List<Article> articles = parseArticles(channel);
+    private RssFeed parseChannel(final Element channel) {
+        final String title = channel.getChildText(FEED_TITLE_NAME);
+        final String link = channel.getChildText(FEED_ORIGIN_NAME);
+        final String description = channel.getChildText(FEED_DESCRIPTION_NAME);
 
-        if (articles == null) {
-            return;
+        if (title == null || link == null || description == null) {
+            return null;
         }
 
-        addArticles(articles);
+        final RssFeed result = new RssFeed(title, link);
+        result.setDescription(description);
+
+        return result;
+    }
+
+    private RssArticle parseArticle(final Element item) {
+        final String title = item.getChildText(ARTICLE_TITLE_NAME);
+        final String link = item.getChildText(ARTICLE_ORIGIN_NAME);
+        final String description = item.getChildText(ARTICLE_DESCRIPTION_NAME);
+
+        if (title == null || link == null || description == null) {
+            return null;
+        }
+
+        final RssArticle result = new RssArticle(title, link);
+        result.setDescription(description);
+
+        return result;
     }
 }

@@ -1,14 +1,16 @@
-package ru.iandreyshev.parserrss.models.feed;
+package ru.iandreyshev.parserrss.models.rss;
+
+import android.support.annotation.NonNull;
 
 import ru.iandreyshev.parserrss.models.web.Url;
 
-public class Feed implements IFeedContent {
-    private String mTitle;
+class RssFeed implements IRssFeed {
+    private Url mUrl;
     private String mOrigin;
+    private String mTitle;
     private String mDescription;
-    private String mUrl;
 
-    public Feed(final String title, final String origin) throws NullPointerException {
+    RssFeed(@NonNull final String title, @NonNull final String origin) throws NullPointerException {
         mTitle = title;
         mOrigin = origin;
     }
@@ -18,12 +20,9 @@ public class Feed implements IFeedContent {
         return mTitle;
     }
 
+    @Override
     public String getDescription() {
         return mDescription;
-    }
-
-    public void setDescription(final String description) {
-        mDescription = description;
     }
 
     @Override
@@ -31,11 +30,16 @@ public class Feed implements IFeedContent {
         return mOrigin;
     }
 
+    @Override
     public Url getUrl() {
-        return Url.parse(mUrl);
+        return mUrl;
+    }
+
+    public void setDescription(final String description) {
+        mDescription = description;
     }
 
     public void setUrl(final Url url) throws NullPointerException {
-        mUrl = url.toString();
+        mUrl = url;
     }
 }

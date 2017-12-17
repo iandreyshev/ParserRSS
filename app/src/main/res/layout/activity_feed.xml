@@ -4,15 +4,15 @@
     android:id="@+id/feed_common_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/background_light"
     android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/feed_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:titleTextAppearance="@style/ToolbarSizeFix">
-
-        </android.support.v7.widget.Toolbar>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/feed_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorWhite"
+        app:titleTextAppearance="@style/ToolbarSizeFix" />
 
     <ProgressBar
         android:id="@+id/feed_progress_bar"
@@ -21,18 +21,17 @@
         android:layout_height="wrap_content"
         android:indeterminate="true" />
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/feed_refresh_layout"
+    <android.support.design.widget.TabLayout
+        android:id="@+id/feed_tabs_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        app:tabGravity="fill"
+        app:tabMode="scrollable" />
 
-        <android.support.v7.widget.RecyclerView
-            app:layoutManager="LinearLayoutManager"
-            android:id="@+id/feed_items_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/background_light" />
-
-    </android.support.v4.widget.SwipeRefreshLayout>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/feed_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>

@@ -13,12 +13,12 @@ public class HttpRequestHandlerTest {
 
         requestHandler.sendGet(nullUrl);
 
-        assertEquals(requestHandler.getState(), HttpRequestHandler.State.BadUrl);
+        assertEquals(requestHandler.getState(), HttpRequestHandler.State.InvalidUrl);
 
         final Url url = null;
 
         requestHandler.sendGet(url);
 
-        assertEquals(requestHandler.getState(), HttpRequestHandler.State.BadUrl);
+        assertEquals(requestHandler.getState(), HttpRequestHandler.State.InvalidUrl);
     }
 }

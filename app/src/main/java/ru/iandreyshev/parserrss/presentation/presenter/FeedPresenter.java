@@ -1,58 +1,30 @@
 package ru.iandreyshev.parserrss.presentation.presenter;
 
-import android.os.AsyncTask;
+import android.util.Log;
 
-import ru.iandreyshev.parserrss.models.article.IArticleContent;
-import ru.iandreyshev.parserrss.models.feed.Feed;
-import ru.iandreyshev.parserrss.models.feed.IFeedContent;
-import ru.iandreyshev.parserrss.presentation.presenter.task.IFeedTask;
-import ru.iandreyshev.parserrss.presentation.presenter.task.InsertFeedTask;
-import ru.iandreyshev.parserrss.presentation.presenter.task.RefreshFeedTask;
-import ru.iandreyshev.parserrss.presentation.presenter.task.listener.IOnCancelledListener;
-import ru.iandreyshev.parserrss.presentation.presenter.task.listener.IOnErrorListener;
-import ru.iandreyshev.parserrss.presentation.presenter.task.listener.IOnSuccessListener;
+import ru.iandreyshev.parserrss.models.rss.IRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IRssFeed;
+import ru.iandreyshev.parserrss.models.async.InsertRssTask;
+import ru.iandreyshev.parserrss.models.async.UpdateRssTask;
+import ru.iandreyshev.parserrss.models.async.listener.IOnCancelledListener;
+import ru.iandreyshev.parserrss.models.async.listener.IOnErrorListener;
+import ru.iandreyshev.parserrss.models.async.listener.IOnSuccessListener;
+import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import java.util.ArrayList;
-
 @InjectViewState
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
-    private static final String TAG = "FeedPresenter";
-
-    private RefreshFeedTask mRefreshTask = new RefreshFeedTask();
-    private InsertFeedTask mInsertTask = new InsertFeedTask();
-
-    private Feed mFeed;
-
-    public void onRefreshFeed() {
-        if (mFeed == null) {
-            getViewState().setRefreshing(false);
-
-            return;
-        }
-
-        onRefreshFeed(mFeed);
-    }
-
-    public void onAddingButtonClick() {
-        getViewState().openAddingFeedDialog();
-    }
-
-    public void onEditButtonClick() {
+    public void onRefreshFeed(IRssFeed feed) {
     }
 
     public void onSubmitAddingFeed(final String url) {
-        if (mInsertTask.getStatus() == AsyncTask.Status.RUNNING) {
-            return;
-        }
-
-        mInsertTask = new InsertFeedTask();
+        final InsertRssTask task = new InsertRssTask();
         final InsertTaskListener listener = new InsertTaskListener();
 
-        mInsertTask.setSuccessListener(listener)
+        task.setSuccessListener(listener)
                 .setErrorListener(listener)
                 .setOnCancelledListener(listener)
                 .execute(url);
@@ -60,7 +32,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         getViewState().startProgressBar(true);
     }
 
-    public void onItemClick(IArticleContent article) {
+    public void onItemClick(IRssArticle article) {
         getViewState().openArticle(article);
     }
 
@@ -69,35 +41,17 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         super.onFirstViewAttach();
     }
 
-    private void onRefreshFeed(IFeedContent feedToRefresh) {
-        if (feedToRefresh == null) {
-            return;
-        }
-
-        if (mRefreshTask.getStatus() == AsyncTask.Status.RUNNING) {
-            return;
-        } else if (mRefreshTask.getStatus() == AsyncTask.Status.FINISHED || mRefreshTask.isCancelled()) {
-            mRefreshTask = new RefreshFeedTask();
-        }
-
-        final RefreshTaskListener listener = new RefreshTaskListener();
-
-        mRefreshTask.setSuccessListener(listener)
-                .setErrorListener(listener)
-                .execute(mFeed);
-    }
-
     private class RefreshTaskListener
-            implements IOnSuccessListener<IFeedTask>, IOnErrorListener<RefreshFeedTask.ErrorStatus> {
+            implements
+            IOnSuccessListener<Rss>,
+            IOnErrorListener<UpdateRssTask.ErrorState> {
         @Override
-        public void onSuccessEvent(IFeedTask task) {
-            getViewState().setRefreshing(false);
-            getViewState().updateFeedList(task.getFeed(), new ArrayList<>(task.getArticles()));
+        public void onSuccessEvent(Rss rss) {
+            getViewState().updateFeedList(rss);
         }
 
         @Override
-        public void onErrorEvent(RefreshFeedTask.ErrorStatus refreshError) {
-            getViewState().setRefreshing(false);
+        public void onErrorEvent(UpdateRssTask.ErrorState refreshError) {
 
             switch (refreshError) {
 
@@ -115,19 +69,18 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     }
 
     private class InsertTaskListener
-            implements IOnSuccessListener<IFeedTask>,
-            IOnErrorListener<InsertFeedTask.ErrorStatus>,
+            implements
+            IOnSuccessListener<Rss>,
+            IOnErrorListener<InsertRssTask.ErrorState>,
             IOnCancelledListener {
         @Override
-        public void onSuccessEvent(IFeedTask task) {
+        public void onSuccessEvent(Rss rss) {
             getViewState().startProgressBar(false);
-
-            mFeed = task.getFeed();
-            getViewState().setFeed(mFeed);
-            getViewState().updateFeedList(mFeed, new ArrayList<>(task.getArticles()));
+            getViewState().insertFeed(rss);
+            Log.e("InsertTaskListener", rss.getFeed().getTitle());
         }
         @Override
-        public void onErrorEvent(InsertFeedTask.ErrorStatus status) {
+        public void onErrorEvent(InsertRssTask.ErrorState status) {
             getViewState().startProgressBar(false);
 
             switch (status) {

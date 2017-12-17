@@ -1,12 +1,9 @@
 package ru.iandreyshev.parserrss.models.rss;
 
-import org.jdom2.Document;
 import org.junit.Before;
 import org.junit.Test;
 
 import ru.iandreyshev.parserrss.TestUtils;
-import ru.iandreyshev.parserrss.models.article.Article;
-import ru.iandreyshev.parserrss.models.feed.Feed;
 
 import static org.junit.Assert.*;
 
@@ -25,9 +22,8 @@ public class Parser_2_0_Test {
 
     @Test
     public void parseRssWithoutXmlFormat() {
-        parseFileAndCheck("valid_without_xml_format");
-
-        final Feed feed = mParser.getFeed();
+        final Rss rss = parseFileAndCheck("valid_without_xml_format");
+        final IRssFeed feed = rss.getFeed();
 
         assertEquals(feed.getTitle(), RSS_TITLE);
         assertEquals(feed.getDescription(), RSS_DESCRIPTION);
@@ -36,9 +32,8 @@ public class Parser_2_0_Test {
 
     @Test
     public void parseRssWithFeedTitleAndDescriptionOnly() {
-        parseFileAndCheck("valid_minimal");
-
-        final Feed feed = mParser.getFeed();
+        final Rss rss = parseFileAndCheck("valid_minimal");
+        final IRssFeed feed = rss.getFeed();
 
         assertEquals(feed.getTitle(), RSS_TITLE);
         assertEquals(feed.getDescription(), RSS_DESCRIPTION);
@@ -46,57 +41,54 @@ public class Parser_2_0_Test {
 
     @Test
     public void notParseIfTitleIsAbsent() {
-        parseFile("invalid_without_title");
+        final Rss rss = parseFile("invalid_without_title");
 
-        assertEquals(mParser.getState(), Parser.State.InvalidFormat);
-    }
-
-    @Test
-    public void returnNotParseStatusIfNotParseAnythingYet() {
-        assertEquals(mParser.getState(), Parser.State.NotParse);
+        assertNull(rss);
     }
 
     @Test
     public void returnEmptyArticlesListIfArticlesIsAbsent() {
-        parseFileAndCheck("valid_minimal");
+        final Rss rss = parseFileAndCheck("valid_minimal");
 
-        assertEquals(0, mParser.getArticles().size());
+        assertEquals(rss.getArticles().size(), 0);
     }
 
     @Test
     public void notParseArticlesInItemsNode() {
-        parseFileAndCheck("invalid_with_articles_in_items_node");
+        final Rss rss = parseFileAndCheck("invalid_with_articles_in_items_node");
 
-        assertEquals(0, mParser.getArticles().size());
+        assertEquals(rss.getArticles().size(), 0);
     }
 
     @Test
     public void parseArticlesInChannelNode() {
-        parseFileAndCheck("valid_with_articles");
+        final Rss rss = parseFileAndCheck("valid_with_articles");
 
-        assertEquals(2, mParser.getArticles().size());
+        assertEquals(rss.getArticles().size(), 2);
 
-        for (Article article : mParser.getArticles()) {
+        for (IRssArticle article : rss.getArticles()) {
 
             assertEquals(article.getTitle(), ARTICLE_TITLE);
-            assertEquals(article.getText(), ARTICLE_TEXT);
+            assertEquals(article.getDescription(), ARTICLE_TEXT);
             assertNotNull(article.getOrigin());
 
         }
     }
 
-    private void parseFile(final String fileName) {
-        final Document result = TestUtils.readXmlFromFile(toPath(fileName));
+    private Rss parseFile(final String fileName) {
+        final String result = TestUtils.readFromFile(toPath(fileName));
 
         assertNotNull(result);
 
-        mParser.parse(result);
+        return mParser.parse(result);
     }
 
-    private void parseFileAndCheck(final String fileName) {
-        parseFile(fileName);
+    private Rss parseFileAndCheck(final String fileName) {
+        final Rss rss = parseFile(fileName);
 
-        assertEquals(mParser.getState(), Parser.State.Success);
+        assertNotNull(rss);
+
+        return rss;
     }
 
     private String toPath(final String fileName) {

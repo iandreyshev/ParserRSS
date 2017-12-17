@@ -1,11 +1,11 @@
-package ru.iandreyshev.parserrss.presentation.presenter.task;
+package ru.iandreyshev.parserrss.models.async;
 
 import android.os.AsyncTask;
 
-import ru.iandreyshev.parserrss.presentation.presenter.task.listener.IOnCancelledListener;
-import ru.iandreyshev.parserrss.presentation.presenter.task.listener.IOnErrorListener;
-import ru.iandreyshev.parserrss.presentation.presenter.task.listener.IOnProgressListener;
-import ru.iandreyshev.parserrss.presentation.presenter.task.listener.IOnSuccessListener;
+import ru.iandreyshev.parserrss.models.async.listener.IOnCancelledListener;
+import ru.iandreyshev.parserrss.models.async.listener.IOnErrorListener;
+import ru.iandreyshev.parserrss.models.async.listener.IOnProgressListener;
+import ru.iandreyshev.parserrss.models.async.listener.IOnSuccessListener;
 
 public abstract class Task<TParams, TProgress, TResult, TError> extends AsyncTask<TParams, TProgress, TResult> {
     private IOnSuccessListener<TResult> mOnSuccessListener;

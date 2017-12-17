@@ -3,14 +3,16 @@ package ru.iandreyshev.parserrss.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
+import android.text.Html;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.article.IArticleContent;
+import ru.iandreyshev.parserrss.models.rss.IRssArticle;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
 
@@ -19,6 +21,8 @@ import ru.iandreyshev.parserrss.R;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 public class ArticleActivity extends BaseActivity implements IArticleView {
+    public static final String ARTICLE_BOUND_KEY = "Article_to_open";
+
     @InjectPresenter
     ArticlePresenter mArticlePresenter;
 
@@ -30,8 +34,8 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     TextView mDate;
     @BindView(R.id.article_image)
     ImageView mImage;
-    @BindView(R.id.article_button_layout)
-    ConstraintLayout mBackButton;
+    @BindView(R.id.article_toolbar)
+    Toolbar mToolbar;
 
     public static Intent getIntent(final Context context) {
         return new Intent(context, ArticleActivity.class);
@@ -48,54 +52,39 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_article);
 
         ButterKnife.bind(this);
 
-        if (!isIntentContainsArticle()) {
+        if (!initArticle()) {
             mArticlePresenter.onErrorLoadArticle();
             return;
         }
 
-        initContent(getArticleFromIntent());
+        setSupportActionBar(mToolbar);
         initButtonsListeners();
     }
 
-    private boolean isIntentContainsArticle() {
-        IArticleContent article;
+    private boolean initArticle() {
+        final IRssArticle article = (IRssArticle) getIntent().getSerializableExtra(ARTICLE_BOUND_KEY);
 
-        try {
-            article = getArticleFromIntent();
-        } catch (Exception ex) {
+        if (article == null) {
             return false;
         }
 
-        return article != null;
-    }
+        mTitle.setText(Html.fromHtml(article.getTitle()));
+        mText.setText(Html.fromHtml(article.getDescription()));
 
-    private void initContent(IArticleContent article) {
-        mTitle.setText(article.getTitle());
-        mText.setText(article.getText());
-
-        if (article.isDateExist()) {
-            mDate.setText(article.getDate().toString());
-        } else {
-            mDate.setVisibility(View.GONE);
-        }
-
-        if (article.isImageExist()) {
+        if (article.getImage() != null) {
             mImage.setImageBitmap(article.getImage());
         } else {
             mImage.setVisibility(View.GONE);
         }
-    }
 
-    private IArticleContent getArticleFromIntent() {
-        final String key = getResources().getString(R.string.const_article_bundle_key);
-        return (IArticleContent) getIntent().getSerializableExtra(key);
+        return true;
     }
 
     private void initButtonsListeners() {
-        mBackButton.setOnClickListener(view -> mArticlePresenter.onBackButtonClick());
     }
 }

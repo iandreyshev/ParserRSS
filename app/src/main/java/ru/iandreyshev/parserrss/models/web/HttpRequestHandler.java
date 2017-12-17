@@ -26,7 +26,7 @@ public class HttpRequestHandler {
 
     public enum State {
         Success,
-        BadUrl,
+        InvalidUrl,
         BadConnection,
         PermissionDenied,
     }
@@ -41,7 +41,7 @@ public class HttpRequestHandler {
 
     public void sendGet(final Url url) {
         if (url == null) {
-            mState = State.BadUrl;
+            mState = State.InvalidUrl;
 
             return;
         }
@@ -71,7 +71,7 @@ public class HttpRequestHandler {
 
     private boolean prepareUrl(final String url) {
         if (url == null) {
-            mState = State.BadUrl;
+            mState = State.InvalidUrl;
 
             return false;
         }
@@ -79,7 +79,7 @@ public class HttpRequestHandler {
         mUrl = Url.parse(url);
 
         if (mUrl == null) {
-            mState = State.BadUrl;
+            mState = State.InvalidUrl;
 
             return false;
         }

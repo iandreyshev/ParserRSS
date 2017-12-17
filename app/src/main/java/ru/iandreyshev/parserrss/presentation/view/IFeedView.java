@@ -1,23 +1,26 @@
 package ru.iandreyshev.parserrss.presentation.view;
 
+import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-import java.util.List;
-
-import ru.iandreyshev.parserrss.models.article.IArticleContent;
-import ru.iandreyshev.parserrss.models.feed.IFeedContent;
+import ru.iandreyshev.parserrss.models.rss.IRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IRssFeed;
+import ru.iandreyshev.parserrss.models.rss.Rss;
 
 public interface IFeedView extends IBaseView {
     @StateStrategyType(SkipStrategy.class)
-    void openArticle(IArticleContent article);
-
-    @StateStrategyType(AddToEndStrategy.class)
-    void updateFeedList(IFeedContent feed, List<IArticleContent> newList);
+    void insertFeed(final Rss rss);
 
     @StateStrategyType(SkipStrategy.class)
-    void setRefreshing(boolean isRefresh);
+    void updateFeedList(final Rss rss);
+
+    @StateStrategyType(SkipStrategy.class)
+    void removeFeed(IRssFeed feed);
+
+    @StateStrategyType(SkipStrategy.class)
+    void openArticle(IRssArticle article);
 
     @StateStrategyType(SkipStrategy.class)
     void openAddingFeedDialog();
@@ -25,6 +28,6 @@ public interface IFeedView extends IBaseView {
     @StateStrategyType(AddToEndStrategy.class)
     void startProgressBar(boolean isStart);
 
-    @StateStrategyType(SkipStrategy.class)
-    void setFeed(IFeedContent feed);
+    @StateStrategyType(AddToEndStrategy.class)
+    void startRefresh(IRssFeed feed, boolean isStart);
 }
