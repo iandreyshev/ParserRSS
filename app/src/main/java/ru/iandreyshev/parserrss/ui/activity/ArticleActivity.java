@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -20,8 +21,15 @@ import ru.iandreyshev.parserrss.R;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class ArticleActivity extends BaseActivity implements IArticleView {
     public static final String ARTICLE_BOUND_KEY = "Article_to_open";
+    public static final String TOOLBAR_TITLE = "Article";
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddd, dd MMM yyyy HH:mm:ss K", Locale.US);
+
+    private IRssArticle mArticle;
 
     @InjectPresenter
     ArticlePresenter mArticlePresenter;
@@ -50,6 +58,15 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            openFeed();
+        }
+
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -62,29 +79,44 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
             return;
         }
 
-        setSupportActionBar(mToolbar);
+        initToolbar();
         initButtonsListeners();
     }
 
     private boolean initArticle() {
-        final IRssArticle article = (IRssArticle) getIntent().getSerializableExtra(ARTICLE_BOUND_KEY);
+        mArticle = (IRssArticle) getIntent().getSerializableExtra(ARTICLE_BOUND_KEY);
 
-        if (article == null) {
+        if (mArticle == null) {
             return false;
         }
 
-        mTitle.setText(Html.fromHtml(article.getTitle()));
-        mText.setText(Html.fromHtml(article.getDescription()));
+        mTitle.setText(Html.fromHtml(mArticle.getTitle()));
+        mText.setText(Html.fromHtml(mArticle.getDescription()));
 
-        if (article.getImage() != null) {
-            mImage.setImageBitmap(article.getImage());
-        } else {
-            mImage.setVisibility(View.GONE);
+        setViewVisible(mImage, (mArticle.getImage() != null));
+        if (mArticle.getImage() != null) {
+            mImage.setImageBitmap(mArticle.getImage());
+        }
+
+        setViewVisible(mDate, (mArticle.getDate() != null));
+        if (mArticle.getDate() != null) {
+            mDate.setText(DATE_FORMAT.format(mArticle.getDate()));
         }
 
         return true;
     }
 
+    private void initToolbar() {
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle(TOOLBAR_TITLE);
+    }
+
     private void initButtonsListeners() {
+    }
+
+    public void setViewVisible(View view, boolean isVisible) {
+        view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 }

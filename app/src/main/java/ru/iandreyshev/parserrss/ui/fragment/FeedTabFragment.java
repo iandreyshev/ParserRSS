@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,7 +25,10 @@ public class FeedTabFragment extends Fragment {
     private IOnArticleClickListener mOnItemClickListener;
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener;
     private SwipeRefreshLayout mRefreshLayout;
-    private View mView;
+    private boolean mIsRefreshing = false;
+
+    public FeedTabFragment() {
+    }
 
     public void setArticles(List<IRssArticle> articles) {
         mArticles = articles;
@@ -38,32 +42,51 @@ public class FeedTabFragment extends Fragment {
         mOnRefreshListener = listener;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstantState) {
-        if (mView == null) {
-            initList(inflater, viewGroup);
+    public void startRefresh(boolean isStart) {
+        mIsRefreshing = isStart;
+
+        if (mRefreshLayout != null) {
+            mRefreshLayout.setRefreshing(isStart);
         }
-
-        mListAdapter.notifyDataSetChanged();
-        mRefreshLayout.setRefreshing(mRefreshLayout.isRefreshing());
-
-        return mView;
     }
 
-    private void initList(LayoutInflater inflater, ViewGroup viewGroup) {
-        mView = inflater.inflate(R.layout.feed_list, viewGroup, false);
+    @Override
+    public void onCreate(Bundle savedInstantState) {
+        super.onCreate(savedInstantState);
+        initListAdapter();
+    }
 
-        final RecyclerView itemsList = mView.findViewById(R.id.feed_items_list);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstantState) {
+        View listView = initList(inflater, viewGroup);
+        mListAdapter.notifyDataSetChanged();
 
-        mListAdapter = new ArticlesListAdapter(getContext());
-        mListAdapter.setOnItemClickListener(mOnItemClickListener);
-        mListAdapter.setArticles(mArticles);
+        return listView;
+    }
 
+    private View initList(LayoutInflater inflater, ViewGroup viewGroup) {
+        View view = inflater.inflate(R.layout.feed_list, viewGroup, false);
+
+        final RecyclerView itemsList = view.findViewById(R.id.feed_items_list);
         itemsList.setAdapter(mListAdapter);
         itemsList.setLayoutManager(new LinearLayoutManager(getContext()));
         itemsList.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
-        mRefreshLayout = mView.findViewById(R.id.feed_refresh_layout);
-        mRefreshLayout.setOnRefreshListener(mOnRefreshListener);
+        mRefreshLayout = view.findViewById(R.id.feed_refresh_layout);
+        mRefreshLayout.setOnRefreshListener(() -> {
+            if (mOnRefreshListener != null) {
+                mOnRefreshListener.onRefresh();
+            }
+            mIsRefreshing = true;
+        });
+        mRefreshLayout.setRefreshing(mIsRefreshing);
+
+        return view;
+    }
+
+    private void initListAdapter() {
+        mListAdapter = new ArticlesListAdapter(getContext());
+        mListAdapter.setOnItemClickListener(mOnItemClickListener);
+        mListAdapter.setArticles(mArticles);
     }
 }

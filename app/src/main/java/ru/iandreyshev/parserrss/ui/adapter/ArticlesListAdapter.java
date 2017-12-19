@@ -16,11 +16,13 @@ import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.IRssArticle;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
+    private Context mContext;
     private LayoutInflater mInflater;
     private IOnArticleClickListener mArticleClickListener;
     private List<IRssArticle> mList = new ArrayList<>();
 
     public ArticlesListAdapter(Context context) {
+        mContext = context;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -44,7 +46,11 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.setContent(mList.get(position));
+        final IRssArticle article = mList.get(position);
+
+        if (article != null) {
+            holder.setContent(article);
+        }
     }
 
     @Override
@@ -79,8 +85,8 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             });
         }
 
-        void setContent(IRssArticle mContent) {
-            this.mContent = mContent;
+        void setContent(IRssArticle content) {
+            this.mContent = content;
 
             mTitle.setText(Html.fromHtml(mContent.getTitle()));
             mDescription.setText(Html.fromHtml(mContent.getDescription()));

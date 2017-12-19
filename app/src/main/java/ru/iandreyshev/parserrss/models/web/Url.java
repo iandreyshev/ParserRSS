@@ -6,7 +6,11 @@ public class Url {
     private HttpUrl mInstance;
 
     public static Url parse(final String url) {
-        HttpUrl instance = HttpUrl.parse(url);
+        if (url == null) {
+            return null;
+        }
+
+        final HttpUrl instance = HttpUrl.parse(url);
 
         if (instance == null) {
             return null;

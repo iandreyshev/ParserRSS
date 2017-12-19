@@ -2,13 +2,11 @@ package ru.iandreyshev.parserrss.presentation.presenter;
 
 import android.util.Log;
 
+import ru.iandreyshev.parserrss.models.async.ITaskListener;
 import ru.iandreyshev.parserrss.models.rss.IRssArticle;
 import ru.iandreyshev.parserrss.models.rss.IRssFeed;
 import ru.iandreyshev.parserrss.models.async.InsertRssTask;
 import ru.iandreyshev.parserrss.models.async.UpdateRssTask;
-import ru.iandreyshev.parserrss.models.async.listener.IOnCancelledListener;
-import ru.iandreyshev.parserrss.models.async.listener.IOnErrorListener;
-import ru.iandreyshev.parserrss.models.async.listener.IOnSuccessListener;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
@@ -18,22 +16,35 @@ import com.arellomobile.mvp.MvpPresenter;
 @InjectViewState
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
     public void onRefreshFeed(IRssFeed feed) {
+        Log.e("Presenter", "Start refreshing");
+        final UpdateRssTask task = new UpdateRssTask();
+
+        task.setListener(new UpdateTaskListener())
+                .execute(feed);
     }
 
     public void onSubmitAddingFeed(final String url) {
         final InsertRssTask task = new InsertRssTask();
-        final InsertTaskListener listener = new InsertTaskListener();
 
-        task.setSuccessListener(listener)
-                .setErrorListener(listener)
-                .setOnCancelledListener(listener)
+        task.setListener(new InsertTaskListener())
                 .execute(url);
 
         getViewState().startProgressBar(true);
     }
 
-    public void onItemClick(IRssArticle article) {
+    public void onArticleClick(IRssArticle article) {
         getViewState().openArticle(article);
+    }
+
+    public void onOpenInfo(IRssFeed feed) {
+        if (feed == null) {
+            return;
+        }
+
+
+    }
+
+    public void onDeleteFeed(IRssFeed feed) {
     }
 
     @Override
@@ -41,46 +52,15 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         super.onFirstViewAttach();
     }
 
-    private class RefreshTaskListener
-            implements
-            IOnSuccessListener<Rss>,
-            IOnErrorListener<UpdateRssTask.ErrorState> {
-        @Override
-        public void onSuccessEvent(Rss rss) {
-            getViewState().updateFeedList(rss);
-        }
-
-        @Override
-        public void onErrorEvent(UpdateRssTask.ErrorState refreshError) {
-
-            switch (refreshError) {
-
-                case InternetPermissionDenied:
-                    getViewState().showShortToast("Internet permission denied");
-                    break;
-                case BadConnection:
-                    getViewState().showShortToast("Bad connection");
-                    break;
-                case InvalidFormat:
-                    getViewState().showShortToast("Parsing error");
-                    break;
-            }
-        }
-    }
-
-    private class InsertTaskListener
-            implements
-            IOnSuccessListener<Rss>,
-            IOnErrorListener<InsertRssTask.ErrorState>,
-            IOnCancelledListener {
+    private class InsertTaskListener implements ITaskListener<String, Void, Rss, InsertRssTask.ErrorState> {
         @Override
         public void onSuccessEvent(Rss rss) {
             getViewState().startProgressBar(false);
             getViewState().insertFeed(rss);
-            Log.e("InsertTaskListener", rss.getFeed().getTitle());
         }
+
         @Override
-        public void onErrorEvent(InsertRssTask.ErrorState status) {
+        public void onErrorEvent(String[] urls, InsertRssTask.ErrorState status) {
             getViewState().startProgressBar(false);
 
             switch (status) {
@@ -101,10 +81,79 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
                     break;
             }
         }
+
         @Override
-        public void onCancel() {
+        public void onProgress(Void[] process) {
+        }
+
+        @Override
+        public void onCancel(String[] urlsCollection) {
             getViewState().startProgressBar(false);
             getViewState().showLongToast("Cancel!");
+        }
+    }
+
+    private class UpdateTaskListener implements ITaskListener<IRssFeed, Void, Rss, UpdateRssTask.ErrorState> {
+        @Override
+        public void onSuccessEvent(Rss rss) {
+            Log.e("Task", "Refreshing success");
+            getViewState().updateFeedList(rss);
+        }
+
+        @Override
+        public void onCancel(IRssFeed[] feeds) {
+            Log.e("Task", "Refreshing cancelled");
+            stopRefreshFirst(feeds, 0);
+        }
+
+        @Override
+        public void onErrorEvent(IRssFeed[] feeds, UpdateRssTask.ErrorState refreshError) {
+            Log.e("Task", "Refreshing error");
+            switch (refreshError) {
+                case InternetPermissionDenied:
+                    getViewState().showShortToast("Internet permission denied");
+                    break;
+                case BadConnection:
+                    getViewState().showShortToast("Bad connection");
+                    break;
+                case InvalidUrl:
+                    getViewState().showShortToast("Invalid url");
+                    break;
+                case InvalidFormat:
+                    getViewState().showShortToast("Parsing error");
+                    break;
+            }
+            stopRefreshFirst(feeds, 0);
+        }
+
+        @Override
+        public void onProgress(Void[] process) {
+        }
+
+        private void stopRefreshFirst(IRssFeed[] feeds, int index) {
+            if (feeds == null || feeds.length <= index) {
+                return;
+            }
+
+            getViewState().startRefresh(feeds[index], false);
+        }
+    }
+
+    private class DeleteTaskListener implements ITaskListener<IRssFeed, Void, Void, Void> {
+        @Override
+        public void onCancel(IRssFeed[] feeds) {
+        }
+
+        @Override
+        public void onErrorEvent(IRssFeed[] feeds, Void aVoid) {
+        }
+
+        @Override
+        public void onProgress(Void[] process) {
+        }
+
+        @Override
+        public void onSuccessEvent(Void aVoid) {
         }
     }
 }

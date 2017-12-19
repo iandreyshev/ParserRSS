@@ -10,13 +10,13 @@ import ru.iandreyshev.parserrss.models.rss.IRssFeed;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 
 public interface IFeedView extends IBaseView {
-    @StateStrategyType(SkipStrategy.class)
+    @StateStrategyType(AddToEndStrategy.class)
     void insertFeed(final Rss rss);
 
-    @StateStrategyType(SkipStrategy.class)
+    @StateStrategyType(AddToEndStrategy.class)
     void updateFeedList(final Rss rss);
 
-    @StateStrategyType(SkipStrategy.class)
+    @StateStrategyType(AddToEndStrategy.class)
     void removeFeed(IRssFeed feed);
 
     @StateStrategyType(SkipStrategy.class)
@@ -30,4 +30,7 @@ public interface IFeedView extends IBaseView {
 
     @StateStrategyType(AddToEndStrategy.class)
     void startRefresh(IRssFeed feed, boolean isStart);
+
+    @StateStrategyType(AddToEndSingleStrategy.class)
+    void openInfo(IRssFeed feed);
 }

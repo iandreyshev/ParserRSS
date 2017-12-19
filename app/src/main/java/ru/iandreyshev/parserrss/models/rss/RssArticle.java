@@ -3,11 +3,15 @@ package ru.iandreyshev.parserrss.models.rss;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
+import java.util.Date;
+
 class RssArticle implements IRssArticle {
     private String mTitle;
     private String mOrigin;
     private String mDescription;
     private Bitmap mImage;
+    private String mImageUrl;
+    private Date mDate;
 
     RssArticle(@NonNull final String title, @NonNull final String origin) {
         setTitle(title);
@@ -30,8 +34,18 @@ class RssArticle implements IRssArticle {
     }
 
     @Override
+    public Date getDate() {
+        return mDate;
+    }
+
+    @Override
     public Bitmap getImage() {
         return mImage;
+    }
+
+    @Override
+    public String getImageUrl() {
+        return mImageUrl;
     }
 
     void setTitle(String title) {
@@ -42,7 +56,15 @@ class RssArticle implements IRssArticle {
         mDescription = text;
     }
 
-    public void setImage(Bitmap image) {
+    void setImage(Bitmap image) {
         mImage = image;
+    }
+
+    void setDate(Date date) {
+        mDate = date;
+    }
+
+    void setImageUrl(String url) {
+        mImageUrl = url;
     }
 }

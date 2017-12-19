@@ -20,11 +20,12 @@ public class HttpRequestHandler {
             .connectTimeout(CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS)
             .writeTimeout(WRITE_TIMEOUT_SEC, TimeUnit.SECONDS)
             .build();
-    private State mState;
-    private byte[] mBody;
+    private State mState = State.NotSend;
+    private byte[] mBody = new byte[0];
     private Url mUrl;
 
     public enum State {
+        NotSend,
         Success,
         InvalidUrl,
         BadConnection,
@@ -58,10 +59,6 @@ public class HttpRequestHandler {
     }
 
     public byte[] getResponseBody() {
-        if (mState != State.Success || mBody == null) {
-            return null;
-        }
-
         return mBody;
     }
 
@@ -90,14 +87,22 @@ public class HttpRequestHandler {
     private void send(Request request) {
         try (final Response response = mClient.newCall(request).execute()) {
 
-            final boolean isResponseValid = response.code() == GOOD_RESPONSE_CODE;
-            mState = isResponseValid ? State.Success : State.BadConnection;
-
             try (final ResponseBody body = response.body()) {
-                mBody = body.bytes();
-            } catch (Exception ex) {
-            }
 
+                final boolean isResponseValid = response.code() == GOOD_RESPONSE_CODE;
+
+                if (!isResponseValid) {
+                    mState =  State.BadConnection;
+
+                    return;
+                }
+
+                mBody = body.bytes();
+                mState = State.Success;
+
+            } catch (Exception ex) {
+                mState =  State.BadConnection;
+            }
         } catch (SecurityException ex) {
             mState = State.PermissionDenied;
         } catch (Exception ex) {

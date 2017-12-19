@@ -1,18 +1,12 @@
 package ru.iandreyshev.parserrss.models.async;
 
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import ru.iandreyshev.parserrss.models.rss.IRssArticle;
-import ru.iandreyshev.parserrss.models.rss.IRssFeed;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.Url;
 
-public class InsertRssTask
-        extends Task<String, Void, Rss, InsertRssTask.ErrorState> {
+public class InsertRssTask extends Task<String, Void, Rss, InsertRssTask.ErrorState> {
+    private static final int MIN_URLS_COUNT = 1;
+
     private HttpRequestHandler mRequestHandler = new HttpRequestHandler();
 
     public enum ErrorState {
@@ -23,8 +17,15 @@ public class InsertRssTask
     }
 
     @Override
-    protected Rss doInBackground(String... urlCollection) {
-        mRequestHandler.sendGet(Url.parse(urlCollection[0]));
+    protected Rss behaviourProcess(String[] urlCollection) {
+        if (urlCollection.length < MIN_URLS_COUNT) {
+            setError(ErrorState.InvalidUrl);
+
+            return null;
+        }
+
+        final Url feedUrl = Url.parse(urlCollection[0]);
+        mRequestHandler.sendGet(feedUrl);
 
         if (mRequestHandler.getState() != HttpRequestHandler.State.Success) {
             initWebError();
@@ -32,14 +33,16 @@ public class InsertRssTask
             return null;
         }
 
-        final String rssText = new String(mRequestHandler.getResponseBody());
-        final Rss rss = Rss.parse(rssText);
+        final byte[] respBody = mRequestHandler.getResponseBody();
+        final Rss rss = respBody == null ? null : Rss.parse(new String(respBody));
 
         if (rss == null) {
             setError(ErrorState.InvalidFormat);
 
             return null;
         }
+
+        rss.setUrl(feedUrl);
 
         return rss;
     }

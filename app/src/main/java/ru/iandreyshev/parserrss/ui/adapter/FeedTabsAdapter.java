@@ -27,6 +27,10 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
     }
 
     public void add(final Rss rss) {
+        if (mFeedsPages.containsKey(rss.getFeed())) {
+            return;
+        }
+
         final IRssFeed feed = rss.getFeed();
         mFeeds.add(feed);
 
@@ -40,7 +44,6 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
         page.setArticles(rss.getArticles());
 
         mFeedsPages.put(feed, page);
-
         notifyDataSetChanged();
     }
 
@@ -51,13 +54,26 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
             return;
         }
 
+        fragment.startRefresh(false);
         fragment.setArticles(rss.getArticles());
     }
 
-    public void remove(final IRssFeed feed) {
+    public void remove(int position) {
+        final IRssFeed feed = mFeeds.get(position);
+        mFeeds.remove(position);
+        mFeedsPages.remove(feed);
+
+        notifyDataSetChanged();
     }
 
     public void startRefresh(IRssFeed feed, boolean isRefresh) {
+        final FeedTabFragment fragment = mFeedsPages.get(feed);
+
+        if (fragment == null) {
+            return;
+        }
+
+        fragment.startRefresh(isRefresh);
     }
 
     public void setOnItemClickListener(IOnArticleClickListener listener) {
@@ -70,12 +86,12 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return getFragment(position);
+        return mFeedsPages.get(mFeeds.get(position));
     }
 
     @Override
     public int getCount() {
-        return mFeeds.size();
+        return mFeedsPages.size();
     }
 
     @Override
@@ -89,7 +105,11 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
         return String.format(CUT_TITLE_PATTERN, title.substring(0, MAX_TITLE_LENGTH - 1));
     }
 
-    private FeedTabFragment getFragment(int position) {
-        return mFeedsPages.get(mFeeds.get(position));
+    public IRssFeed getFeed(int position) {
+        if (position < 0 || position >= mFeeds.size()) {
+            return null;
+        }
+
+        return mFeeds.get(position);
     }
 }

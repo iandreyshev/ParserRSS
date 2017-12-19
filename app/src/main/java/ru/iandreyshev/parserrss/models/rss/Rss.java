@@ -12,8 +12,6 @@ public final class Rss {
     private List<RssArticle> mArticles;
 
     static {
-        PARSERS.add(new Parser_0_91());
-        PARSERS.add(new Parser_1_0());
         PARSERS.add(new Parser_2_0());
     }
 

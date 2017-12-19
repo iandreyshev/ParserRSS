@@ -44,7 +44,6 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     ViewPager mPager;
 
     private FeedTabsAdapter mTabsAdapter;
-    private Menu mMenu;
     private MenuItem mAddMenuItem;
     private MenuItem mInfoMenuItem;
     private MenuItem mDeleteMenuItem;
@@ -57,14 +56,18 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     public void insertFeed(final Rss rss) {
         mTabsAdapter.add(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
+        updateMenuState();
     }
 
     @Override
     public void updateFeedList(final Rss rss) {
+        updateMenuState();
+        mTabsAdapter.update(rss);
     }
 
     @Override
     public void removeFeed(IRssFeed feed) {
+        updateMenuState();
     }
 
     @Override
@@ -78,7 +81,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
 
     @Override
     public void openAddingFeedDialog() {
-        AddFeedDialog dialog = new AddFeedDialog();
+        final AddFeedDialog dialog = new AddFeedDialog();
         dialog.show(getSupportFragmentManager(), "");
     }
 
@@ -93,17 +96,24 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
+    public void openInfo(IRssFeed feed) {
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.feed_options_menu, menu);
-        mMenu = menu;
-        mAddMenuItem = mMenu.findItem(R.id.feed_options_add);
-        mInfoMenuItem = mMenu.findItem(R.id.feed_options_info);
-        mDeleteMenuItem = mMenu.findItem(R.id.feed_options_delete);
+        mAddMenuItem = menu.findItem(R.id.feed_options_add);
+        mInfoMenuItem = menu.findItem(R.id.feed_options_info);
+        mDeleteMenuItem = menu.findItem(R.id.feed_options_delete);
 
-        mInfoMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
-        mDeleteMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
+        updateMenuState();
 
         return true;
+    }
+
+    @Override
+    public void onSubmit(DialogInterface dialogInterface, String url) {
+        mFeedPresenter.onSubmitAddingFeed(url);
     }
 
     @Override
@@ -113,12 +123,26 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
                 openAddingFeedDialog();
                 break;
             case R.id.feed_options_info:
+                mFeedPresenter.onOpenInfo(getCurrentFeed());
                 break;
             case R.id.feed_options_delete:
+                mFeedPresenter.onDeleteFeed(getCurrentFeed());
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void updateMenuState() {
+        if (mAddMenuItem != null) {
+            mAddMenuItem.setEnabled(mProgressBar.getVisibility() != View.VISIBLE);
+        }
+        if (mInfoMenuItem != null) {
+            mInfoMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
+        }
+        if (mDeleteMenuItem != null) {
+            mDeleteMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
+        }
     }
 
     @Override
@@ -131,6 +155,10 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
 
         initToolbar();
         initTabsView();
+    }
+
+    private IRssFeed getCurrentFeed() {
+        return mTabsAdapter.getFeed(mPager.getCurrentItem());
     }
 
     private void initToolbar() {
@@ -151,18 +179,10 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
         mTabs.setupWithViewPager(mPager, true);
     }
 
-    @Override
-    public void onSubmit(DialogInterface dialogInterface, String url) {
-        mFeedPresenter.onSubmitAddingFeed(url);
-    }
-
-    private class FeedListener
-            implements
-            IOnRefreshListener,
-            IOnArticleClickListener {
+    private class FeedListener implements IOnRefreshListener, IOnArticleClickListener {
         @Override
         public void onItemClick(IRssArticle item) {
-            mFeedPresenter.onItemClick(item);
+            mFeedPresenter.onArticleClick(item);
         }
 
         @Override

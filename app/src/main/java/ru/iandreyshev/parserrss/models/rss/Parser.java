@@ -44,9 +44,9 @@ abstract class Parser implements IRssParser {
         }
     }
 
-    protected abstract RssFeed parseFeed(final Element root);
+    protected abstract RssFeed parseFeed(final Element root) throws Exception;
 
-    protected abstract List<RssArticle> parseArticles(final Element root);
+    protected abstract List<RssArticle> parseArticles(final Element root) throws Exception;
 
     private static Document toDocument(final String xmlText) {
         for (final SAXBuilder builder : mDocBuilders) {

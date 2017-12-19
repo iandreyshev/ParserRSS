@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorWhite"
-        app:titleTextAppearance="@style/ToolbarSizeFix" />
+        app:titleTextAppearance="@style/ToolbarTheme" />
 
     <ProgressBar
         android:id="@+id/feed_progress_bar"

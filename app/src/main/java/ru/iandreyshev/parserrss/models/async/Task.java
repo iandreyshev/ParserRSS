@@ -2,51 +2,35 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.os.AsyncTask;
 
-import ru.iandreyshev.parserrss.models.async.listener.IOnCancelledListener;
-import ru.iandreyshev.parserrss.models.async.listener.IOnErrorListener;
-import ru.iandreyshev.parserrss.models.async.listener.IOnProgressListener;
-import ru.iandreyshev.parserrss.models.async.listener.IOnSuccessListener;
-
 public abstract class Task<TParams, TProgress, TResult, TError> extends AsyncTask<TParams, TProgress, TResult> {
-    private IOnSuccessListener<TResult> mOnSuccessListener;
-    private IOnProgressListener<TProgress> mOnProgressListener;
-    private IOnErrorListener<TError> mOnErrorListener;
-    private IOnCancelledListener mOnCancelled;
+    private ITaskListener<TParams, TProgress, TResult, TError> mListener;
+    private TParams[] mParams;
     private TError mError;
 
-    public final Task<TParams, TProgress, TResult, TError> setSuccessListener(IOnSuccessListener<TResult> listener) {
-        mOnSuccessListener = listener;
+    public final Task<TParams, TProgress, TResult, TError> setListener(ITaskListener<TParams, TProgress, TResult, TError> listener) {
+        mListener = listener;
 
         return this;
     }
 
-    public final Task<TParams, TProgress, TResult, TError> setProgressListener(IOnProgressListener<TProgress> listener) {
-        mOnProgressListener = listener;
+    protected abstract TResult behaviourProcess(TParams[] params);
 
-        return this;
-    }
+    @Override
+    protected final TResult doInBackground(TParams[] params) {
+        mParams = params;
 
-    public final Task<TParams, TProgress, TResult, TError> setErrorListener(IOnErrorListener<TError> listener) {
-        mOnErrorListener = listener;
-
-        return this;
-    }
-
-    public final Task<TParams, TProgress, TResult, TError> setOnCancelledListener(IOnCancelledListener listener) {
-        mOnCancelled = listener;
-
-        return this;
+        return behaviourProcess(mParams);
     }
 
     @Override
-    protected void onProgressUpdate(TProgress[] progress) {
-        if (mOnProgressListener != null) {
-            mOnProgressListener.onProcessEvent(progress);
+    protected final void onProgressUpdate(TProgress[] progress) {
+        if (mListener != null) {
+            mListener.onProgress(progress);
         }
     }
 
     @Override
-    protected void onPostExecute(TResult result) {
+    protected final void onPostExecute(TResult result) {
         super.onPostExecute(result);
 
         if (mError == null) {
@@ -57,12 +41,12 @@ public abstract class Task<TParams, TProgress, TResult, TError> extends AsyncTas
     }
 
     @Override
-    protected void onCancelled() {
+    protected final void onCancelled() {
         cancelEvent();
     }
 
     @Override
-    protected void onCancelled(TResult result) {
+    protected final void onCancelled(TResult result) {
         cancelEvent();
     }
 
@@ -71,20 +55,20 @@ public abstract class Task<TParams, TProgress, TResult, TError> extends AsyncTas
     }
 
     private void cancelEvent() {
-        if (mOnCancelled != null) {
-            mOnCancelled.onCancel();
+        if (mListener != null) {
+            mListener.onCancel(mParams);
         }
     }
 
     private void errorEvent(TError error) {
-        if (mOnErrorListener != null) {
-            mOnErrorListener.onErrorEvent(error);
+        if (mListener != null) {
+            mListener.onErrorEvent(mParams, error);
         }
     }
 
     private void successEvent(TResult result) {
-        if (mOnSuccessListener != null) {
-            mOnSuccessListener.onSuccessEvent(result);
+        if (mListener != null) {
+            mListener.onSuccessEvent(result);
         }
     }
 }
