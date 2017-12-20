@@ -1,13 +1,11 @@
 package ru.iandreyshev.parserrss.presentation.presenter;
 
-import android.util.Log;
-
 import ru.iandreyshev.parserrss.models.async.ITaskListener;
-import ru.iandreyshev.parserrss.models.rss.IRssArticle;
-import ru.iandreyshev.parserrss.models.rss.IRssFeed;
 import ru.iandreyshev.parserrss.models.async.InsertRssTask;
 import ru.iandreyshev.parserrss.models.async.UpdateRssTask;
 import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.rss.RssArticle;
+import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
 import com.arellomobile.mvp.InjectViewState;
@@ -15,8 +13,7 @@ import com.arellomobile.mvp.MvpPresenter;
 
 @InjectViewState
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
-    public void onRefreshFeed(IRssFeed feed) {
-        Log.e("FeedPresenter", "Start refresh");
+    public void onRefreshRss(final RssFeed feed) {
         getViewState().startRefresh(feed, true);
 
         new UpdateRssTask()
@@ -33,18 +30,16 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         getViewState().startProgressBar(true);
     }
 
-    public void onArticleClick(IRssArticle article) {
+    public void onArticleClick(final RssArticle article) {
         getViewState().openArticle(article);
     }
 
-    public void onOpenInfo(IRssFeed feed) {
-        if (feed == null) {
-            return;
-        }
+    public void onOpenInfo(final RssFeed feed) {
+        getViewState().openRssInfo(feed);
     }
 
-    public void onDeleteFeed(final Rss rss) {
-        getViewState().removeRss(rss);
+    public void onDeleteFeed(final RssFeed feed) {
+        getViewState().removeRss(feed);
     }
 
     @Override
@@ -56,7 +51,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         @Override
         public void onSuccessEvent(Rss rss) {
             getViewState().startProgressBar(false);
-            getViewState().insertFeed(rss);
+            getViewState().insertRss(rss);
         }
 
         @Override
@@ -89,26 +84,23 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         @Override
         public void onCancel(String[] urlsCollection) {
             getViewState().startProgressBar(false);
-            getViewState().showLongToast("Cancel!");
+            getViewState().showLongToast("Cancel");
         }
     }
 
-    private class UpdateTaskListener implements ITaskListener<IRssFeed, Void, Rss, UpdateRssTask.ErrorState> {
+    private class UpdateTaskListener implements ITaskListener<RssFeed, Void, Rss, UpdateRssTask.ErrorState> {
         @Override
         public void onSuccessEvent(Rss rss) {
-            Log.e("Task", "Refreshing success");
-            getViewState().updateFeedList(rss);
+            getViewState().updateArticles(rss);
         }
 
         @Override
-        public void onCancel(IRssFeed[] feeds) {
-            Log.e("Task", "Refreshing cancelled");
-            stopRefreshFirst(feeds, 0);
+        public void onCancel(RssFeed[] feeds) {
+            getViewState().startRefresh(feeds[0], false);
         }
 
         @Override
-        public void onErrorEvent(IRssFeed[] feeds, UpdateRssTask.ErrorState refreshError) {
-            Log.e("Task", "Refreshing error");
+        public void onErrorEvent(RssFeed[] feeds, UpdateRssTask.ErrorState refreshError) {
             switch (refreshError) {
                 case InternetPermissionDenied:
                     getViewState().showShortToast("Internet permission denied");
@@ -123,29 +115,21 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
                     getViewState().showShortToast("Parsing error");
                     break;
             }
-            stopRefreshFirst(feeds, 0);
+            getViewState().startRefresh(feeds[0], false);
         }
 
         @Override
         public void onProgress(Void[] process) {
         }
-
-        private void stopRefreshFirst(IRssFeed[] feeds, int index) {
-            if (feeds == null || feeds.length <= index) {
-                return;
-            }
-
-            getViewState().startRefresh(feeds[index], false);
-        }
     }
 
-    private class DeleteTaskListener implements ITaskListener<IRssFeed, Void, Void, Void> {
+    private class DeleteTaskListener implements ITaskListener<RssFeed, Void, Void, Void> {
         @Override
-        public void onCancel(IRssFeed[] feeds) {
+        public void onCancel(RssFeed[] feeds) {
         }
 
         @Override
-        public void onErrorEvent(IRssFeed[] feeds, Void aVoid) {
+        public void onErrorEvent(RssFeed[] feeds, Void aVoid) {
         }
 
         @Override

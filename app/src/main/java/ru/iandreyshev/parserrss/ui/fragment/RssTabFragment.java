@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.IRssArticle;
+import ru.iandreyshev.parserrss.models.rss.RssArticle;
 import ru.iandreyshev.parserrss.ui.adapter.ArticlesListAdapter;
 import ru.iandreyshev.parserrss.ui.adapter.IOnArticleClickListener;
 
@@ -23,7 +23,7 @@ public class RssTabFragment extends Fragment {
     private static final String REFRESHING_KEY = "IsRefreshing";
 
     private ArticlesListAdapter mListAdapter;
-    private List<IRssArticle> mArticles = new ArrayList<>();
+    private List<RssArticle> mArticles = new ArrayList<>();
     private IOnArticleClickListener mArticleClickListener;
     private SwipeRefreshLayout.OnRefreshListener mRefreshListener;
     private SwipeRefreshLayout mRefreshLayout;
@@ -34,7 +34,7 @@ public class RssTabFragment extends Fragment {
         }
     }
 
-    public void update(final List<IRssArticle> newArticles) {
+    public void update(final List<RssArticle> newArticles) {
     }
 
     @Override
@@ -79,7 +79,7 @@ public class RssTabFragment extends Fragment {
     public static class Builder {
         private RssTabFragment fragment = new RssTabFragment();
 
-        public Builder setArticles(List<IRssArticle> articles) {
+        public Builder setArticles(List<RssArticle> articles) {
             fragment.mArticles = articles;
 
             return this;

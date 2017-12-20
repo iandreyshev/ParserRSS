@@ -6,8 +6,8 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 public interface IBaseView extends MvpView {
     @StateStrategyType(SkipStrategy.class)
-    void showShortToast(String message);
+    void showShortToast(final String message);
 
     @StateStrategyType(SkipStrategy.class)
-    void showLongToast(String message);
+    void showLongToast(final String message);
 }

@@ -1,10 +1,10 @@
 package ru.iandreyshev.parserrss.models.async;
 
-import ru.iandreyshev.parserrss.models.rss.IRssFeed;
+import ru.iandreyshev.parserrss.models.rss.RssFeed;
 
-public class DeleteFeedTask extends Task<IRssFeed, Void, Void, Void> {
+public class DeleteFeedTask extends Task<RssFeed, Void, Void, Void> {
     @Override
-    protected Void behaviourProcess(IRssFeed[] iRssFeeds) {
+    protected Void behaviourProcess(RssFeed[] iRssFeeds) {
         return null;
     }
 }

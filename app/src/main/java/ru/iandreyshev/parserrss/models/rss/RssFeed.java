@@ -1,10 +1,8 @@
 package ru.iandreyshev.parserrss.models.rss;
 
-import android.support.annotation.NonNull;
-
 import ru.iandreyshev.parserrss.models.web.Url;
 
-class RssFeed implements IRssFeed {
+public final class RssFeed {
     private static int DEFAULT_HASH = 11;
 
     private Url mUrl;
@@ -13,27 +11,23 @@ class RssFeed implements IRssFeed {
     private String mDescription;
     private int mHash;
 
-    RssFeed(@NonNull final String title, @NonNull final String origin) throws NullPointerException {
+    RssFeed(final String title, final String origin) throws NullPointerException {
         mTitle = title;
         mOrigin = origin;
     }
 
-    @Override
     public String getTitle() {
         return mTitle;
     }
 
-    @Override
     public String getDescription() {
         return mDescription;
     }
 
-    @Override
     public String getOrigin() {
         return mOrigin;
     }
 
-    @Override
     public Url getUrl() {
         return mUrl;
     }

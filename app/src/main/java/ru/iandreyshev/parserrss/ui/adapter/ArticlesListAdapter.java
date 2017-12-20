@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.IRssArticle;
+import ru.iandreyshev.parserrss.models.rss.RssArticle;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
     private LayoutInflater mInflater;
     private IOnArticleClickListener mArticleClickListener;
-    private List<IRssArticle> mList = new ArrayList<>();
+    private List<RssArticle> mList = new ArrayList<>();
 
     public ArticlesListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -28,7 +28,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         this.mArticleClickListener = listener;
     }
 
-    public void setArticles(List<IRssArticle> newItems) {
+    public void setArticles(List<RssArticle> newItems) {
         clear();
         mList.addAll(newItems);
         notifyDataSetChanged();
@@ -43,7 +43,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final IRssArticle article = mList.get(position);
+        final RssArticle article = mList.get(position);
 
         if (article != null) {
             holder.setContent(article);
@@ -61,7 +61,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private IRssArticle mContent;
+        private RssArticle mContent;
         private TextView mTitle;
         private TextView mDescription;
         private ImageView mImage;
@@ -82,7 +82,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             });
         }
 
-        void setContent(IRssArticle content) {
+        void setContent(RssArticle content) {
             this.mContent = content;
 
             mTitle.setText(Html.fromHtml(mContent.getTitle()));

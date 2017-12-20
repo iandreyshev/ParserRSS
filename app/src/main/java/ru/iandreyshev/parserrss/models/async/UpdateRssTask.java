@@ -2,13 +2,11 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.util.Log;
 
-import java.util.Locale;
-
-import ru.iandreyshev.parserrss.models.rss.IRssFeed;
 import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 
-public class UpdateRssTask extends Task<IRssFeed, Void, Rss, UpdateRssTask.ErrorState> {
+public class UpdateRssTask extends Task<RssFeed, Void, Rss, UpdateRssTask.ErrorState> {
     private static final int MIN_FEEDS_COUNT = 1;
 
     private HttpRequestHandler mRequestHandler = new HttpRequestHandler();
@@ -21,7 +19,7 @@ public class UpdateRssTask extends Task<IRssFeed, Void, Rss, UpdateRssTask.Error
     }
 
     @Override
-    protected Rss behaviourProcess(IRssFeed[] feedsCollection) {
+    protected Rss behaviourProcess(RssFeed[] feedsCollection) {
         if (feedsCollection.length < MIN_FEEDS_COUNT) {
             Log.e("Update task", "Url not found");
             setError(ErrorState.InvalidUrl);
@@ -29,7 +27,7 @@ public class UpdateRssTask extends Task<IRssFeed, Void, Rss, UpdateRssTask.Error
             return null;
         }
 
-        final IRssFeed feed = feedsCollection[0];
+        final RssFeed feed = feedsCollection[0];
         Log.e("Update task", feed.getUrl() == null ? "NULL" : "NOT NULL");
         mRequestHandler.sendGet(feed.getUrl());
 

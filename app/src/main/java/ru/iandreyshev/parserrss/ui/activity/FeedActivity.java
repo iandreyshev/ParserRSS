@@ -16,21 +16,23 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.IRssArticle;
-import ru.iandreyshev.parserrss.models.rss.IRssFeed;
 import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.rss.RssArticle;
+import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.ui.adapter.RssTabsAdapter;
 import ru.iandreyshev.parserrss.ui.adapter.IOnArticleClickListener;
 import ru.iandreyshev.parserrss.ui.adapter.IOnRefreshListener;
-import ru.iandreyshev.parserrss.ui.fragment.AddFeedDialog;
+import ru.iandreyshev.parserrss.ui.fragment.AddingRssDialog;
 import ru.iandreyshev.parserrss.ui.fragment.IOnSubmitAddingListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAddingListener {
+public class FeedActivity extends BaseActivity implements IFeedView {
+    private static final String ADD_DIALOG_TAG = "AddingRssDialog";
+
     @InjectPresenter
     FeedPresenter mFeedPresenter;
 
@@ -53,26 +55,27 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
-    public void insertFeed(final Rss rss) {
+    public void insertRss(final Rss rss) {
         mTabsAdapter.add(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
         updateMenuState();
     }
 
     @Override
-    public void updateFeedList(final Rss rss) {
+    public void updateArticles(final Rss rss) {
         updateMenuState();
         mTabsAdapter.update(rss);
         mTabsAdapter.startRefresh(rss.getFeed(), false);
     }
 
-    public void removeRss(final Rss rss) {
-        mTabsAdapter.remove(rss);
+    @Override
+    public void removeRss(final RssFeed feed) {
+        mTabsAdapter.remove(feed);
         updateMenuState();
     }
 
     @Override
-    public void openArticle(IRssArticle article) {
+    public void openArticle(RssArticle article) {
         final Intent intent = ArticleActivity.getIntent(this)
                 .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, article)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -81,9 +84,10 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
-    public void openAddingFeedDialog() {
-        final AddFeedDialog dialog = new AddFeedDialog();
-        dialog.show(getSupportFragmentManager(), "");
+    public void openAddingRssDialog() {
+        final AddingRssDialog dialog = new AddingRssDialog()
+                .setOnSubmitListener(new FeedListener());
+        dialog.show(getSupportFragmentManager(), ADD_DIALOG_TAG);
     }
 
     @Override
@@ -92,16 +96,16 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
-    public void startRefresh(IRssFeed feed, boolean isStart) {
+    public void startRefresh(final RssFeed feed, boolean isStart) {
         mTabsAdapter.startRefresh(feed, isStart);
     }
 
     @Override
-    public void openInfo(IRssFeed feed) {
+    public void openRssInfo(final RssFeed feed) {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.feed_options_menu, menu);
         mAddMenuItem = menu.findItem(R.id.feed_options_add);
         mInfoMenuItem = menu.findItem(R.id.feed_options_info);
@@ -113,21 +117,18 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     }
 
     @Override
-    public void onSubmit(DialogInterface dialogInterface, String url) {
-        mFeedPresenter.onSubmitAddingFeed(url);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final RssFeed currentFeed = mTabsAdapter.getFeed(mPager.getCurrentItem());
+
         switch (item.getItemId()) {
             case R.id.feed_options_add:
-                openAddingFeedDialog();
+                openAddingRssDialog();
                 break;
             case R.id.feed_options_info:
-                mFeedPresenter.onOpenInfo(getCurrentRss().getFeed());
+                mFeedPresenter.onOpenInfo(currentFeed);
                 break;
             case R.id.feed_options_delete:
-                mFeedPresenter.onDeleteFeed(getCurrentRss());
+                mFeedPresenter.onDeleteFeed(currentFeed);
                 break;
         }
 
@@ -158,10 +159,6 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
         initTabsView();
     }
 
-    private Rss getCurrentRss() {
-        return mTabsAdapter.getRss(mPager.getCurrentItem());
-    }
-
     private void initToolbar() {
         mToolbar.setTitle(getResources().getString(R.string.feed_title));
         setSupportActionBar(mToolbar);
@@ -179,15 +176,20 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
         mTabs.setupWithViewPager(mPager, true);
     }
 
-    private class FeedListener implements IOnRefreshListener, IOnArticleClickListener {
+    private class FeedListener implements IOnRefreshListener, IOnArticleClickListener, IOnSubmitAddingListener {
         @Override
-        public void onItemClick(IRssArticle item) {
+        public void onItemClick(final RssArticle item) {
             mFeedPresenter.onArticleClick(item);
         }
 
         @Override
-        public void onRefresh(IRssFeed feed) {
-            mFeedPresenter.onRefreshFeed(feed);
+        public void onRefresh(final RssFeed feed) {
+            mFeedPresenter.onRefreshRss(feed);
+        }
+
+        @Override
+        public void onSubmit(final DialogInterface dialogInterface, final String url) {
+            mFeedPresenter.onSubmitAddingFeed(url);
         }
     }
 }

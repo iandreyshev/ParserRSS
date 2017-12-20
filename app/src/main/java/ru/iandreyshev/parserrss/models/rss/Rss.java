@@ -6,13 +6,13 @@ import java.util.List;
 import ru.iandreyshev.parserrss.models.web.Url;
 
 public final class Rss {
-    private static final List<Parser> PARSERS = new ArrayList<>();
+    private static final List<Parser> mParsers = new ArrayList<>();
 
     private RssFeed mFeed;
     private List<RssArticle> mArticles;
 
     static {
-        PARSERS.add(new Parser_2_0());
+        mParsers.add(new Parser_2_0());
     }
 
     public static Rss parse(final byte[] rssBytes) {
@@ -24,7 +24,7 @@ public final class Rss {
     }
 
     public static Rss parse(final String rssText) {
-        for (final Parser parser : PARSERS) {
+        for (final Parser parser : mParsers) {
             final Rss rss = parser.parse(rssText);
 
             if (rss != null) {
@@ -35,12 +35,12 @@ public final class Rss {
         return null;
     }
 
-    public IRssFeed getFeed() {
+    public RssFeed getFeed() {
         return mFeed;
     }
 
-    public List<IRssArticle> getArticles() {
-        return new ArrayList<>(mArticles);
+    public List<RssArticle> getArticles() {
+        return mArticles;
     }
 
     public void setUrl(final Url url) {
