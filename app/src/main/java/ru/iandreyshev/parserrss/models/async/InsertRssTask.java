@@ -18,6 +18,10 @@ public class InsertRssTask extends Task<String, Void, Rss, InsertRssTask.ErrorSt
 
     @Override
     protected Rss behaviourProcess(String[] urlCollection) {
+        try{
+            Thread.sleep(1500);
+        } catch (Exception ex) {
+        }
         if (urlCollection.length < MIN_URLS_COUNT) {
             setError(ErrorState.InvalidUrl);
 
@@ -33,8 +37,7 @@ public class InsertRssTask extends Task<String, Void, Rss, InsertRssTask.ErrorSt
             return null;
         }
 
-        final byte[] respBody = mRequestHandler.getResponseBody();
-        final Rss rss = respBody == null ? null : Rss.parse(new String(respBody));
+        final Rss rss = Rss.parse(mRequestHandler.getResponseBody());
 
         if (rss == null) {
             setError(ErrorState.InvalidFormat);

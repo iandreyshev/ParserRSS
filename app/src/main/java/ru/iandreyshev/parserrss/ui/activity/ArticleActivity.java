@@ -27,7 +27,7 @@ import java.util.Locale;
 public class ArticleActivity extends BaseActivity implements IArticleView {
     public static final String ARTICLE_BOUND_KEY = "Article_to_open";
     public static final String TOOLBAR_TITLE = "Article";
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddd, dd MMM yyyy HH:mm:ss K", Locale.US);
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.US);
 
     private IRssArticle mArticle;
 

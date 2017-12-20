@@ -17,7 +17,7 @@ public interface IFeedView extends IBaseView {
     void updateFeedList(final Rss rss);
 
     @StateStrategyType(AddToEndStrategy.class)
-    void removeFeed(IRssFeed feed);
+    void removeRss(final Rss rss);
 
     @StateStrategyType(SkipStrategy.class)
     void openArticle(IRssArticle article);

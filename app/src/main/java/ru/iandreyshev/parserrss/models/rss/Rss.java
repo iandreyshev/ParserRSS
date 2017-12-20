@@ -16,6 +16,10 @@ public final class Rss {
     }
 
     public static Rss parse(final byte[] rssBytes) {
+        if (rssBytes == null) {
+            return null;
+        }
+
         return parse(new String(rssBytes));
     }
 
@@ -43,6 +47,22 @@ public final class Rss {
         if (mFeed != null) {
             mFeed.setUrl(url);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return mFeed.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Rss) {
+            final Rss other = (Rss) object;
+
+            return mFeed.equals(other.mFeed);
+        }
+
+        return false;
     }
 
     Rss(final RssFeed feed, final List<RssArticle> articles) throws NullPointerException {

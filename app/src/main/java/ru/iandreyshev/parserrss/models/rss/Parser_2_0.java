@@ -20,7 +20,7 @@ final class Parser_2_0 extends Parser {
     private static final String ARTICLE_DESCRIPTION = "description";
 
     private static final String DATE_NAME = "pubDate";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(("E, d MMM yyyy HH:mm:ss Z"), Locale.ENGLISH);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(("EEE, d MMM yyyy HH:mm:ss Z"), Locale.ENGLISH);
 
     private static final String ARTICLE_IMG_NODE = "enclosure";
     private static final String ARTICLE_IMG_URL = "url";

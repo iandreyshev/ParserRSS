@@ -22,7 +22,7 @@ import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.ui.adapter.FeedTabsAdapter;
+import ru.iandreyshev.parserrss.ui.adapter.RssTabsAdapter;
 import ru.iandreyshev.parserrss.ui.adapter.IOnArticleClickListener;
 import ru.iandreyshev.parserrss.ui.adapter.IOnRefreshListener;
 import ru.iandreyshev.parserrss.ui.fragment.AddFeedDialog;
@@ -43,7 +43,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     @BindView(R.id.feed_view_pager)
     ViewPager mPager;
 
-    private FeedTabsAdapter mTabsAdapter;
+    private RssTabsAdapter mTabsAdapter;
     private MenuItem mAddMenuItem;
     private MenuItem mInfoMenuItem;
     private MenuItem mDeleteMenuItem;
@@ -63,10 +63,11 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     public void updateFeedList(final Rss rss) {
         updateMenuState();
         mTabsAdapter.update(rss);
+        mTabsAdapter.startRefresh(rss.getFeed(), false);
     }
 
-    @Override
-    public void removeFeed(IRssFeed feed) {
+    public void removeRss(final Rss rss) {
+        mTabsAdapter.remove(rss);
         updateMenuState();
     }
 
@@ -123,10 +124,10 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
                 openAddingFeedDialog();
                 break;
             case R.id.feed_options_info:
-                mFeedPresenter.onOpenInfo(getCurrentFeed());
+                mFeedPresenter.onOpenInfo(getCurrentRss().getFeed());
                 break;
             case R.id.feed_options_delete:
-                mFeedPresenter.onDeleteFeed(getCurrentFeed());
+                mFeedPresenter.onDeleteFeed(getCurrentRss());
                 break;
         }
 
@@ -157,8 +158,8 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
         initTabsView();
     }
 
-    private IRssFeed getCurrentFeed() {
-        return mTabsAdapter.getFeed(mPager.getCurrentItem());
+    private Rss getCurrentRss() {
+        return mTabsAdapter.getRss(mPager.getCurrentItem());
     }
 
     private void initToolbar() {
@@ -170,12 +171,11 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnSubmitAd
     private void initTabsView() {
         final FeedListener listener = new FeedListener();
 
-        mTabsAdapter = new FeedTabsAdapter(getSupportFragmentManager());
+        mTabsAdapter = new RssTabsAdapter(getSupportFragmentManager());
         mTabsAdapter.setOnItemClickListener(listener);
         mTabsAdapter.setOnRefreshListener(listener);
 
         mPager.setAdapter(mTabsAdapter);
-
         mTabs.setupWithViewPager(mPager, true);
     }
 

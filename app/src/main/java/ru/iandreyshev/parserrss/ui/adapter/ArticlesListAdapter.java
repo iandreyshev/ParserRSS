@@ -16,23 +16,20 @@ import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.IRssArticle;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
-    private Context mContext;
     private LayoutInflater mInflater;
     private IOnArticleClickListener mArticleClickListener;
     private List<IRssArticle> mList = new ArrayList<>();
 
     public ArticlesListAdapter(Context context) {
-        mContext = context;
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setOnItemClickListener(IOnArticleClickListener listener) {
+    public void setItemClickListener(IOnArticleClickListener listener) {
         this.mArticleClickListener = listener;
     }
 
     public void setArticles(List<IRssArticle> newItems) {
         clear();
-        mList.clear();
         mList.addAll(newItems);
         notifyDataSetChanged();
     }
@@ -91,10 +88,14 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             mTitle.setText(Html.fromHtml(mContent.getTitle()));
             mDescription.setText(Html.fromHtml(mContent.getDescription()));
 
-            if (mContent.getImage() != null) {
-                mImage.setImageBitmap(mContent.getImage());
-            } else {
+            loadImage();
+        }
+
+        void loadImage() {
+            if (mContent.getImage() == null) {
                 mImage.setVisibility(View.GONE);
+            } else {
+                mImage.setVisibility(View.VISIBLE);
             }
         }
     }

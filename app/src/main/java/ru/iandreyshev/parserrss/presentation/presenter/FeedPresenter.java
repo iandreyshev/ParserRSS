@@ -16,10 +16,11 @@ import com.arellomobile.mvp.MvpPresenter;
 @InjectViewState
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
     public void onRefreshFeed(IRssFeed feed) {
-        Log.e("Presenter", "Start refreshing");
-        final UpdateRssTask task = new UpdateRssTask();
+        Log.e("FeedPresenter", "Start refresh");
+        getViewState().startRefresh(feed, true);
 
-        task.setListener(new UpdateTaskListener())
+        new UpdateRssTask()
+                .setListener(new UpdateTaskListener())
                 .execute(feed);
     }
 
@@ -40,11 +41,10 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         if (feed == null) {
             return;
         }
-
-
     }
 
-    public void onDeleteFeed(IRssFeed feed) {
+    public void onDeleteFeed(final Rss rss) {
+        getViewState().removeRss(rss);
     }
 
     @Override
