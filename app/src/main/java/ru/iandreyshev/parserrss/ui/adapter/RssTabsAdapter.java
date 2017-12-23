@@ -2,70 +2,59 @@ package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.view.ViewGroup;
+import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.ui.fragment.RssTabFragment;
 
-public class RssTabsAdapter extends FragmentStatePagerAdapter {
+public class RssTabsAdapter extends SmartFragmentStatePagerAdapter {
     private static final String TAG = "RssTabsAdapter";
     private static final String CUT_TITLE_PATTERN = "%s...";
     private static final int MAX_TITLE_LENGTH = 16;
 
     private ArrayList<RssFeed> mRssList = new ArrayList<>();
-    private HashMap<RssFeed, RssTabFragment> mFragments = new HashMap<>();
     private IOnArticleClickListener mItemClickListener;
-    private IOnRefreshListener mRefreshListener;
-    private FragmentManager mFragmentManager;
+    private IOnRefreshFeedListener mRefreshListener;
+    private FragmentManager mManager;
 
     public RssTabsAdapter(FragmentManager manager) {
         super(manager);
-        mFragmentManager = manager;
     }
 
-    public void add(final Rss rss) {
-        if (mFragments.containsKey(rss.getFeed())) {
-            return;
-        }
-
-        mRssList.add(rss.getFeed());
-        mFragments.put(rss.getFeed(), new RssTabFragment.Builder()
-                .setArticles(rss.getArticles())
-                .setOnItemClickListener(mItemClickListener)
-                .setOnRefreshListener(() -> onRefresh(rss))
-                .build());
-
+    public void add(final RssFeed feed) {
+        Log.e(TAG, "Add");
+        mRssList.add(feed);
         notifyDataSetChanged();
     }
 
     public void update(final Rss rss) {
-        if (mFragments.containsKey(rss.getFeed())) {
-            mFragments.get(rss.getFeed()).update(rss.getArticles());
+        int position = getItemPosition(rss.getFeed());
+
+        if (position < 0) {
+            Log.e(TAG, "Update fragment not found");
+            return;
         }
+
+        Log.e(TAG, "Update fragment");
+        final RssTabFragment fragment = (RssTabFragment) getItem(position);
+        fragment.update(rss.getArticles());
     }
 
     public void remove(final RssFeed feed) {
     }
 
     public void startRefresh(final RssFeed feed, boolean isStart) {
-        final RssTabFragment fragment = mFragments.get(feed);
-
-        if (fragment != null) {
-            fragment.startRefresh(isStart);
-        }
     }
 
     public void setOnItemClickListener(IOnArticleClickListener listener) {
         mItemClickListener = listener;
     }
 
-    public void setOnRefreshListener(IOnRefreshListener listener) {
+    public void setOnRefreshListener(IOnRefreshFeedListener listener) {
         mRefreshListener = listener;
     }
 
@@ -79,12 +68,34 @@ public class RssTabsAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return mFragments.get(mRssList.get(position));
+        final Fragment fragment = getRegisteredFragment(position);
+
+        if (fragment == null) {
+            Log.e(TAG, "Create new fragment");
+            final RssFeed feed = mRssList.get(position);
+            return new RssTabFragment.Builder()
+                    .setOnItemClickListener(mItemClickListener)
+                    .setOnRefreshListener(() -> onRefresh(feed))
+                    .build();
+        }
+
+        Log.e(TAG, "Load fragment");
+
+        return fragment;
+    }
+
+    @Override
+    public int getItemPosition(final Object item) {
+        if (item instanceof RssFeed) {
+            return mRssList.indexOf(item);
+        }
+
+        return PagerAdapter.POSITION_NONE;
     }
 
     @Override
     public int getCount() {
-        return mFragments.size();
+        return mRssList.size();
     }
 
     @Override
@@ -99,28 +110,9 @@ public class RssTabsAdapter extends FragmentStatePagerAdapter {
         return title;
     }
 
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        final FragmentTransaction transaction = mFragmentManager
-                .beginTransaction()
-                .remove((Fragment) object);
-        transaction.commit();
-    }
-
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        final String tag = getFeed(position).toString();
-        final FragmentTransaction transaction = mFragmentManager
-                .beginTransaction()
-                .add(container.getId(), getItem(position), tag);
-        transaction.commit();
-
-        return getItem(position);
-    }
-
-    private void onRefresh(final Rss rss) {
+    private void onRefresh(final RssFeed feed) {
         if (mRefreshListener != null) {
-            mRefreshListener.onRefresh(rss.getFeed());
+            mRefreshListener.onRefresh(feed);
         }
     }
 }

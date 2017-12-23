@@ -7,8 +7,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class HttpRequestHandler {
-    private static final String TAG = "NewWorker";
+public class HttpRequestHandler implements IHttpRequestResult {
+    private static final String TAG = HttpRequestHandler.class.getName();
 
     private static final int GOOD_RESPONSE_CODE = 200;
     private static final int CONNECTION_TIMEOUT_SEC = 1;
@@ -21,30 +21,22 @@ public class HttpRequestHandler {
             .writeTimeout(WRITE_TIMEOUT_SEC, TimeUnit.SECONDS)
             .build();
     private State mState = State.NotSend;
-    private byte[] mBody = new byte[0];
+    private String mBody;
     private Url mUrl;
 
-    public enum State {
-        NotSend,
-        Success,
-        InvalidUrl,
-        BadConnection,
-        PermissionDenied,
-    }
-
-    public void sendGet(final String url) {
+    public IHttpRequestResult sendGet(final String url) {
         if (!prepareUrl(url)) {
-            return;
+            return this;
         }
 
-        sendGet(mUrl);
+        return sendGet(mUrl);
     }
 
-    public void sendGet(final Url url) {
+    public IHttpRequestResult sendGet(final Url url) {
         if (url == null) {
-            mState = State.InvalidUrl;
+            mState = State.BadUrl;
 
-            return;
+            return this;
         }
 
         mUrl = url;
@@ -52,23 +44,28 @@ public class HttpRequestHandler {
         send(new Request.Builder()
                 .url(mUrl.getInstance())
                 .build());
+
+        return this;
     }
 
+    @Override
     public State getState() {
         return mState;
     }
 
-    public byte[] getResponseBody() {
+    @Override
+    public String getResponseBody() {
         return mBody;
     }
 
+    @Override
     public String getUrl() {
         return mUrl.toString();
     }
 
     private boolean prepareUrl(final String url) {
         if (url == null) {
-            mState = State.InvalidUrl;
+            mState = State.BadUrl;
 
             return false;
         }
@@ -76,7 +73,7 @@ public class HttpRequestHandler {
         mUrl = Url.parse(url);
 
         if (mUrl == null) {
-            mState = State.InvalidUrl;
+            mState = State.BadUrl;
 
             return false;
         }
@@ -89,20 +86,18 @@ public class HttpRequestHandler {
 
             try (final ResponseBody body = response.body()) {
 
-                final boolean isResponseValid = response.code() == GOOD_RESPONSE_CODE;
-
-                if (!isResponseValid) {
-                    mState =  State.BadConnection;
+                if (response.code() != GOOD_RESPONSE_CODE || body == null) {
+                    mState = State.BadConnection;
 
                     return;
                 }
-
-                mBody = body.bytes();
+                mBody = body.string();
                 mState = State.Success;
 
             } catch (Exception ex) {
-                mState =  State.BadConnection;
+                mState = State.BadConnection;
             }
+
         } catch (SecurityException ex) {
             mState = State.PermissionDenied;
         } catch (Exception ex) {

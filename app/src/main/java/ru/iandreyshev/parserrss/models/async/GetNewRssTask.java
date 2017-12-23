@@ -4,13 +4,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import ru.iandreyshev.parserrss.models.rss.Rss;
-import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
-public class UpdateRssTask extends AsyncTask<RssFeed, Void, Rss> {
-    private static final String TAG = UpdateRssTask.class.getName();
+public final class GetNewRssTask extends AsyncTask<String, Void, Rss> {
+    private static final String TAG = GetNewRssTask.class.getName();
     private static final String REQUEST_NOT_SEND = "The request was not send";
     private static final String BAD_CONNECTION = "Connection error";
     private static final String BAD_URL = "Invalid url";
@@ -19,26 +18,26 @@ public class UpdateRssTask extends AsyncTask<RssFeed, Void, Rss> {
 
     private IHttpRequestResult mRequestResult;
     private IFeedView mFeedViewState;
-    private RssFeed mFeed;
+    private String mUrl;
 
-    public static void execute(final IFeedView feedView, final RssFeed feed) {
-        final UpdateRssTask task = new UpdateRssTask();
-        task.mFeed = feed;
+    public static void execute(final IFeedView feedView, final String url) {
+        final GetNewRssTask task = new GetNewRssTask();
         task.mFeedViewState = feedView;
+        task.mUrl = url;
         task.execute();
     }
 
     @Override
     protected void onPreExecute() {
-        mFeedViewState.startRefresh(mFeed, true);
+        mFeedViewState.startProgressBar(true);
     }
 
     @Override
-    protected Rss doInBackground(final RssFeed... rssFeeds) {
+    protected Rss doInBackground(final String... strings) {
         mRequestResult = new HttpRequestHandler()
-                .sendGet(mFeed.getUrl());
+                .sendGet(mUrl);
 
-        if (mRequestResult.getState() != IHttpRequestResult.State.Success) {
+        if (mRequestResult.getState() != HttpRequestHandler.State.Success) {
             return null;
         }
 
@@ -46,19 +45,19 @@ public class UpdateRssTask extends AsyncTask<RssFeed, Void, Rss> {
     }
 
     @Override
-    public void onPostExecute(final Rss rss) {
-        mFeedViewState.startRefresh(mFeed, false);
+    protected void onPostExecute(final Rss rss) {
+        mFeedViewState.startProgressBar(false);
 
-        if (mRequestResult.getState() != IHttpRequestResult.State.BadConnection) {
+        if (mRequestResult.getState() != IHttpRequestResult.State.Success) {
             handleWebError();
         } else if (rss == null) {
             mFeedViewState.showShortToast(INVALID_RSS_FORMAT);
         } else {
-            mFeedViewState.updateArticles(rss);
+            mFeedViewState.insertRss(rss);
         }
     }
 
-    private UpdateRssTask() {
+    private GetNewRssTask() {
     }
 
     private void handleWebError() {
