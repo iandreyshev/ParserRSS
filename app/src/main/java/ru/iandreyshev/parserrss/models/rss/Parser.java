@@ -31,7 +31,7 @@ abstract class Parser implements IRssParser {
 
             final Element root = doc.getRootElement();
             final RssFeed feed = parseFeed(root);
-            final List<RssArticle> articles = parseArticles(root);
+            final ArrayList<RssArticle> articles = parseArticles(root);
 
             if (feed == null || articles == null) {
                 return null;
@@ -46,7 +46,7 @@ abstract class Parser implements IRssParser {
 
     protected abstract RssFeed parseFeed(final Element root) throws Exception;
 
-    protected abstract List<RssArticle> parseArticles(final Element root) throws Exception;
+    protected abstract ArrayList<RssArticle> parseArticles(final Element root) throws Exception;
 
     private static Document toDocument(final String xmlText) {
         for (final SAXBuilder builder : mDocBuilders) {

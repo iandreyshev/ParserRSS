@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import java.io.Serializable;
 import java.util.Date;
 
-public final class RssArticle implements Serializable {
+public final class RssArticle implements Serializable, Parcelable {
     private String mTitle;
     private String mOrigin;
     private String mDescription;
@@ -20,6 +20,26 @@ public final class RssArticle implements Serializable {
         mTitle = title;
         mOrigin = origin;
     }
+
+    protected RssArticle(Parcel in) {
+        mTitle = in.readString();
+        mOrigin = in.readString();
+        mDescription = in.readString();
+        mImage = in.readParcelable(Bitmap.class.getClassLoader());
+        mImageUrl = in.readString();
+    }
+
+    public static final Creator<RssArticle> CREATOR = new Creator<RssArticle>() {
+        @Override
+        public RssArticle createFromParcel(Parcel in) {
+            return new RssArticle(in);
+        }
+
+        @Override
+        public RssArticle[] newArray(int size) {
+            return new RssArticle[size];
+        }
+    };
 
     public String getTitle() {
         return mTitle;
@@ -63,5 +83,19 @@ public final class RssArticle implements Serializable {
 
     void setImageUrl(String url) {
         mImageUrl = url;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mTitle);
+        dest.writeString(mOrigin);
+        dest.writeString(mDescription);
+        dest.writeParcelable(mImage, flags);
+        dest.writeString(mImageUrl);
     }
 }

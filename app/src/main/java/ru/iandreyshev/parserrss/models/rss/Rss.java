@@ -9,7 +9,7 @@ public final class Rss {
     private static final List<Parser> mParsers = new ArrayList<>();
 
     private RssFeed mFeed;
-    private List<RssArticle> mArticles;
+    private ArrayList<RssArticle> mArticles;
 
     static {
         mParsers.add(new Parser_2_0());
@@ -39,14 +39,12 @@ public final class Rss {
         return mFeed;
     }
 
-    public List<RssArticle> getArticles() {
+    public ArrayList<RssArticle> getArticles() {
         return mArticles;
     }
 
     public void setUrl(final Url url) {
-        if (mFeed != null) {
-            mFeed.setUrl(url);
-        }
+        mFeed.setUrl(url);
     }
 
     @Override
@@ -65,7 +63,7 @@ public final class Rss {
         return false;
     }
 
-    Rss(final RssFeed feed, final List<RssArticle> articles) throws NullPointerException {
+    Rss(final RssFeed feed, final ArrayList<RssArticle> articles) throws NullPointerException {
         if (feed == null) {
             throw new NullPointerException("Try to create rss with null feed");
         } else if (articles == null) {

@@ -9,23 +9,22 @@ import java.util.ArrayList;
 
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.rss.RssFeed;
-import ru.iandreyshev.parserrss.ui.fragment.RssTabFragment;
+import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
 
-public class RssTabsAdapter extends SmartFragmentStatePagerAdapter {
-    private static final String TAG = "RssTabsAdapter";
+public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
+    private static final String TAG = FeedTabsAdapter.class.getName();
     private static final String CUT_TITLE_PATTERN = "%s...";
     private static final int MAX_TITLE_LENGTH = 16;
 
-    private ArrayList<RssFeed> mRssList = new ArrayList<>();
+    private ArrayList<Rss> mRssList = new ArrayList<>();
     private IOnArticleClickListener mItemClickListener;
     private IOnRefreshFeedListener mRefreshListener;
-    private FragmentManager mManager;
 
-    public RssTabsAdapter(FragmentManager manager) {
+    public FeedTabsAdapter(FragmentManager manager) {
         super(manager);
     }
 
-    public void add(final RssFeed feed) {
+    public void add(final Rss feed) {
         Log.e(TAG, "Add");
         mRssList.add(feed);
         notifyDataSetChanged();
@@ -40,7 +39,7 @@ public class RssTabsAdapter extends SmartFragmentStatePagerAdapter {
         }
 
         Log.e(TAG, "Update fragment");
-        final RssTabFragment fragment = (RssTabFragment) getItem(position);
+        final FeedTabFragment fragment = (FeedTabFragment) getItem(position);
         fragment.update(rss.getArticles());
     }
 
@@ -50,11 +49,11 @@ public class RssTabsAdapter extends SmartFragmentStatePagerAdapter {
     public void startRefresh(final RssFeed feed, boolean isStart) {
     }
 
-    public void setOnItemClickListener(IOnArticleClickListener listener) {
+    public void setOnItemClickListener(final IOnArticleClickListener listener) {
         mItemClickListener = listener;
     }
 
-    public void setOnRefreshListener(IOnRefreshFeedListener listener) {
+    public void setOnRefreshListener(final IOnRefreshFeedListener listener) {
         mRefreshListener = listener;
     }
 
@@ -63,34 +62,22 @@ public class RssTabsAdapter extends SmartFragmentStatePagerAdapter {
             return null;
         }
 
-        return mRssList.get(position);
+        return mRssList.get(position).getFeed();
     }
 
     @Override
     public Fragment getItem(int position) {
-        final Fragment fragment = getRegisteredFragment(position);
+        FeedTabFragment fragment = (FeedTabFragment) getRegisteredFragment(position);
 
         if (fragment == null) {
-            Log.e(TAG, "Create new fragment");
-            final RssFeed feed = mRssList.get(position);
-            return new RssTabFragment.Builder()
+            final Rss rss = mRssList.get(position);
+            fragment = FeedTabFragment.newInstance(rss.getArticles())
                     .setOnItemClickListener(mItemClickListener)
-                    .setOnRefreshListener(() -> onRefresh(feed))
-                    .build();
+                    .setOnRefreshListener(() -> onRefresh(rss.getFeed()));
+            Log.e(TAG, "New instance");
         }
-
-        Log.e(TAG, "Load fragment");
 
         return fragment;
-    }
-
-    @Override
-    public int getItemPosition(final Object item) {
-        if (item instanceof RssFeed) {
-            return mRssList.indexOf(item);
-        }
-
-        return PagerAdapter.POSITION_NONE;
     }
 
     @Override
@@ -100,7 +87,7 @@ public class RssTabsAdapter extends SmartFragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title = mRssList.get(position).getTitle();
+        String title = mRssList.get(position).getFeed().getTitle();
 
         if (title.length() > MAX_TITLE_LENGTH) {
             title = title.substring(0, MAX_TITLE_LENGTH - 1);

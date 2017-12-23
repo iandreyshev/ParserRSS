@@ -19,6 +19,7 @@ public abstract class SmartFragmentStatePagerAdapter extends FragmentStatePagerA
     public Object instantiateItem(ViewGroup container, int position) {
         Fragment fragment = (Fragment) super.instantiateItem(container, position);
         registeredFragments.put(position, fragment);
+
         return fragment;
     }
 
@@ -26,6 +27,7 @@ public abstract class SmartFragmentStatePagerAdapter extends FragmentStatePagerA
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         registeredFragments.remove(position);
+
         super.destroyItem(container, position, object);
     }
 

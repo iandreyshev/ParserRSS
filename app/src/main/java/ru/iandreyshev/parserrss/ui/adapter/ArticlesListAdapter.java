@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +11,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.RssArticle;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
+    private static final String TAG = ArticlesListAdapter.class.getName();
+
     private LayoutInflater mInflater;
     private IOnArticleClickListener mArticleClickListener;
-    private List<RssArticle> mList = new ArrayList<>();
+    private ArrayList<RssArticle> mArticles = new ArrayList<>();
 
     public ArticlesListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -28,10 +30,14 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         this.mArticleClickListener = listener;
     }
 
-    public void setArticles(List<RssArticle> newItems) {
-        clear();
-        mList.addAll(newItems);
+    public void setArticles(final ArrayList<RssArticle> newItems) {
+        mArticles = newItems;
+        Log.e(TAG, Integer.toString(mArticles.size()));
         notifyDataSetChanged();
+    }
+
+    public ArrayList<RssArticle> getArticles() {
+        return mArticles;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final RssArticle article = mList.get(position);
+        final RssArticle article = mArticles.get(position);
 
         if (article != null) {
             holder.setContent(article);
@@ -52,12 +58,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
 
     @Override
     public int getItemCount() {
-        return mList.size();
-    }
-
-    private void clear() {
-        mList.clear();
-        notifyDataSetChanged();
+        return mArticles.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

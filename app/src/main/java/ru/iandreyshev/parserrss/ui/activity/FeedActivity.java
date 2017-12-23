@@ -23,17 +23,18 @@ import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.ui.adapter.RssTabsAdapter;
+import ru.iandreyshev.parserrss.ui.adapter.FeedTabsAdapter;
 import ru.iandreyshev.parserrss.ui.adapter.IOnArticleClickListener;
 import ru.iandreyshev.parserrss.ui.adapter.IOnRefreshFeedListener;
-import ru.iandreyshev.parserrss.ui.fragment.AddingRssDialog;
-import ru.iandreyshev.parserrss.ui.fragment.IOnSubmitAddingListener;
+import ru.iandreyshev.parserrss.ui.fragment.AddRssDialog;
+import ru.iandreyshev.parserrss.ui.fragment.IOnSubmitAddListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import java.io.Serializable;
+
 public class FeedActivity extends BaseActivity implements IFeedView {
-    private static final String TAG = "FeedActivity";
-    private static final String ADD_DIALOG_TAG = "AddingRssDialog";
+    private static final String TAG = FeedActivity.class.getName();
 
     @InjectPresenter
     FeedPresenter mFeedPresenter;
@@ -47,7 +48,7 @@ public class FeedActivity extends BaseActivity implements IFeedView {
     @BindView(R.id.feed_view_pager)
     ViewPager mPager;
 
-    private RssTabsAdapter mTabsAdapter;
+    private FeedTabsAdapter mTabsAdapter;
     private MenuItem mAddMenuItem;
     private MenuItem mInfoMenuItem;
     private MenuItem mDeleteMenuItem;
@@ -58,7 +59,8 @@ public class FeedActivity extends BaseActivity implements IFeedView {
 
     @Override
     public void insertRss(final Rss rss) {
-        mTabsAdapter.add(rss.getFeed());
+        Log.e(TAG, Integer.toString(rss.getArticles().size()));
+        mTabsAdapter.add(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
         updateMenuState();
     }
@@ -77,9 +79,9 @@ public class FeedActivity extends BaseActivity implements IFeedView {
     }
 
     @Override
-    public void openArticle(RssArticle article) {
+    public void openArticle(final RssArticle article) {
         final Intent intent = ArticleActivity.getIntent(this)
-                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, article)
+                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, (Serializable) article)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         startActivity(intent);
@@ -87,9 +89,9 @@ public class FeedActivity extends BaseActivity implements IFeedView {
 
     @Override
     public void openAddingRssDialog() {
-        final AddingRssDialog dialog = new AddingRssDialog()
-                .setOnSubmitListener(new FeedListener());
-        dialog.show(getSupportFragmentManager(), ADD_DIALOG_TAG);
+        new AddRssDialog()
+                .setOnSubmitListener(new FeedListener())
+                .show(getSupportFragmentManager(), AddRssDialog.class.getName());
     }
 
     @Override
@@ -168,18 +170,15 @@ public class FeedActivity extends BaseActivity implements IFeedView {
     }
 
     private void initTabsView() {
-        Log.e(TAG, "Create adapter");
-        final FeedListener listener = new FeedListener();
-
-        mTabsAdapter = new RssTabsAdapter(getSupportFragmentManager());
-        mTabsAdapter.setOnItemClickListener(listener);
-        mTabsAdapter.setOnRefreshListener(listener);
+        mTabsAdapter = new FeedTabsAdapter(getSupportFragmentManager());
+        mTabsAdapter.setOnItemClickListener(new FeedListener());
+        mTabsAdapter.setOnRefreshListener(new FeedListener());
 
         mPager.setAdapter(mTabsAdapter);
         mTabs.setupWithViewPager(mPager, true);
     }
 
-    private class FeedListener implements IOnRefreshFeedListener, IOnArticleClickListener, IOnSubmitAddingListener {
+    private class FeedListener implements IOnRefreshFeedListener, IOnArticleClickListener, IOnSubmitAddListener {
         @Override
         public void onItemClick(final RssArticle item) {
             mFeedPresenter.openArticle(item);
@@ -191,7 +190,7 @@ public class FeedActivity extends BaseActivity implements IFeedView {
         }
 
         @Override
-        public void onSubmit(final DialogInterface dialogInterface, final String url) {
+        public void onAddSubmit(final DialogInterface dialogInterface, final String url) {
             mFeedPresenter.onSubmitInsertRss(url);
         }
     }

@@ -45,10 +45,10 @@ final class Parser_2_0 extends Parser {
     }
 
     @Override
-    protected List<RssArticle> parseArticles(final Element root) {
+    protected ArrayList<RssArticle> parseArticles(final Element root) {
         final Element channel = root.getChild(FEED_NAME);
         final List<Element> items = channel.getChildren(ARTICLE_NAME);
-        final List<RssArticle> result = new ArrayList<>();
+        final ArrayList<RssArticle> result = new ArrayList<>();
 
         for (final Element item : items) {
             final RssArticle article = parseArticle(item);

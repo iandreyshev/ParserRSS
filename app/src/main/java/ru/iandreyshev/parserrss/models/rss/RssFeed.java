@@ -32,11 +32,11 @@ public final class RssFeed {
         return mUrl;
     }
 
-    public void setDescription(final String description) {
+    void setDescription(final String description) {
         mDescription = description;
     }
 
-    public void setUrl(final Url url) throws NullPointerException {
+    void setUrl(final Url url) {
         mUrl = url;
         initHash();
     }

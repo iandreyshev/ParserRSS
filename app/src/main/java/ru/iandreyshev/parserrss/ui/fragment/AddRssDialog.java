@@ -13,11 +13,11 @@ import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 
 import ru.iandreyshev.parserrss.R;
 
-public class AddingRssDialog extends MvpAppCompatDialogFragment implements DialogInterface.OnClickListener {
-    private IOnSubmitAddingListener mOnSubmitListener;
+public class AddRssDialog extends MvpAppCompatDialogFragment implements DialogInterface.OnClickListener {
+    private IOnSubmitAddListener mOnSubmitListener;
     private EditText mField;
 
-    public AddingRssDialog setOnSubmitListener(IOnSubmitAddingListener listener) {
+    public AddRssDialog setOnSubmitListener(IOnSubmitAddListener listener) {
         mOnSubmitListener = listener;
 
         return this;
@@ -44,7 +44,7 @@ public class AddingRssDialog extends MvpAppCompatDialogFragment implements Dialo
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (mOnSubmitListener != null) {
-            mOnSubmitListener.onSubmit(dialog, mField.getText().toString());
+            mOnSubmitListener.onAddSubmit(dialog, mField.getText().toString());
         }
     }
 }
