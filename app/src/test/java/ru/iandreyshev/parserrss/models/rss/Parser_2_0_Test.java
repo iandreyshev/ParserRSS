@@ -24,7 +24,7 @@ public class Parser_2_0_Test {
     @Test
     public void parse_rss_without_xml_format() {
         final Rss rss = parseFileAndCheck("valid_without_xml_format");
-        final IRssFeed feed = rss.getFeed();
+        final RssFeed feed = rss.getFeed();
 
         assertEquals(RSS_TITLE, feed.getTitle());
         assertEquals(RSS_DESCRIPTION, feed.getDescription());
@@ -34,7 +34,7 @@ public class Parser_2_0_Test {
     @Test
     public void parse_rss_with_feed_title_and_description_only() {
         final Rss rss = parseFileAndCheck("valid_minimal");
-        final IRssFeed feed = rss.getFeed();
+        final RssFeed feed = rss.getFeed();
 
         assertEquals(RSS_TITLE, feed.getTitle());
         assertEquals(RSS_DESCRIPTION, feed.getDescription());
@@ -67,7 +67,7 @@ public class Parser_2_0_Test {
 
         assertEquals(2, rss.getArticles().size());
 
-        for (IRssArticle article : rss.getArticles()) {
+        for (RssArticle article : rss.getArticles()) {
 
             assertEquals(ARTICLE_TITLE, article.getTitle());
             assertEquals(ARTICLE_TEXT, article.getDescription());
@@ -82,7 +82,7 @@ public class Parser_2_0_Test {
 
         assertEquals(2, rss.getArticles().size());
 
-        for (IRssArticle article : rss.getArticles()) {
+        for (RssArticle article : rss.getArticles()) {
 
             assertEquals(ARTICLE_IMG_URL, article.getImageUrl());
 
@@ -114,7 +114,7 @@ public class Parser_2_0_Test {
     public void not_parse_articles_image_if_they_do_not_have_url_or_type() {
         final Rss rss = parseFile("valid_with_articles_enclosure_without_required_element");
 
-        for (final IRssArticle article : rss.getArticles()) {
+        for (final RssArticle article : rss.getArticles()) {
 
             assertNull(article.getImageUrl());
 

@@ -1,11 +1,12 @@
 package ru.iandreyshev.parserrss.models.rss;
 
-import ru.iandreyshev.parserrss.models.web.Url;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public final class RssFeed {
-    private static int DEFAULT_HASH = 11;
+public final class RssFeed implements Parcelable {
+    private static final int DEFAULT_HASH = 11;
 
-    private Url mUrl;
+    private String mUrl;
     private String mOrigin;
     private String mTitle;
     private String mDescription;
@@ -15,6 +16,26 @@ public final class RssFeed {
         mTitle = title;
         mOrigin = origin;
     }
+
+    protected RssFeed(Parcel in) {
+        mUrl = in.readString();
+        mOrigin = in.readString();
+        mTitle = in.readString();
+        mDescription = in.readString();
+        mHash = in.readInt();
+    }
+
+    public static final Creator<RssFeed> CREATOR = new Creator<RssFeed>() {
+        @Override
+        public RssFeed createFromParcel(Parcel in) {
+            return new RssFeed(in);
+        }
+
+        @Override
+        public RssFeed[] newArray(int size) {
+            return new RssFeed[size];
+        }
+    };
 
     public String getTitle() {
         return mTitle;
@@ -28,15 +49,15 @@ public final class RssFeed {
         return mOrigin;
     }
 
-    public Url getUrl() {
+    public String getUrl() {
         return mUrl;
     }
 
-    void setDescription(final String description) {
+    public void setDescription(final String description) {
         mDescription = description;
     }
 
-    void setUrl(final Url url) {
+    public void setUrl(final String url) {
         mUrl = url;
         initHash();
     }
@@ -52,11 +73,25 @@ public final class RssFeed {
     }
 
     private void initHash() {
-        final String urlStr = mUrl == null ? "" : mUrl.toString();
+        final String urlStr = mUrl == null ? "" : mUrl;
         mHash = DEFAULT_HASH;
 
         for (int i = 0; i < urlStr.length(); i++) {
             mHash = mHash * 31 + urlStr.charAt(i);
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mUrl);
+        dest.writeString(mOrigin);
+        dest.writeString(mTitle);
+        dest.writeString(mDescription);
+        dest.writeInt(mHash);
     }
 }

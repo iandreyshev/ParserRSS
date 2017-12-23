@@ -6,7 +6,6 @@ import android.util.Log;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
-import ru.iandreyshev.parserrss.models.web.Url;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
 public final class GetNewRssTask extends AsyncTask<String, Void, Rss> {
@@ -45,7 +44,7 @@ public final class GetNewRssTask extends AsyncTask<String, Void, Rss> {
         final Rss result = Rss.parse(mRequestResult.getResponseBody());
 
         if (result != null) {
-            result.setUrl(Url.parse(mUrl));
+            result.setUrl(mUrl);
         }
 
         return result;

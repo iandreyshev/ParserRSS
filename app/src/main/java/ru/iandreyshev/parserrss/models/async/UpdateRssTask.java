@@ -30,7 +30,7 @@ public class UpdateRssTask extends AsyncTask<RssFeed, Void, Rss> {
 
     @Override
     protected void onPreExecute() {
-        mFeedViewState.startRefresh(mFeed, true);
+        mFeedViewState.startUpdate(mFeed, true);
     }
 
     @Override
@@ -47,9 +47,11 @@ public class UpdateRssTask extends AsyncTask<RssFeed, Void, Rss> {
 
     @Override
     public void onPostExecute(final Rss rss) {
-        mFeedViewState.startRefresh(mFeed, false);
+        Log.e(TAG, "End update");
+        Log.e(TAG, "Handler state " + mRequestResult.getState());
+        mFeedViewState.startUpdate(mFeed, false);
 
-        if (mRequestResult.getState() != IHttpRequestResult.State.BadConnection) {
+        if (mRequestResult.getState() != IHttpRequestResult.State.Success) {
             handleWebError();
         } else if (rss == null) {
             mFeedViewState.showShortToast(INVALID_RSS_FORMAT);

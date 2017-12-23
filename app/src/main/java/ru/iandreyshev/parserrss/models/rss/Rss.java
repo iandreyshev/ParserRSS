@@ -3,8 +3,6 @@ package ru.iandreyshev.parserrss.models.rss;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.iandreyshev.parserrss.models.web.Url;
-
 public final class Rss {
     private static final List<Parser> mParsers = new ArrayList<>();
 
@@ -43,7 +41,7 @@ public final class Rss {
         return mArticles;
     }
 
-    public void setUrl(final Url url) {
+    public void setUrl(final String url) {
         mFeed.setUrl(url);
     }
 

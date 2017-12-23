@@ -3,18 +3,16 @@ package ru.iandreyshev.parserrss.models.rss;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public final class RssArticle implements Serializable, Parcelable {
+public final class RssArticle implements Parcelable {
     private String mTitle;
     private String mOrigin;
     private String mDescription;
     private Bitmap mImage;
     private String mImageUrl;
-    private Date mDate;
+    private Long mDate;
 
     RssArticle(final String title, final String origin) {
         mTitle = title;
@@ -27,6 +25,7 @@ public final class RssArticle implements Serializable, Parcelable {
         mDescription = in.readString();
         mImage = in.readParcelable(Bitmap.class.getClassLoader());
         mImageUrl = in.readString();
+        mDate = in.readLong();
     }
 
     public static final Creator<RssArticle> CREATOR = new Creator<RssArticle>() {
@@ -54,7 +53,7 @@ public final class RssArticle implements Serializable, Parcelable {
     }
 
     public Date getDate() {
-        return mDate;
+        return mDate == null ? null : new Date(mDate);
     }
 
     public Bitmap getImage() {
@@ -78,7 +77,7 @@ public final class RssArticle implements Serializable, Parcelable {
     }
 
     void setDate(Date date) {
-        mDate = date;
+        mDate = date.getTime();
     }
 
     void setImageUrl(String url) {
@@ -97,5 +96,6 @@ public final class RssArticle implements Serializable, Parcelable {
         dest.writeString(mDescription);
         dest.writeParcelable(mImage, flags);
         dest.writeString(mImageUrl);
+        dest.writeLong(mDate);
     }
 }

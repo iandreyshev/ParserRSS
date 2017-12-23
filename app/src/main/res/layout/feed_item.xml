@@ -10,19 +10,32 @@
 
     <TextView
         android:id="@+id/item_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
         android:maxLines="1"
         android:textAllCaps="false"
         android:textColor="@color/colorBlack"
         android:textSize="15sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:disable="contentDescription"
         tools:text="Title" />
+
+    <TextView
+        android:id="@+id/item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:text="TextView"
+        android:textStyle="bold|italic"
+        app:layout_constraintStart_toEndOf="@+id/item_image"
+        app:layout_constraintTop_toBottomOf="@+id/item_title" />
 
     <ImageView
         android:id="@+id/item_image"
@@ -30,21 +43,25 @@
         android:layout_height="100dp"
         android:layout_marginTop="5dp"
         android:adjustViewBounds="true"
+        android:background="?attr/colorButtonNormal"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        android:tint="@android:color/darker_gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_background"
+        app:srcCompat="@drawable/ic_image_black_24dp"
         tools:disable="contentDescription" />
 
     <TextView
         android:id="@+id/item_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="8dp"
         android:maxLines="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_image"
-        app:layout_constraintTop_toBottomOf="@+id/item_title"
+        app:layout_constraintTop_toBottomOf="@+id/item_date"
         tools:disable="contentDescription"
         tools:text="Lorem ipsum dolor sit omet" />
 </android.support.constraint.ConstraintLayout>

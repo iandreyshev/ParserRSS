@@ -2,13 +2,10 @@ package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 
 import java.util.ArrayList;
 
 import ru.iandreyshev.parserrss.models.rss.Rss;
-import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
 
 public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
@@ -16,17 +13,16 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     private static final String CUT_TITLE_PATTERN = "%s...";
     private static final int MAX_TITLE_LENGTH = 16;
 
+    private FragmentManager mFragmentManager;
     private ArrayList<Rss> mRssList = new ArrayList<>();
-    private IOnArticleClickListener mItemClickListener;
-    private IOnRefreshFeedListener mRefreshListener;
 
-    public FeedTabsAdapter(FragmentManager manager) {
+    public FeedTabsAdapter(final FragmentManager manager) {
         super(manager);
+        mFragmentManager = manager;
     }
 
-    public void add(final Rss feed) {
-        Log.e(TAG, "Add");
-        mRssList.add(feed);
+    public void insert(final Rss rss) {
+        mRssList.add(rss);
         notifyDataSetChanged();
     }
 
@@ -34,50 +30,48 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
         int position = getItemPosition(rss.getFeed());
 
         if (position < 0) {
-            Log.e(TAG, "Update fragment not found");
             return;
         }
 
-        Log.e(TAG, "Update fragment");
-        final FeedTabFragment fragment = (FeedTabFragment) getItem(position);
-        fragment.update(rss.getArticles());
+        final FeedTabFragment fragment = (FeedTabFragment) getRegisteredFragment(position);
+
+        if (fragment != null) {
+            fragment.update(rss.getArticles());
+
+            return;
+        }
+
+        mRssList.set(position, rss);
     }
 
-    public void remove(final RssFeed feed) {
+    public void remove(final Rss rss) {
+        int position = mRssList.indexOf(rss);
+
+        if (position < 0) {
+            return;
+        }
+
+        if (getRegisteredFragment(position) != null) {
+            mFragmentManager.beginTransaction()
+                    .detach(getRegisteredFragment(position))
+                    .commit();
+        }
+
+        mRssList.remove(position);
+        notifyDataSetChanged();
     }
 
-    public void startRefresh(final RssFeed feed, boolean isStart) {
-    }
-
-    public void setOnItemClickListener(final IOnArticleClickListener listener) {
-        mItemClickListener = listener;
-    }
-
-    public void setOnRefreshListener(final IOnRefreshFeedListener listener) {
-        mRefreshListener = listener;
-    }
-
-    public RssFeed getFeed(int position) {
+    public Rss getRss(int position) {
         if (position < 0 || position >= mRssList.size()) {
             return null;
         }
 
-        return mRssList.get(position).getFeed();
+        return mRssList.get(position);
     }
 
     @Override
     public Fragment getItem(int position) {
-        FeedTabFragment fragment = (FeedTabFragment) getRegisteredFragment(position);
-
-        if (fragment == null) {
-            final Rss rss = mRssList.get(position);
-            fragment = FeedTabFragment.newInstance(rss.getArticles())
-                    .setOnItemClickListener(mItemClickListener)
-                    .setOnRefreshListener(() -> onRefresh(rss.getFeed()));
-            Log.e(TAG, "New instance");
-        }
-
-        return fragment;
+        return FeedTabFragment.newInstance(mRssList.get(position));
     }
 
     @Override
@@ -97,9 +91,12 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
         return title;
     }
 
-    private void onRefresh(final RssFeed feed) {
-        if (mRefreshListener != null) {
-            mRefreshListener.onRefresh(feed);
+    @Override
+    public int getItemPosition(Object item) {
+        if (item instanceof Rss) {
+            return mRssList.indexOf(item);
         }
+
+        return super.getItemPosition(item);
     }
 }

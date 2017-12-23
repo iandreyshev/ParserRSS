@@ -73,7 +73,16 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         setContentView(R.layout.activity_article);
 
         ButterKnife.bind(this);
-        final RssArticle article = (RssArticle) getIntent().getSerializableExtra(ARTICLE_BOUND_KEY);
+
+        final Bundle extras = getIntent().getExtras();
+
+        if (extras == null) {
+            mArticlePresenter.onErrorLoadArticle();
+
+            return;
+        }
+
+        final RssArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
 
         if (article == null) {
             mArticlePresenter.onErrorLoadArticle();

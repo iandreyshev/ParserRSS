@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.presentation.presenter;
 import ru.iandreyshev.parserrss.models.async.DeleteFeedTask;
 import ru.iandreyshev.parserrss.models.async.GetNewRssTask;
 import ru.iandreyshev.parserrss.models.async.UpdateRssTask;
+import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.rss.RssArticle;
 import ru.iandreyshev.parserrss.models.rss.RssFeed;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
@@ -22,8 +23,8 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         GetNewRssTask.execute(getViewState(), url);
     }
 
-    public void onDeleteRss(final RssFeed feed) {
-        DeleteFeedTask.execute(getViewState(), feed);
+    public void onDeleteRss(final Rss rss) {
+        DeleteFeedTask.execute(getViewState(), rss);
     }
 
     public void openArticle(final RssArticle article) {

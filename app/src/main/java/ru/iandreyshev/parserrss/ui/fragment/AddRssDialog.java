@@ -1,6 +1,8 @@
 package ru.iandreyshev.parserrss.ui.fragment;
 
 import android.app.Dialog;
+import android.support.v4.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,15 +14,15 @@ import android.widget.EditText;
 import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 
 import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.ui.activity.FeedActivity;
+import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener;
 
 public class AddRssDialog extends MvpAppCompatDialogFragment implements DialogInterface.OnClickListener {
-    private IOnSubmitAddListener mOnSubmitListener;
+    private IOnSubmitAddRssListener mOnSubmitListener;
     private EditText mField;
 
-    public AddRssDialog setOnSubmitListener(IOnSubmitAddListener listener) {
-        mOnSubmitListener = listener;
-
-        return this;
+    public static void show(final FragmentManager fragmentManager) {
+        new AddRssDialog().show(fragmentManager, AddRssDialog.class.getName());
     }
 
     @Override
@@ -44,7 +46,13 @@ public class AddRssDialog extends MvpAppCompatDialogFragment implements DialogIn
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (mOnSubmitListener != null) {
-            mOnSubmitListener.onAddSubmit(dialog, mField.getText().toString());
+            mOnSubmitListener.onSubmitAddRss(mField.getText().toString());
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mOnSubmitListener = (FeedActivity) context;
     }
 }

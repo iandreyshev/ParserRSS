@@ -11,8 +11,8 @@ public class HttpRequestHandler implements IHttpRequestResult {
     private static final String TAG = HttpRequestHandler.class.getName();
 
     private static final int GOOD_RESPONSE_CODE = 200;
-    private static final int CONNECTION_TIMEOUT_SEC = 1;
     private static final int READ_TIMEOUT_SEC = 1;
+    private static final int CONNECTION_TIMEOUT_SEC = 1;
     private static final int WRITE_TIMEOUT_SEC = 1;
 
     private OkHttpClient mClient = new OkHttpClient.Builder()

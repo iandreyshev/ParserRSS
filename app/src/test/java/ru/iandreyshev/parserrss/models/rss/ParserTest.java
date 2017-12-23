@@ -4,6 +4,7 @@ import org.jdom2.Element;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.TestUtils;
@@ -23,7 +24,7 @@ public class ParserTest {
             }
 
             @Override
-            protected List<RssArticle> parseArticles(Element root) throws Exception {
+            protected ArrayList<RssArticle> parseArticles(Element root) throws Exception {
                 fail();
 
                 return null;
@@ -36,7 +37,7 @@ public class ParserTest {
             }
 
             @Override
-            protected List<RssArticle> parseArticles(Element root) throws Exception {
+            protected ArrayList<RssArticle> parseArticles(Element root) throws Exception {
                 throw new UnsupportedOperationException();
             }
         };
