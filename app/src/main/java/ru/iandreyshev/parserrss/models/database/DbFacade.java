@@ -4,11 +4,9 @@ import java.util.List;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
-import io.objectbox.query.Query;
 import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.rss.RssArticle;
-import ru.iandreyshev.parserrss.models.rss.RssArticle_;
 import ru.iandreyshev.parserrss.models.rss.Rss_;
 
 public class DbFacade {
@@ -42,20 +40,5 @@ public class DbFacade {
 
     public List<Rss> getAllRss() {
         return mRssBox.getAll();
-    }
-
-    public boolean updateArticles(final Rss rss) {
-        final List<Rss> rssWithSameUrl = mRssBox.find(Rss_.mUrl, rss.getUrl());
-
-        if (!rssWithSameUrl.isEmpty()) {
-            return false;
-        }
-
-        mArticleBox.find(RssArticle_.mRssId, rss.getId());
-        mArticleBox.query().build()
-        Query<RssArticle> query = new Query<>()
-                .
-
-        return true;
     }
 }
