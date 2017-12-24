@@ -2,18 +2,18 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.os.AsyncTask;
 
-import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
-public class DeleteFeedTask extends AsyncTask<Rss, Void, Void> {
+public class DeleteFeedTask extends AsyncTask<IViewRss, Void, Void> {
 
     private IFeedView mFeedViewState;
-    private Rss mFeed;
+    private IViewRss mRssToDelete;
 
-    public static void execute(final IFeedView feedView, final Rss feed) {
+    public static void execute(final IFeedView feedView, final IViewRss feed) {
         final DeleteFeedTask task = new DeleteFeedTask();
         task.mFeedViewState = feedView;
-        task.mFeed = feed;
+        task.mRssToDelete = feed;
         task.execute();
     }
 
@@ -23,14 +23,14 @@ public class DeleteFeedTask extends AsyncTask<Rss, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(final Rss... feeds) {
+    protected Void doInBackground(final IViewRss... rssToDelete) {
         return null;
     }
 
     @Override
     protected void onPostExecute(final Void result) {
         mFeedViewState.startProgressBar(false);
-        mFeedViewState.removeRss(mFeed);
+        mFeedViewState.removeRss(mRssToDelete);
     }
 
     private DeleteFeedTask() {

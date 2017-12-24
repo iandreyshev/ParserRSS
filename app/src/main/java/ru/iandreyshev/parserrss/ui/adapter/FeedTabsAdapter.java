@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 
 import java.util.ArrayList;
 
-import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
 
 public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
@@ -14,20 +14,20 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     private static final int MAX_TITLE_LENGTH = 16;
 
     private FragmentManager mFragmentManager;
-    private ArrayList<Rss> mRssList = new ArrayList<>();
+    private ArrayList<IViewRss> mRssList = new ArrayList<>();
 
     public FeedTabsAdapter(final FragmentManager manager) {
         super(manager);
         mFragmentManager = manager;
     }
 
-    public void insert(final Rss rss) {
+    public void insert(final IViewRss rss) {
         mRssList.add(rss);
         notifyDataSetChanged();
     }
 
-    public void update(final Rss rss) {
-        int position = getItemPosition(rss.getFeed());
+    public void update(final IViewRss rss) {
+        int position = getItemPosition(rss);
 
         if (position < 0) {
             return;
@@ -44,7 +44,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
         mRssList.set(position, rss);
     }
 
-    public void remove(final Rss rss) {
+    public void remove(final IViewRss rss) {
         int position = mRssList.indexOf(rss);
 
         if (position < 0) {
@@ -61,7 +61,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
-    public Rss getRss(int position) {
+    public IViewRss getRss(int position) {
         if (position < 0 || position >= mRssList.size()) {
             return null;
         }
@@ -81,7 +81,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title = mRssList.get(position).getFeed().getTitle();
+        String title = mRssList.get(position).getTitle();
 
         if (title.length() > MAX_TITLE_LENGTH) {
             title = title.substring(0, MAX_TITLE_LENGTH - 1);
@@ -93,7 +93,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(Object item) {
-        if (item instanceof Rss) {
+        if (item instanceof IViewRss) {
             return mRssList.indexOf(item);
         }
 

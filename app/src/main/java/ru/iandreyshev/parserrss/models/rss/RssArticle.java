@@ -2,30 +2,48 @@ package ru.iandreyshev.parserrss.models.rss;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import java.util.Date;
 
-public final class RssArticle implements Parcelable {
-    private String mTitle;
-    private String mOrigin;
-    private String mDescription;
-    private Bitmap mImage;
-    private String mImageUrl;
-    private Long mDate;
+import io.objectbox.annotation.Entity;
+import io.objectbox.annotation.Id;
+import io.objectbox.annotation.Index;
+import io.objectbox.annotation.NameInDb;
+import io.objectbox.annotation.Transient;
+import ru.iandreyshev.parserrss.app.IBuilder;
 
-    RssArticle(final String title, final String origin) {
-        mTitle = title;
-        mOrigin = origin;
+@Entity
+public class RssArticle implements IViewRssArticle {
+    @Id
+    @NameInDb("id_rss_article")
+    long mId;
+    @Index
+    @NameInDb("id_rss")
+    Long mRssId;
+    @NameInDb("title")
+    String mTitle;
+    @NameInDb("origin_url")
+    String mOriginUrl;
+    @NameInDb("description")
+    String mDescription;
+    @NameInDb("image_url")
+    String mImageUrl;
+    @NameInDb("post_date")
+    Long mPostDate;
+
+    @Transient
+    Bitmap mImage;
+
+    private RssArticle() {
     }
 
-    protected RssArticle(Parcel in) {
+    private RssArticle(Parcel in) {
         mTitle = in.readString();
-        mOrigin = in.readString();
+        mOriginUrl = in.readString();
         mDescription = in.readString();
         mImage = in.readParcelable(Bitmap.class.getClassLoader());
         mImageUrl = in.readString();
-        mDate = in.readLong();
+        mPostDate = in.readLong();
     }
 
     public static final Creator<RssArticle> CREATOR = new Creator<RssArticle>() {
@@ -40,48 +58,39 @@ public final class RssArticle implements Parcelable {
         }
     };
 
+    @Override
+    public long getId() {
+        return mId;
+    }
+
+    @Override
     public String getTitle() {
         return mTitle;
     }
 
-    public String getOrigin() {
-        return mOrigin;
+    @Override
+    public String getOriginUrl() {
+        return mOriginUrl;
     }
 
+    @Override
     public String getDescription() {
         return mDescription;
     }
 
-    public Date getDate() {
-        return mDate == null ? null : new Date(mDate);
+    @Override
+    public Long getPostDate() {
+        return mPostDate;
     }
 
+    @Override
     public Bitmap getImage() {
         return mImage;
     }
 
+    @Override
     public String getImageUrl() {
         return mImageUrl;
-    }
-
-    void setTitle(String title) {
-        mTitle = title;
-    }
-
-    void setDescription(String text) {
-        mDescription = text;
-    }
-
-    void setImage(Bitmap image) {
-        mImage = image;
-    }
-
-    void setDate(Date date) {
-        mDate = date.getTime();
-    }
-
-    void setImageUrl(String url) {
-        mImageUrl = url;
     }
 
     @Override
@@ -92,10 +101,64 @@ public final class RssArticle implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mTitle);
-        dest.writeString(mOrigin);
+        dest.writeString(mOriginUrl);
         dest.writeString(mDescription);
         dest.writeParcelable(mImage, flags);
         dest.writeString(mImageUrl);
-        dest.writeLong(mDate);
+        dest.writeLong(mPostDate);
+    }
+
+    @Override
+    public long getRssId() {
+        return mRssId;
+    }
+
+    static class Builder implements IBuilder<RssArticle> {
+        private RssArticle mArticle = new RssArticle();
+
+        Builder(final String title) {
+            mArticle.mTitle = title;
+        }
+
+        Builder setTitle(final String title) {
+            mArticle.mTitle = title;
+
+            return this;
+        }
+
+        Builder setDescription(final String text) {
+            mArticle.mDescription = text;
+
+            return this;
+        }
+
+        Builder setImage(final Bitmap image) {
+            mArticle.mImage = image;
+
+            return this;
+        }
+
+        Builder setDate(final Date date) {
+            mArticle.mPostDate = date.getTime();
+
+            return this;
+        }
+
+        Builder setImageUrl(final String url) {
+            mArticle.mImageUrl = url;
+
+            return this;
+        }
+
+        Builder setOrigin(final String origin) {
+            mArticle.mOriginUrl = origin;
+
+            return this;
+        }
+
+        @Override
+        public RssArticle build() {
+            return mArticle;
+        }
     }
 }

@@ -14,7 +14,7 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.RssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
 
@@ -82,7 +82,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
             return;
         }
 
-        final RssArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
+        final IViewRssArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
 
         if (article == null) {
             mArticlePresenter.onErrorLoadArticle();
@@ -94,18 +94,18 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         initArticle(article);
     }
 
-    private void initArticle(final RssArticle article) {
+    private void initArticle(final IViewRssArticle article) {
         mTitle.setText(Html.fromHtml(article.getTitle()));
         mText.setText(Html.fromHtml(article.getDescription()));
 
         setViewVisible(mImage, (article.getImage() != null));
-        setViewVisible(mDate, (article.getDate() != null));
+        setViewVisible(mDate, (article.getPostDate() != null));
 
         if (article.getImage() != null) {
             mImage.setImageBitmap(article.getImage());
         }
-        if (article.getDate() != null) {
-            mDate.setText(DATE_FORMAT.format(article.getDate()));
+        if (article.getPostDate() != null) {
+            mDate.setText(DATE_FORMAT.format(article.getPostDate()));
         }
     }
 

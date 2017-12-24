@@ -7,37 +7,35 @@ import ru.iandreyshev.parserrss.TestUtils;
 
 import static org.junit.Assert.*;
 
-public class Parser_2_0_Test {
+public class RssParserV2Test {
     private static final String RSS_TITLE = "Feed title";
     private static final String RSS_DESCRIPTION = "Feed description";
     private static final String ARTICLE_TITLE = "Article title";
     private static final String ARTICLE_TEXT = "Article text";
     private static final String ARTICLE_IMG_URL = "Article_image_url";
 
-    private Parser_2_0 mParser;
+    private RssParserV2 mParser;
 
     @Before
     public void resetParser() {
-        mParser = new Parser_2_0();
+        mParser = new RssParserV2();
     }
 
     @Test
     public void parse_rss_without_xml_format() {
         final Rss rss = parseFileAndCheck("valid_without_xml_format");
-        final RssFeed feed = rss.getFeed();
 
-        assertEquals(RSS_TITLE, feed.getTitle());
-        assertEquals(RSS_DESCRIPTION, feed.getDescription());
-        assertNotNull(feed.getOrigin());
+        assertEquals(RSS_TITLE, rss.getTitle());
+        assertEquals(RSS_DESCRIPTION, rss.getDescription());
+        assertNotNull(rss.getOrigin());
     }
 
     @Test
     public void parse_rss_with_feed_title_and_description_only() {
         final Rss rss = parseFileAndCheck("valid_minimal");
-        final RssFeed feed = rss.getFeed();
 
-        assertEquals(RSS_TITLE, feed.getTitle());
-        assertEquals(RSS_DESCRIPTION, feed.getDescription());
+        assertEquals(RSS_TITLE, rss.getTitle());
+        assertEquals(RSS_DESCRIPTION, rss.getDescription());
     }
 
     @Test
@@ -67,11 +65,11 @@ public class Parser_2_0_Test {
 
         assertEquals(2, rss.getArticles().size());
 
-        for (RssArticle article : rss.getArticles()) {
+        for (final IViewRssArticle article : rss.getArticles()) {
 
             assertEquals(ARTICLE_TITLE, article.getTitle());
             assertEquals(ARTICLE_TEXT, article.getDescription());
-            assertNotNull(article.getOrigin());
+            assertNotNull(article.getOriginUrl());
 
         }
     }
@@ -82,7 +80,7 @@ public class Parser_2_0_Test {
 
         assertEquals(2, rss.getArticles().size());
 
-        for (RssArticle article : rss.getArticles()) {
+        for (final IViewRssArticle article : rss.getArticles()) {
 
             assertEquals(ARTICLE_IMG_URL, article.getImageUrl());
 
@@ -114,7 +112,7 @@ public class Parser_2_0_Test {
     public void not_parse_articles_image_if_they_do_not_have_url_or_type() {
         final Rss rss = parseFile("valid_with_articles_enclosure_without_required_element");
 
-        for (final RssArticle article : rss.getArticles()) {
+        for (final IViewRssArticle article : rss.getArticles()) {
 
             assertNull(article.getImageUrl());
 
@@ -125,7 +123,7 @@ public class Parser_2_0_Test {
     public void parse_article_date() {
         final Rss rss = parseFile("valid_with_pub_date");
 
-        assertNotNull(rss.getArticles().get(0).getDate());
+        assertNotNull(rss.getArticles().get(0).getPostDate());
     }
 
     private Rss parseFile(final String fileName) {

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-final class Parser_2_0 extends Parser {
+final class RssParserV2 extends RssParseEngine {
     private static final String FEED_NAME = "channel";
     private static final String FEED_TITLE = "title";
     private static final String FEED_ORIGIN = "link";
@@ -25,10 +25,9 @@ final class Parser_2_0 extends Parser {
     private static final String ARTICLE_IMG_NODE = "enclosure";
     private static final String ARTICLE_IMG_URL = "url";
     private static final String ARTICLE_IMG_TYPE = "type";
-    private static final String ARTICLE_IMG_LENGTH = "length";
 
     @Override
-    protected RssFeed parseFeed(final Element root) {
+    protected Rss.Builder parseRss(final Element root) {
         final Element channel = root.getChild(FEED_NAME);
         final String title = channel.getChildText(FEED_TITLE);
         final String link = channel.getChildText(FEED_ORIGIN);
@@ -38,7 +37,8 @@ final class Parser_2_0 extends Parser {
             return null;
         }
 
-        final RssFeed result = new RssFeed(title, link);
+        final Rss.Builder result = new Rss.Builder(title);
+        result.setOrigin(link);
         result.setDescription(description);
 
         return result;
@@ -63,23 +63,24 @@ final class Parser_2_0 extends Parser {
 
     private RssArticle parseArticle(final Element item) {
         final String title = item.getChildText(ARTICLE_TITLE);
-        final String link = item.getChildText(ARTICLE_ORIGIN);
+        final String origin = item.getChildText(ARTICLE_ORIGIN);
         final String description = item.getChildText(ARTICLE_DESCRIPTION);
 
-        if (title == null || link == null || description == null) {
+        if (title == null || origin == null || description == null) {
             return null;
         }
 
-        final RssArticle result = new RssArticle(title, link);
-        result.setDescription(description);
+        final RssArticle.Builder articleBuilder = new RssArticle.Builder(title)
+                .setDescription(description)
+                .setOrigin(origin);
 
-        parseArticleDate(item, result);
-        parseArticleImage(item, result);
+        parseArticleDate(item, articleBuilder);
+        parseArticleImage(item, articleBuilder);
 
-        return result;
+        return articleBuilder.build();
     }
 
-    private void parseArticleDate(final Element item, final RssArticle article) {
+    private void parseArticleDate(final Element item, final RssArticle.Builder builder) {
         final String dateStr = item.getChildText(DATE_NAME);
         final Date date;
 
@@ -89,10 +90,10 @@ final class Parser_2_0 extends Parser {
             return;
         }
 
-        article.setDate(date);
+        builder.setDate(date);
     }
 
-    private void parseArticleImage(final Element item, final RssArticle article) {
+    private void parseArticleImage(final Element item, final RssArticle.Builder builder) {
         final Element resource = item.getChild(ARTICLE_IMG_NODE);
 
         if (resource == null) {
@@ -106,7 +107,7 @@ final class Parser_2_0 extends Parser {
             return;
         }
 
-        article.setImageUrl(url);
+        builder.setImageUrl(url);
     }
 
     private boolean isValidImageType(String type) {

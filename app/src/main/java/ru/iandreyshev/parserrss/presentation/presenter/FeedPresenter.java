@@ -3,9 +3,8 @@ package ru.iandreyshev.parserrss.presentation.presenter;
 import ru.iandreyshev.parserrss.models.async.DeleteFeedTask;
 import ru.iandreyshev.parserrss.models.async.GetNewRssTask;
 import ru.iandreyshev.parserrss.models.async.UpdateRssTask;
-import ru.iandreyshev.parserrss.models.rss.Rss;
-import ru.iandreyshev.parserrss.models.rss.RssArticle;
-import ru.iandreyshev.parserrss.models.rss.RssFeed;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
 import com.arellomobile.mvp.InjectViewState;
@@ -15,7 +14,7 @@ import com.arellomobile.mvp.MvpPresenter;
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
     private final static String TAG = FeedPresenter.class.getName();
 
-    public void onUpdateRss(final RssFeed feed) {
+    public void onUpdateRss(final IViewRss feed) {
         UpdateRssTask.execute(getViewState(), feed);
     }
 
@@ -23,16 +22,16 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         GetNewRssTask.execute(getViewState(), url);
     }
 
-    public void onDeleteRss(final Rss rss) {
+    public void onDeleteRss(final IViewRss rss) {
         DeleteFeedTask.execute(getViewState(), rss);
     }
 
-    public void openArticle(final RssArticle article) {
+    public void openArticle(final IViewRssArticle article) {
         getViewState().openArticle(article);
     }
 
-    public void openRssInfo(final RssFeed feed) {
-        getViewState().openRssInfo(feed);
+    public void openRssInfo(final IViewRss rss) {
+        getViewState().openRssInfo(rss);
     }
 
     @Override

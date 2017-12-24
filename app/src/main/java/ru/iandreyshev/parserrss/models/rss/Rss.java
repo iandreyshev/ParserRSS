@@ -3,72 +3,140 @@ package ru.iandreyshev.parserrss.models.rss;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Rss {
-    private static final List<Parser> mParsers = new ArrayList<>();
+import io.objectbox.annotation.Entity;
+import io.objectbox.annotation.Id;
+import io.objectbox.annotation.Index;
+import io.objectbox.annotation.NameInDb;
+import io.objectbox.annotation.Transient;
+import ru.iandreyshev.parserrss.app.IBuilder;
 
-    private RssFeed mFeed;
-    private ArrayList<RssArticle> mArticles;
+@Entity
+public class Rss implements IViewRss {
+    @Id
+    @NameInDb("id_rss")
+    long mId;
+    @Index
+    @NameInDb("url")
+    String mUrl;
+    @NameInDb("origin")
+    String mOrigin;
+    @NameInDb("title")
+    String mTitle;
+    @NameInDb("description")
+    String mDescription;
 
-    static {
-        mParsers.add(new Parser_2_0());
+    @Transient
+    ArrayList<RssArticle> mRssArticles;
+    @Transient
+    ArrayList<IViewRssArticle> mArticles;
+
+    private Rss() {
     }
 
-    public static Rss parse(final byte[] rssBytes) {
-        if (rssBytes == null) {
-            return null;
-        }
-
-        return parse(new String(rssBytes));
+    @Override
+    public long getId() {
+        return mId;
     }
 
-    public static Rss parse(final String rssText) {
-        for (final Parser parser : mParsers) {
-            final Rss rss = parser.parse(rssText);
-
-            if (rss != null) {
-                return rss;
-            }
-        }
-
-        return null;
+    @Override
+    public String getTitle() {
+        return mTitle;
     }
 
-    public RssFeed getFeed() {
-        return mFeed;
+    @Override
+    public String getDescription() {
+        return mDescription;
     }
 
-    public ArrayList<RssArticle> getArticles() {
+    @Override
+    public String getUrl() {
+        return mUrl;
+    }
+
+    @Override
+    public String getOrigin() {
+        return mOrigin;
+    }
+
+    @Override
+    public ArrayList<IViewRssArticle> getArticles() {
         return mArticles;
     }
 
-    public void setUrl(final String url) {
-        mFeed.setUrl(url);
+    public ArrayList<RssArticle> getRssArticles() {
+        return mRssArticles;
     }
 
     @Override
-    public int hashCode() {
-        return mFeed.hashCode();
+    public boolean equals(Object other) {
+        return (other instanceof Rss) && ((Rss) other).getUrl().equals(mUrl);
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof Rss) {
-            final Rss other = (Rss) object;
+    public static class Parser {
+        private static final List<RssParseEngine> mParsers = new ArrayList<>();
 
-            return mFeed.equals(other.mFeed);
+        static {
+            mParsers.add(new RssParserV2());
         }
 
-        return false;
+        public static Rss parse(final byte[] rssBytes, final String url) {
+            if (rssBytes == null) {
+                return null;
+            }
+
+            return parse(new String(rssBytes), url);
+        }
+
+        public static Rss parse(final String rssText, final String url) {
+            for (final RssParseEngine parser : mParsers) {
+                final Rss rss = parser.parse(rssText);
+
+                if (rss != null) {
+                    rss.mUrl = url;
+
+                    return rss;
+                }
+            }
+
+            return null;
+        }
     }
 
-    Rss(final RssFeed feed, final ArrayList<RssArticle> articles) throws NullPointerException {
-        if (feed == null) {
-            throw new NullPointerException("Try to create rss with null feed");
-        } else if (articles == null) {
-            throw new NullPointerException("Try to create rss with null articles");
+    static class Builder implements IBuilder<Rss> {
+        private Rss mRss = new Rss();
+
+        Builder(final String rssTitle) {
+            mRss.mTitle = rssTitle;
         }
 
-        mFeed = feed;
-        mArticles = articles;
+        @Override
+        public Rss build() {
+            return mRss;
+        }
+
+        public Builder setUrl(final String url) {
+            mRss.mUrl = url;
+
+            return this;
+        }
+
+        public Builder setArticles(final List<RssArticle> articles) {
+            mRss.mArticles = new ArrayList<>(articles);
+            mRss.mRssArticles = new ArrayList<>(articles);
+
+            return this;
+        }
+
+        public Builder setDescription(final String description) {
+            mRss.mDescription = description;
+
+            return this;
+        }
+
+        public Builder setOrigin(final String origin) {
+            mRss.mOrigin = origin;
+
+            return this;
+        }
     }
 }

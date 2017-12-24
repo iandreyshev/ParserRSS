@@ -3,12 +3,13 @@ package ru.iandreyshev.parserrss.models.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
-public final class GetNewRssTask extends AsyncTask<String, Void, Rss> {
+public final class GetNewRssTask extends AsyncTask<String, Void, IViewRss> {
     private static final String TAG = GetNewRssTask.class.getName();
     private static final String REQUEST_NOT_SEND = "The request was not send";
     private static final String BAD_CONNECTION = "Connection error";
@@ -33,7 +34,7 @@ public final class GetNewRssTask extends AsyncTask<String, Void, Rss> {
     }
 
     @Override
-    protected Rss doInBackground(final String... strings) {
+    protected IViewRss doInBackground(final String... strings) {
         mRequestResult = new HttpRequestHandler()
                 .sendGet(mUrl);
 
@@ -41,17 +42,11 @@ public final class GetNewRssTask extends AsyncTask<String, Void, Rss> {
             return null;
         }
 
-        final Rss result = Rss.parse(mRequestResult.getResponseBody());
-
-        if (result != null) {
-            result.setUrl(mUrl);
-        }
-
-        return result;
+        return Rss.Parser.parse(mRequestResult.getResponseBody(), mUrl);
     }
 
     @Override
-    protected void onPostExecute(final Rss rss) {
+    protected void onPostExecute(final IViewRss rss) {
         mFeedViewState.startProgressBar(false);
 
         if (mRequestResult.getState() != IHttpRequestResult.State.Success) {

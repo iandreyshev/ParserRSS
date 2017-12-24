@@ -5,21 +5,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ru.iandreyshev.parserrss.TestUtils;
 
 import static org.junit.Assert.*;
 
-public class ParserTest {
-    private Parser mFeedParseExceptionParser;
-    private Parser mArticlesParseExceptionParser;
+public class RssParserTest {
+    private RssParseEngine mFeedParseExceptionParser;
+    private RssParseEngine mArticlesParseExceptionParser;
 
     @Before
     public void reset() {
-        mFeedParseExceptionParser = new Parser() {
+        mFeedParseExceptionParser = new RssParseEngine() {
             @Override
-            protected RssFeed parseFeed(Element root) throws Exception {
+            protected Rss.Builder parseRss(Element root) throws Exception {
                 throw new UnsupportedOperationException();
             }
 
@@ -30,9 +29,9 @@ public class ParserTest {
                 return null;
             }
         };
-        mArticlesParseExceptionParser = new Parser() {
+        mArticlesParseExceptionParser = new RssParseEngine() {
             @Override
-            protected RssFeed parseFeed(Element root) throws Exception {
+            protected Rss.Builder parseRss(Element root) throws Exception {
                 return null;
             }
 

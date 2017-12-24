@@ -10,12 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.Rss;
-import ru.iandreyshev.parserrss.models.rss.RssArticle;
-import ru.iandreyshev.parserrss.models.rss.RssFeed;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
 import ru.iandreyshev.parserrss.ui.activity.FeedActivity;
 import ru.iandreyshev.parserrss.ui.adapter.ArticlesListAdapter;
 import ru.iandreyshev.parserrss.ui.listeners.IOnUpdateRssListener;
@@ -23,17 +22,17 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnUpdateRssListener;
 public class FeedTabFragment extends Fragment {
     private static final String TAG = FeedTabFragment.class.getName();
     private static final String UPDATING_KEY = "UPDATING_KEY";
-    private static final String FEED_KEY = "FEED_KEY";
+    private static final String RSS_KEY = "RSS_KEY";
     private static final String ARTICLES_KEY = "ARTICLES_KEY";
 
-    private RssFeed mFeed;
+    private IViewRss mRss;
     private ArticlesListAdapter mListAdapter;
     private SwipeRefreshLayout mRefreshLayout;
 
-    public static FeedTabFragment newInstance(final Rss rss) {
+    public static FeedTabFragment newInstance(final IViewRss rss) {
         final FeedTabFragment fragment = new FeedTabFragment();
         final Bundle fragmentState = new Bundle();
-        fragmentState.putParcelable(FEED_KEY, rss.getFeed());
+        fragmentState.putSerializable(RSS_KEY, rss);
         fragmentState.putParcelableArrayList(ARTICLES_KEY, rss.getArticles());
         fragment.setArguments(fragmentState);
 
@@ -46,12 +45,12 @@ public class FeedTabFragment extends Fragment {
         }
     }
 
-    public void update(final List<RssArticle> newArticles) {
+    public void update(final ArrayList<IViewRssArticle> newArticles) {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstantState) {
-        mFeed = getArguments().getParcelable(FEED_KEY);
+        mRss = (IViewRss) getArguments().getSerializable(RSS_KEY);
         final View view = inflater.inflate(R.layout.feed_list, viewGroup, false);
 
         initListAdapter();
@@ -65,7 +64,7 @@ public class FeedTabFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(UPDATING_KEY, mRefreshLayout.isRefreshing());
-        outState.putParcelable(FEED_KEY, mFeed);
+        outState.putSerializable(RSS_KEY, mRss);
         outState.putParcelableArrayList(ARTICLES_KEY, mListAdapter.getArticles());
     }
 
@@ -83,7 +82,7 @@ public class FeedTabFragment extends Fragment {
         mRefreshLayout.setOnRefreshListener(() -> {
             final IOnUpdateRssListener listener = (FeedActivity) getContext();
             if (listener != null) {
-                listener.onUpdateRss(mFeed);
+                listener.onUpdateRss(mRss);
             }
         });
 

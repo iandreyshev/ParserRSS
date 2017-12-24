@@ -8,7 +8,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class Parser implements IRssParser {
+abstract class RssParseEngine {
     private static final String DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
     private static List<SAXBuilder> mDocBuilders = new ArrayList<>();
@@ -20,31 +20,31 @@ abstract class Parser implements IRssParser {
         mDocBuilders.add(new SAXBuilder());
     }
 
-    @Override
-    public final Rss parse(final String rss) {
+    public final Rss parse(final String rssText) {
         try {
-            final Document doc = toDocument(rss);
+            final Document doc = toDocument(rssText);
 
             if (doc == null) {
                 return null;
             }
 
             final Element root = doc.getRootElement();
-            final RssFeed feed = parseFeed(root);
-            final ArrayList<RssArticle> articles = parseArticles(root);
+            final Rss.Builder rssBuilder = parseRss(root);
 
-            if (feed == null || articles == null) {
+            if (rssBuilder == null) {
                 return null;
             }
 
-            return new Rss(feed, articles);
+            rssBuilder.setArticles(parseArticles(root));
+
+            return rssBuilder.build();
 
         } catch (Exception ex) {
             return null;
         }
     }
 
-    protected abstract RssFeed parseFeed(final Element root) throws Exception;
+    protected abstract Rss.Builder parseRss(final Element root) throws Exception;
 
     protected abstract ArrayList<RssArticle> parseArticles(final Element root) throws Exception;
 

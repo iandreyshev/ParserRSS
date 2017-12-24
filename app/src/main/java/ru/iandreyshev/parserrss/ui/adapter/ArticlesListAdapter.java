@@ -10,24 +10,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.RssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
     private static final String TAG = ArticlesListAdapter.class.getName();
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     private LayoutInflater mInflater;
     private IOnArticleClickListener mArticleClickListener;
-    private ArrayList<RssArticle> mArticles = new ArrayList<>();
+    private ArrayList<IViewRssArticle> mArticles = new ArrayList<>();
 
     public ArticlesListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -41,13 +38,13 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         return mArticleClickListener;
     }
 
-    public void setArticles(final ArrayList<RssArticle> newItems) {
+    public void setArticles(final ArrayList<IViewRssArticle> newItems) {
         mArticles = newItems;
         Log.e(TAG, Integer.toString(mArticles.size()));
         notifyDataSetChanged();
     }
 
-    public ArrayList<RssArticle> getArticles() {
+    public ArrayList<IViewRssArticle> getArticles() {
         return mArticles;
     }
 
@@ -60,7 +57,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final RssArticle article = mArticles.get(position);
+        final IViewRssArticle article = mArticles.get(position);
 
         if (article != null) {
             holder.setContent(article);
@@ -73,7 +70,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private RssArticle mContent;
+        private IViewRssArticle mContent;
         private TextView mTitle;
         private TextView mDescription;
         private TextView mDate;
@@ -96,7 +93,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             });
         }
 
-        void setContent(RssArticle content) {
+        void setContent(IViewRssArticle content) {
             this.mContent = content;
 
             mTitle.setText(Html.fromHtml(mContent.getTitle()));
@@ -113,8 +110,8 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         }
 
         void loadDate() {
-            if (mContent.getDate() != null) {
-                mDate.setText(DATE_FORMAT.format(mContent.getDate()));
+            if (mContent.getPostDate() != null) {
+                mDate.setText(DATE_FORMAT.format(mContent.getPostDate()));
             }
         }
     }
