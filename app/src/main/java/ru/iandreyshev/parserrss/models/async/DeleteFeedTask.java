@@ -6,9 +6,11 @@ import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
 public class DeleteFeedTask extends AsyncTask<IViewRss, Void, Void> {
-
     private IFeedView mFeedViewState;
     private IViewRss mRssToDelete;
+
+    private DeleteFeedTask() {
+    }
 
     public static void execute(final IFeedView feedView, final IViewRss feed) {
         final DeleteFeedTask task = new DeleteFeedTask();
@@ -31,8 +33,5 @@ public class DeleteFeedTask extends AsyncTask<IViewRss, Void, Void> {
     protected void onPostExecute(final Void result) {
         mFeedViewState.startProgressBar(false);
         mFeedViewState.removeRss(mRssToDelete);
-    }
-
-    private DeleteFeedTask() {
     }
 }

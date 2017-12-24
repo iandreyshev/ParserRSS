@@ -7,7 +7,7 @@ import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
-import ru.iandreyshev.parserrss.presentation.view.IFeedView;
+import ru.iandreyshev.parserrss.presentation.presenter.IFeedViewHost;
 
 public class UpdateRssTask extends AsyncTask<IViewRss, Void, IViewRss> {
     private static final String TAG = UpdateRssTask.class.getName();
@@ -18,19 +18,22 @@ public class UpdateRssTask extends AsyncTask<IViewRss, Void, IViewRss> {
     private static final String INVALID_RSS_FORMAT = "Invalid rss format";
 
     private IHttpRequestResult mRequestResult;
-    private IFeedView mFeedViewState;
+    private IFeedViewHost mViewHost;
     private IViewRss mRss;
 
-    public static void execute(final IFeedView feedView, final IViewRss rssToUpdate) {
+    private UpdateRssTask() {
+    }
+
+    public static void execute(final IFeedViewHost viewHost, final IViewRss rssToUpdate) {
         final UpdateRssTask task = new UpdateRssTask();
         task.mRss = rssToUpdate;
-        task.mFeedViewState = feedView;
+        task.mViewHost = viewHost;
         task.execute();
     }
 
     @Override
     protected void onPreExecute() {
-        mFeedViewState.startUpdate(mRss, true);
+        mViewHost.getViewState().startUpdate(mRss, true);
     }
 
     @Override
@@ -42,48 +45,43 @@ public class UpdateRssTask extends AsyncTask<IViewRss, Void, IViewRss> {
             return null;
         }
 
-        return Rss.Parser.parse(mRequestResult.getResponseBody(), mRss.getUrl());
+        return Rss.Parser.parse(mRequestResult.getResponseBody());
     }
 
     @Override
     public void onPostExecute(final IViewRss rss) {
-        Log.e(TAG, "End update");
-        Log.e(TAG, "Handler state " + mRequestResult.getState());
-        mFeedViewState.startUpdate(mRss, false);
+        mViewHost.getViewState().startUpdate(mRss, false);
 
         if (mRequestResult.getState() != IHttpRequestResult.State.Success) {
             handleWebError();
         } else if (rss == null) {
-            mFeedViewState.showShortToast(INVALID_RSS_FORMAT);
+            mViewHost.getViewState().showShortToast(INVALID_RSS_FORMAT);
         } else {
-            mFeedViewState.updateArticles(rss);
+            mViewHost.getViewState().updateArticles(rss);
         }
-    }
-
-    private UpdateRssTask() {
     }
 
     private void handleWebError() {
         switch (mRequestResult.getState()) {
             case NotSend:
-                mFeedViewState.showShortToast(REQUEST_NOT_SEND);
-                mFeedViewState.startProgressBar(false);
+                mViewHost.getViewState().showShortToast(REQUEST_NOT_SEND);
+                mViewHost.getViewState().startProgressBar(false);
                 Log.e(TAG, REQUEST_NOT_SEND);
                 break;
 
             case BadUrl:
-                mFeedViewState.showShortToast(BAD_URL);
-                mFeedViewState.startProgressBar(false);
+                mViewHost.getViewState().showShortToast(BAD_URL);
+                mViewHost.getViewState().startProgressBar(false);
                 break;
 
             case BadConnection:
-                mFeedViewState.showShortToast(BAD_CONNECTION);
-                mFeedViewState.startProgressBar(false);
+                mViewHost.getViewState().showShortToast(BAD_CONNECTION);
+                mViewHost.getViewState().startProgressBar(false);
                 break;
 
             case PermissionDenied:
-                mFeedViewState.showShortToast(NET_PERMISSION_DENIED);
-                mFeedViewState.startProgressBar(false);
+                mViewHost.getViewState().showShortToast(NET_PERMISSION_DENIED);
+                mViewHost.getViewState().startProgressBar(false);
                 break;
         }
     }

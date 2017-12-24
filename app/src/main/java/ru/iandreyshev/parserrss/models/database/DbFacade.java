@@ -1,44 +1,75 @@
 package ru.iandreyshev.parserrss.models.database;
 
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import io.objectbox.Box;
-import io.objectbox.BoxStore;
+import io.objectbox.exception.DbException;
 import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.rss.RssArticle;
+import ru.iandreyshev.parserrss.models.rss.RssArticle_;
 import ru.iandreyshev.parserrss.models.rss.Rss_;
 
 public class DbFacade {
-    private static final int NOT_PUT = -1;
+    private static final String TAG = DbFacade.class.getName();
+    private static final String BOX_NOT_FOUND_PATTERN = "Box for class %s not found";
+    private static final int MIN_INDEX = 1;
 
-    private BoxStore mBoxStore = App.getBoxStore();
-    private Box<Rss> mRssBox = mBoxStore.boxFor(Rss.class);
-    private Box<RssArticle> mArticleBox = mBoxStore.boxFor(RssArticle.class);
+    private Box<Rss> mRssBox;
+    private Box<RssArticle> mArticleBox;
 
-    public Long getRssId(final String url) {
-        final List<Rss> rssWithSameUrl = mRssBox.find(Rss_.mUrl, url);
-
-        if (rssWithSameUrl.isEmpty()) {
-            return null;
+    public DbFacade() throws DbException {
+        if (App.getBoxStore() == null) {
+            throw new DbException("Box-store in " + App.class.getName() + " is null");
         }
 
-        return rssWithSameUrl.get(0).getId();
+        mRssBox = App.getBoxStore().boxFor(Rss.class);
+        mArticleBox = App.getBoxStore().boxFor(RssArticle.class);
     }
 
-    public long putRss(final Rss rss) {
+    public boolean isRssExist(final String url) {
+        return !mRssBox.find(Rss_.mUrl, url).isEmpty();
+    }
+
+    public boolean putRssIfNotExist(final Rss rss) throws Exception {
         final List<Rss> rssWithSameUrl = mRssBox.find(Rss_.mUrl, rss.getUrl());
 
         if (!rssWithSameUrl.isEmpty()) {
-            return NOT_PUT;
+            return false;
         }
 
-        long id = mRssBox.put(rss);
+        mRssBox.put(rss);
 
-        return id > 0 ? id : NOT_PUT;
+        return true;
     }
 
-    public List<Rss> getAllRss() {
-        return mRssBox.getAll();
+    @NonNull
+    public List<RssArticle> getArticles(final Rss rss) throws Exception {
+        return mArticleBox.query()
+                .equal(RssArticle_.mRssId, rss.getId())
+                .build()
+                .find();
+    }
+
+    @NonNull
+    public List<Rss> getAllRss() throws Exception {
+        final List<Rss> result = mRssBox.getAll();
+
+        return result == null ? new ArrayList<>() : result;
+    }
+
+    public void saveArticles(final Rss rss, final List<RssArticle> articles) {
+        mArticleBox.query()
+                .equal(RssArticle_.mRssId, rss.getId())
+                .build()
+                .remove();
+
+        for (final RssArticle article : articles) {
+            article.setRssId(rss.getId());
+            mArticleBox.put(article);
+        }
     }
 }

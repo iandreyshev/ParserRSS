@@ -2,33 +2,32 @@ package ru.iandreyshev.parserrss.models.rss;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import java.util.Date;
+
+import javax.annotation.Nullable;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
-import io.objectbox.annotation.NameInDb;
 import io.objectbox.annotation.Transient;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
 public class RssArticle implements IViewRssArticle {
     @Id
-    @NameInDb("id_rss_article")
     long mId;
     @Index
-    @NameInDb("id_rss")
     Long mRssId;
-    @NameInDb("title")
     String mTitle;
-    @NameInDb("origin_url")
+    @Nullable
     String mOriginUrl;
-    @NameInDb("description")
+    @Nullable
     String mDescription;
-    @NameInDb("image_url")
+    @Nullable
     String mImageUrl;
-    @NameInDb("post_date")
+    @Nullable
     Long mPostDate;
 
     @Transient
@@ -96,6 +95,10 @@ public class RssArticle implements IViewRssArticle {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public void setRssId(long id) {
+        mRssId = id;
     }
 
     @Override

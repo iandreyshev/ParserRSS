@@ -3,32 +3,32 @@ package ru.iandreyshev.parserrss.models.rss;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
-import io.objectbox.annotation.NameInDb;
 import io.objectbox.annotation.Transient;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
 public class Rss implements IViewRss {
     @Id
-    @NameInDb("id_rss")
     long mId;
-    @Index
-    @NameInDb("url")
-    String mUrl;
-    @NameInDb("origin")
-    String mOrigin;
-    @NameInDb("title")
+
     String mTitle;
-    @NameInDb("description")
+    @Index
+    @Nullable
+    String mUrl;
+    @Nullable
+    String mOrigin;
+    @Nullable
     String mDescription;
 
     @Transient
-    ArrayList<RssArticle> mRssArticles;
+    ArrayList<RssArticle> mRssArticles = new ArrayList<>();
     @Transient
-    ArrayList<IViewRssArticle> mArticles;
+    ArrayList<IViewRssArticle> mArticles = new ArrayList<>();
 
     private Rss() {
     }
@@ -67,6 +67,15 @@ public class Rss implements IViewRss {
         return mRssArticles;
     }
 
+    public void setArticles(final List<RssArticle> articles) {
+        mArticles = new ArrayList<>(articles);
+        mRssArticles = new ArrayList<>(articles);
+    }
+
+    public void setUrl(final String url) {
+        mUrl = url;
+    }
+
     @Override
     public boolean equals(Object other) {
         return (other instanceof Rss) && ((Rss) other).getUrl().equals(mUrl);
@@ -79,21 +88,19 @@ public class Rss implements IViewRss {
             mParsers.add(new RssParserV2());
         }
 
-        public static Rss parse(final byte[] rssBytes, final String url) {
+        public static Rss parse(final byte[] rssBytes) {
             if (rssBytes == null) {
                 return null;
             }
 
-            return parse(new String(rssBytes), url);
+            return parse(new String(rssBytes));
         }
 
-        public static Rss parse(final String rssText, final String url) {
+        public static Rss parse(final String rssText) {
             for (final RssParseEngine parser : mParsers) {
                 final Rss rss = parser.parse(rssText);
 
                 if (rss != null) {
-                    rss.mUrl = url;
-
                     return rss;
                 }
             }
@@ -115,14 +122,13 @@ public class Rss implements IViewRss {
         }
 
         public Builder setUrl(final String url) {
-            mRss.mUrl = url;
+            mRss.setUrl(url);
 
             return this;
         }
 
         public Builder setArticles(final List<RssArticle> articles) {
-            mRss.mArticles = new ArrayList<>(articles);
-            mRss.mRssArticles = new ArrayList<>(articles);
+            mRss.setArticles(articles);
 
             return this;
         }

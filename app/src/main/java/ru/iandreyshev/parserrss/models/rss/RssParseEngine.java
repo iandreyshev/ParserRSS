@@ -35,7 +35,8 @@ abstract class RssParseEngine {
                 return null;
             }
 
-            rssBuilder.setArticles(parseArticles(root));
+            final ArrayList<RssArticle> articles = parseArticles(root);
+            rssBuilder.setArticles(articles == null ? new ArrayList<>() : articles);
 
             return rssBuilder.build();
 

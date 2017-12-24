@@ -91,6 +91,7 @@ public class FeedActivity extends BaseActivity
     @Override
     public void startProgressBar(boolean isStart) {
         mProgressBar.setVisibility(isStart ? View.VISIBLE : View.GONE);
+        updateMenuState();
     }
 
     @Override
