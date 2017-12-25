@@ -1,74 +1,64 @@
 package ru.iandreyshev.parserrss.models.async;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.database.DbFacade;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
-import ru.iandreyshev.parserrss.presentation.presenter.IFeedViewHost;
 
-public class GetRssFromDbTask extends AsyncTask<Void, Void, ArrayList<IViewRss>> {
+public class GetRssFromDbTask extends Task<Void, Void, ArrayList<IViewRss>> {
     private static final String TAG = GetRssFromDbTask.class.getName();
-    private static final String LOADING_ERROR = "Loading error";
 
-    private IFeedViewHost mViewHost;
+    private final DbFacade mDatabase = new DbFacade();
+    private final ArrayList<IViewRss> mResult = new ArrayList<>();
+    private IEventListener mListener;
+    private IEvent mResultEvent;
 
     private GetRssFromDbTask() {
     }
 
-    public static void execute(final IFeedViewHost viewHost) {
+    public static void execute(final IEventListener listener) {
         final GetRssFromDbTask task = new GetRssFromDbTask();
-        task.mViewHost = viewHost;
+        task.setTaskListener(listener);
+        task.mListener = listener;
         task.execute();
     }
 
     @Override
-    protected void onPreExecute() {
-        mViewHost.getViewState().startProgressBar(true);
-    }
-
-    @Override
     protected ArrayList<IViewRss> doInBackground(Void... voids) {
-        final ArrayList<IViewRss> result = new ArrayList<>();
-
         try {
-            final DbFacade dbFacade = new DbFacade();
-            final List<Rss> rssFromDb = dbFacade.getAllRss();
+            final List<Rss> rssFromDb = mDatabase.getAllRss();
 
             for (final Rss rss : rssFromDb) {
-                rss.setArticles(dbFacade.getArticles(rss));
-                result.add(rss);
+                rss.setArticles(mDatabase.getArticles(rss));
+                mResult.add(rss);
             }
+
+            mResultEvent = () -> mListener.onSuccess(mResult);
 
         } catch (Exception ex) {
             Log.e(TAG, Log.getStackTraceString(ex));
+            mResultEvent = () -> mListener.onLoadError();
 
             return null;
         }
 
-        return result;
+        return mResult;
     }
 
     @Override
     protected void onPostExecute(ArrayList<IViewRss> result) {
-        mViewHost.getViewState().startProgressBar(false);
-
-        if (result == null) {
-            handleDbError();
-
-            return;
-        }
-
-        for (final IViewRss rss : result) {
-            mViewHost.getViewState().insertRss(rss);
-        }
+        super.onPostExecute(result);
+        mResultEvent.doEvent();
     }
 
-    private void handleDbError() {
-        mViewHost.getViewState().showShortToast(LOADING_ERROR);
+    public interface IEventListener extends ITaskListener<ArrayList<IViewRss>> {
+        void onLoadError();
+
+        void onSuccess(final ArrayList<IViewRss> rssFromDb);
     }
 }

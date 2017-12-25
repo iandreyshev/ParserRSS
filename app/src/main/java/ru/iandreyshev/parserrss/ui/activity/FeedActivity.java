@@ -30,6 +30,8 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnUpdateRssListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import java.util.ArrayList;
+
 public class FeedActivity extends BaseActivity
         implements IFeedView, IOnArticleClickListener, IOnSubmitAddRssListener, IOnUpdateRssListener {
     private static final String TAG = FeedActivity.class.getName();
@@ -47,9 +49,9 @@ public class FeedActivity extends BaseActivity
     ViewPager mPager;
 
     private FeedTabsAdapter mTabsAdapter;
-    private MenuItem mAddMenuItem;
-    private MenuItem mInfoMenuItem;
-    private MenuItem mDeleteMenuItem;
+    private MenuItem mMenuAddButton;
+    private MenuItem mMenuInfoButton;
+    private MenuItem mMenuDeleteButton;
 
     public static Intent getIntent(final Context context) {
         return new Intent(context, FeedActivity.class);
@@ -59,19 +61,16 @@ public class FeedActivity extends BaseActivity
     public void insertRss(final IViewRss rss) {
         mTabsAdapter.insert(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
-        updateMenuState();
     }
 
     @Override
     public void updateArticles(final IViewRss rss) {
         mTabsAdapter.update(rss);
-        updateMenuState();
     }
 
     @Override
     public void removeRss(final IViewRss rss) {
         mTabsAdapter.remove(rss);
-        updateMenuState();
     }
 
     @Override
@@ -91,11 +90,31 @@ public class FeedActivity extends BaseActivity
     @Override
     public void startProgressBar(boolean isStart) {
         mProgressBar.setVisibility(isStart ? View.VISIBLE : View.GONE);
-        updateMenuState();
     }
 
     @Override
     public void startUpdate(final IViewRss rss, boolean isStart) {
+    }
+
+    @Override
+    public void enableAddingButton(boolean isEnable) {
+        if (mMenuAddButton != null) {
+            mMenuAddButton.setEnabled(isEnable);
+        }
+    }
+
+    @Override
+    public void enableDeleteButton(boolean isEnable) {
+        if (mMenuDeleteButton != null) {
+            mMenuDeleteButton.setEnabled(isEnable);
+        }
+    }
+
+    @Override
+    public void enableInfoButton(boolean isEnable) {
+        if (mMenuInfoButton != null) {
+            mMenuInfoButton.setEnabled(isEnable);
+        }
     }
 
     @Override
@@ -105,13 +124,21 @@ public class FeedActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.feed_options_menu, menu);
-        mAddMenuItem = menu.findItem(R.id.feed_options_add);
-        mInfoMenuItem = menu.findItem(R.id.feed_options_info);
-        mDeleteMenuItem = menu.findItem(R.id.feed_options_delete);
-
-        updateMenuState();
+        mMenuAddButton = menu.findItem(R.id.feed_options_add);
+        mMenuInfoButton = menu.findItem(R.id.feed_options_info);
+        mMenuDeleteButton = menu.findItem(R.id.feed_options_delete);
 
         return true;
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        boolean isMenuOpened = super.onMenuOpened(featureId, menu);
+
+        mMenuInfoButton.setEnabled(mTabsAdapter.getCount() > 0);
+        mMenuDeleteButton.setEnabled(mTabsAdapter.getCount() > 0);
+
+        return isMenuOpened;
     }
 
     @Override
@@ -140,25 +167,13 @@ public class FeedActivity extends BaseActivity
 
     @Override
     public void onSubmitAddRss(final String url) {
-        mFeedPresenter.onSubmitInsertRss(url);
+        mFeedPresenter.onInsertRss(url);
     }
 
     @Override
     public void onUpdateRss(final IViewRss rss) {
         Log.e(TAG, rss.getUrl());
         mFeedPresenter.onUpdateRss(rss);
-    }
-
-    public void updateMenuState() {
-        if (mAddMenuItem != null) {
-            mAddMenuItem.setEnabled(mProgressBar.getVisibility() != View.VISIBLE);
-        }
-        if (mInfoMenuItem != null) {
-            mInfoMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
-        }
-        if (mDeleteMenuItem != null) {
-            mDeleteMenuItem.setEnabled(mTabsAdapter.getCount() > 0);
-        }
     }
 
     @Override
@@ -171,6 +186,8 @@ public class FeedActivity extends BaseActivity
 
         initToolbar();
         initTabsView();
+
+        Log.e(TAG, "End create");
     }
 
     private void initToolbar() {

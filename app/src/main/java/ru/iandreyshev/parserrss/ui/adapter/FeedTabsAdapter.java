@@ -13,12 +13,10 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     private static final String CUT_TITLE_PATTERN = "%s...";
     private static final int MAX_TITLE_LENGTH = 16;
 
-    private FragmentManager mFragmentManager;
     private ArrayList<IViewRss> mRssList = new ArrayList<>();
 
     public FeedTabsAdapter(final FragmentManager manager) {
         super(manager);
-        mFragmentManager = manager;
     }
 
     public void insert(final IViewRss rss) {
@@ -27,21 +25,6 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     }
 
     public void update(final IViewRss rss) {
-        int position = getItemPosition(rss);
-
-        if (position < 0) {
-            return;
-        }
-
-        final FeedTabFragment fragment = (FeedTabFragment) getRegisteredFragment(position);
-
-        if (fragment != null) {
-            fragment.update(rss.getArticles());
-
-            return;
-        }
-
-        mRssList.set(position, rss);
     }
 
     public void remove(final IViewRss rss) {
@@ -49,12 +32,6 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
 
         if (position < 0) {
             return;
-        }
-
-        if (getRegisteredFragment(position) != null) {
-            mFragmentManager.beginTransaction()
-                    .detach(getRegisteredFragment(position))
-                    .commit();
         }
 
         mRssList.remove(position);
@@ -93,10 +70,6 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(Object item) {
-        if (item instanceof IViewRss) {
-            return mRssList.indexOf(item);
-        }
-
-        return super.getItemPosition(item);
+        return POSITION_NONE;
     }
 }

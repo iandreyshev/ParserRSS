@@ -1,52 +1,40 @@
 package ru.iandreyshev.parserrss.models.async;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
+import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.database.DbFacade;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
-import ru.iandreyshev.parserrss.presentation.presenter.IFeedViewHost;
 
-public final class GetRssFromNetTask extends AsyncTask<String, Void, IViewRss> {
+public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     private static final String TAG = GetRssFromNetTask.class.getName();
-    private static final String REQUEST_NOT_SEND = "The request was not send";
-    private static final String BAD_CONNECTION = "Connection error";
-    private static final String BAD_URL = "Invalid url";
-    private static final String NET_PERMISSION_DENIED = "Internet permission denied";
-    private static final String INVALID_RSS_FORMAT = "Invalid rss format";
-    private static final String DATABASE_ERROR = "Saving error";
-    private static final String DUPLICATE_ERROR = "Rss already exist";
 
-    private IHttpRequestResult mRequestResult;
-    private IFeedViewHost mViewHost;
+    private final DbFacade mDatabase = new DbFacade();
+    private IHttpRequestResult mNetRequestResult;
+    private IEventListener mListener;
+    private IEvent mResultEvent;
     private String mUrl;
     private Rss mRss;
-    private IResultEvent mResultEvent;
-    private final DbFacade mDbFacade = new DbFacade();
 
     private GetRssFromNetTask() {
     }
 
-    public static void execute(final IFeedViewHost viewHost, final String url) {
+    public static void execute(final IEventListener listener, final String url) {
         final GetRssFromNetTask task = new GetRssFromNetTask();
-        task.mViewHost = viewHost;
+        task.setTaskListener(listener);
+        task.mListener = listener;
         task.mUrl = url;
         task.execute();
-    }
-
-    @Override
-    protected void onPreExecute() {
-        mViewHost.getViewState().startProgressBar(true);
     }
 
     @Override
     protected IViewRss doInBackground(final String... strings) {
         if (isRssExist()) {
             return null;
-        } else if (!getRssFromWeb()) {
+        } else if (!getRssFromNet()) {
             return null;
         } else if (!parseRss()) {
             return null;
@@ -54,23 +42,27 @@ public final class GetRssFromNetTask extends AsyncTask<String, Void, IViewRss> {
             return null;
         }
 
-        mResultEvent = () -> mViewHost.getViewState().insertRss(mRss);
+        mResultEvent = () -> mListener.onSuccess(mRss);
 
         return mRss;
     }
 
     @Override
     protected void onPostExecute(final IViewRss rss) {
-        mViewHost.getViewState().startProgressBar(false);
-
-        if (mResultEvent != null) {
-            mResultEvent.doEvent();
-        }
+        super.onPostExecute(rss);
+        mResultEvent.doEvent();
     }
 
     private boolean isRssExist() {
-        if (mDbFacade.isRssExist(mUrl)) {
-            mResultEvent = this::handleDuplicationError;
+        try {
+            if (mDatabase.getRssCount(mUrl) > 0) {
+                mResultEvent = () -> mListener.onDuplicateRss();
+
+                return true;
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, Log.getStackTraceString(ex));
+            mResultEvent = () -> mListener.onDbError();
 
             return true;
         }
@@ -78,11 +70,11 @@ public final class GetRssFromNetTask extends AsyncTask<String, Void, IViewRss> {
         return false;
     }
 
-    private boolean getRssFromWeb() {
-        mRequestResult = new HttpRequestHandler().sendGet(mUrl);
+    private boolean getRssFromNet() {
+        mNetRequestResult = new HttpRequestHandler().sendGet(mUrl);
 
-        if (mRequestResult.getState() != HttpRequestHandler.State.Success) {
-            mResultEvent = this::handleWebError;
+        if (mNetRequestResult.getState() != HttpRequestHandler.State.Success) {
+            mResultEvent = () -> mListener.onNetError(mNetRequestResult);
 
             return false;
         }
@@ -91,13 +83,12 @@ public final class GetRssFromNetTask extends AsyncTask<String, Void, IViewRss> {
     }
 
     private boolean parseRss() {
-        mRss = Rss.Parser.parse(mRequestResult.getResponseBody());
+        mRss = Rss.Parser.parse(mNetRequestResult.getResponseBody());
 
         if (mRss == null) {
-            mResultEvent = this::handleParseError;
-
             return false;
         }
+
         mRss.setUrl(mUrl);
 
         return true;
@@ -105,17 +96,17 @@ public final class GetRssFromNetTask extends AsyncTask<String, Void, IViewRss> {
 
     private boolean saveRssToDatabase() {
         try {
-            if (!mDbFacade.putRssIfNotExist(mRss)) {
-                mResultEvent = this::handleDuplicationError;
+            if (!mDatabase.putRssIfNotExist(mRss)) {
+                mResultEvent = () -> mListener.onDuplicateRss();
 
                 return false;
             }
 
-            mDbFacade.saveArticles(mRss, mRss.getRssArticles());
+            mDatabase.putArticles(mRss, mRss.getRssArticles());
 
         } catch (Exception ex) {
             Log.e(TAG, Log.getStackTraceString(ex));
-            mResultEvent = this::handleSavingError;
+            mResultEvent = () -> mListener.onDbError();
 
             return false;
         }
@@ -123,45 +114,15 @@ public final class GetRssFromNetTask extends AsyncTask<String, Void, IViewRss> {
         return true;
     }
 
-    private void handleWebError() {
-        switch (mRequestResult.getState()) {
-            case NotSend:
-                mViewHost.getViewState().showShortToast(REQUEST_NOT_SEND);
-                mViewHost.getViewState().startProgressBar(false);
-                Log.e(TAG, REQUEST_NOT_SEND);
-                break;
+    public interface IEventListener extends ITaskListener<IViewRss> {
+        void onNetError(final IHttpRequestResult requestResult);
 
-            case BadUrl:
-                mViewHost.getViewState().showShortToast(BAD_URL);
-                mViewHost.getViewState().startProgressBar(false);
-                break;
+        void onParsingError();
 
-            case BadConnection:
-                mViewHost.getViewState().showShortToast(BAD_CONNECTION);
-                mViewHost.getViewState().startProgressBar(false);
-                break;
+        void onDbError();
 
-            case PermissionDenied:
-                mViewHost.getViewState().showShortToast(NET_PERMISSION_DENIED);
-                mViewHost.getViewState().startProgressBar(false);
-                break;
-        }
-    }
+        void onDuplicateRss();
 
-    private void handleParseError() {
-        mViewHost.getViewState().showShortToast(INVALID_RSS_FORMAT);
-    }
-
-    private void handleSavingError() {
-        mViewHost.getViewState().showShortToast(DATABASE_ERROR);
-    }
-
-    private void handleDuplicationError() {
-        mViewHost.getViewState().showShortToast(DUPLICATE_ERROR);
-        mViewHost.getViewState().openAddingRssDialog();
-    }
-
-    private interface IResultEvent {
-        void doEvent();
+        void onSuccess(final IViewRss rss);
     }
 }
