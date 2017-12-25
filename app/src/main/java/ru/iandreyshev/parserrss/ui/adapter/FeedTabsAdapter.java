@@ -13,7 +13,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     private static final String CUT_TITLE_PATTERN = "%s...";
     private static final int MAX_TITLE_LENGTH = 16;
 
-    private ArrayList<IViewRss> mRssList = new ArrayList<>();
+    private final ArrayList<IViewRss> mRssList = new ArrayList<>();
 
     public FeedTabsAdapter(final FragmentManager manager) {
         super(manager);
@@ -25,6 +25,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     }
 
     public void update(final IViewRss rss) {
+        // TODO: Rss articles updating
     }
 
     public void remove(final IViewRss rss) {

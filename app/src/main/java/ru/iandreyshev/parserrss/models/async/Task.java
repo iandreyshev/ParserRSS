@@ -7,7 +7,7 @@ abstract class Task<T, U, V> extends AsyncTask<T, U, V> {
     private ITaskListener<V> mListener;
 
     @CallSuper
-    public void setTaskListener(final ITaskListener<V> listener) {
+    void setTaskListener(final ITaskListener<V> listener) {
         mListener = listener;
     }
 

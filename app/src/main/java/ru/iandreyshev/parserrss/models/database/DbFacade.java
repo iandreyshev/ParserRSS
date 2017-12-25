@@ -15,10 +15,8 @@ import ru.iandreyshev.parserrss.models.rss.Rss_;
 
 public class DbFacade {
     private static final String TAG = DbFacade.class.getName();
-    private static final String BOX_NOT_FOUND_PATTERN = "Box for class %s not found";
-    private static final int MIN_INDEX = 1;
 
-    private BoxStore mBoxStore = App.getBoxStore();
+    private final BoxStore mBoxStore = App.getBoxStore();
     private Box<Rss> mRssBox;
     private Box<RssArticle> mArticleBox;
 

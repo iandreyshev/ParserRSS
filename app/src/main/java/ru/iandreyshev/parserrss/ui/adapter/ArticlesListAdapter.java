@@ -3,7 +3,6 @@ package ru.iandreyshev.parserrss.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +21,9 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
     private static final String TAG = ArticlesListAdapter.class.getName();
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
+    private final ArrayList<IViewRssArticle> mArticles = new ArrayList<>();
     private IOnArticleClickListener mArticleClickListener;
-    private ArrayList<IViewRssArticle> mArticles = new ArrayList<>();
 
     public ArticlesListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -34,13 +33,8 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         mArticleClickListener = listener;
     }
 
-    public IOnArticleClickListener getArticleClickListener() {
-        return mArticleClickListener;
-    }
-
     public void setArticles(final ArrayList<IViewRssArticle> newItems) {
-        mArticles = newItems;
-        Log.e(TAG, Integer.toString(mArticles.size()));
+        mArticles.addAll(newItems);
         notifyDataSetChanged();
     }
 
@@ -71,11 +65,11 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private IViewRssArticle mContent;
-        private TextView mTitle;
-        private TextView mDescription;
-        private TextView mDate;
-        private ImageView mImage;
-        private IOnArticleClickListener mClickListener;
+        private final TextView mTitle;
+        private final TextView mDescription;
+        private final TextView mDate;
+        private final ImageView mImage;
+        private final IOnArticleClickListener mClickListener;
 
         ViewHolder(View view, IOnArticleClickListener clickListener) {
             super(view);

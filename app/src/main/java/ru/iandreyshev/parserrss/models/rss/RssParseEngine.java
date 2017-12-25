@@ -9,15 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 abstract class RssParseEngine {
-    private static final String DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
-
-    private static List<SAXBuilder> mDocBuilders = new ArrayList<>();
+    private static final String DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonValidating/load-external-dtd";
+    private static final List<SAXBuilder> DOC_BUILDERS = new ArrayList<>();
 
     static {
         final SAXBuilder withoutDtdBuilder = new SAXBuilder();
         withoutDtdBuilder.setFeature(DISABLE_DTD_FEATURE, false);
-        mDocBuilders.add(withoutDtdBuilder);
-        mDocBuilders.add(new SAXBuilder());
+        DOC_BUILDERS.add(withoutDtdBuilder);
+        DOC_BUILDERS.add(new SAXBuilder());
     }
 
     public final Rss parse(final String rssText) {
@@ -50,7 +49,7 @@ abstract class RssParseEngine {
     protected abstract ArrayList<RssArticle> parseArticles(final Element root) throws Exception;
 
     private static Document toDocument(final String xmlText) {
-        for (final SAXBuilder builder : mDocBuilders) {
+        for (final SAXBuilder builder : DOC_BUILDERS) {
             final Document result;
 
             try {

@@ -93,10 +93,14 @@ public class UpdateRssFromNetTask extends Task<IViewRss, Void, IViewRss> {
     }
 
     private boolean parseRss() {
+        // TODO: Parsing rss
+
         return false;
     }
 
     private boolean updateArticlesInRss() {
+        // TODO: Update articles in database
+
         return false;
     }
 

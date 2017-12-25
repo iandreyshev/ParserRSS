@@ -27,9 +27,9 @@ import java.util.Locale;
 
 public class ArticleActivity extends BaseActivity implements IArticleView {
     public static final String ARTICLE_BOUND_KEY = "Article_to_open";
-    public static final String TOOLBAR_TITLE = "Article";
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
-    public static final String TAG = "ArticleActivity";
+    private static final String TOOLBAR_TITLE = "Article";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
+    private static final String TAG = "ArticleActivity";
 
     @InjectPresenter
     ArticlePresenter mArticlePresenter;
@@ -112,6 +112,11 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     private void initToolbar() {
         try {
             setSupportActionBar(mToolbar);
+
+            if (getSupportActionBar() == null) {
+                return;
+            }
+
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setTitle(TOOLBAR_TITLE);
@@ -121,7 +126,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         }
     }
 
-    public void setViewVisible(View view, boolean isVisible) {
+    private void setViewVisible(View view, boolean isVisible) {
         view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 }

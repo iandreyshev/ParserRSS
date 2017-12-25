@@ -8,10 +8,7 @@ import com.arellomobile.mvp.MvpPresenter;
 
 @InjectViewState
 public class ArticlePresenter extends MvpPresenter<IArticleView> {
-    public void onBackButtonClick() {
-        getViewState().openFeed();
-    }
-
     public void onErrorLoadArticle() {
+        // TODO: Create redirect to feed with message
     }
 }

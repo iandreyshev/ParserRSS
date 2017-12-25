@@ -9,8 +9,8 @@ import io.objectbox.android.BuildConfig;
 import ru.iandreyshev.parserrss.models.rss.MyObjectBox;
 
 public class App extends Application {
-    public static final String TAG = App.class.getName();
-    public static final String START_MESSAGE_PATTERN = "Using ObjectBox %s (%s)";
+    private static final String TAG = App.class.getName();
+    private static final String START_MESSAGE_PATTERN = "Using ObjectBox %s (%s)";
 
     private static BoxStore mBoxStore;
 

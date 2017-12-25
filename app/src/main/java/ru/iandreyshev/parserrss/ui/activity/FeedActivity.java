@@ -30,8 +30,6 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnUpdateRssListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.ArrayList;
-
 public class FeedActivity extends BaseActivity
         implements IFeedView, IOnArticleClickListener, IOnSubmitAddRssListener, IOnUpdateRssListener {
     private static final String TAG = FeedActivity.class.getName();

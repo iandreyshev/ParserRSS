@@ -26,9 +26,9 @@ public class Rss implements IViewRss {
     String mDescription;
 
     @Transient
-    ArrayList<RssArticle> mRssArticles = new ArrayList<>();
+    private ArrayList<RssArticle> mRssArticles = new ArrayList<>();
     @Transient
-    ArrayList<IViewRssArticle> mArticles = new ArrayList<>();
+    private ArrayList<IViewRssArticle> mArticles = new ArrayList<>();
 
     private Rss() {
     }
@@ -110,7 +110,7 @@ public class Rss implements IViewRss {
     }
 
     static class Builder implements IBuilder<Rss> {
-        private Rss mRss = new Rss();
+        private final Rss mRss = new Rss();
 
         Builder(final String rssTitle) {
             mRss.mTitle = rssTitle;

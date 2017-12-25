@@ -3,7 +3,7 @@ package ru.iandreyshev.parserrss.models.web;
 import okhttp3.HttpUrl;
 
 public class Url {
-    private HttpUrl mInstance;
+    private final HttpUrl mInstance;
 
     public static Url parse(final String url) {
         if (url == null) {

@@ -46,6 +46,7 @@ public class FeedTabFragment extends Fragment {
     }
 
     public void update(final ArrayList<IViewRssArticle> newArticles) {
+        // TODO: Rss articles updating
     }
 
     @Override

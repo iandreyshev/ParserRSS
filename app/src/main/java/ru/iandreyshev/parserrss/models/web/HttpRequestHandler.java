@@ -15,7 +15,7 @@ public class HttpRequestHandler implements IHttpRequestResult {
     private static final int CONNECTION_TIMEOUT_SEC = 1;
     private static final int WRITE_TIMEOUT_SEC = 1;
 
-    private OkHttpClient mClient = new OkHttpClient.Builder()
+    private final OkHttpClient mClient = new OkHttpClient.Builder()
             .readTimeout(READ_TIMEOUT_SEC, TimeUnit.SECONDS)
             .connectTimeout(CONNECTION_TIMEOUT_SEC, TimeUnit.SECONDS)
             .writeTimeout(WRITE_TIMEOUT_SEC, TimeUnit.SECONDS)

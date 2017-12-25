@@ -2,7 +2,6 @@ package ru.iandreyshev.parserrss.models.rss;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
 import java.util.Date;
 
@@ -16,6 +15,9 @@ import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
 public class RssArticle implements IViewRssArticle {
+    private static final String TAG = RssArticle.class.getName();
+    private static final Long NULL_DATE = -1L;
+
     @Id
     long mId;
     @Index
@@ -31,7 +33,7 @@ public class RssArticle implements IViewRssArticle {
     Long mPostDate;
 
     @Transient
-    Bitmap mImage;
+    private Bitmap mImage;
 
     private RssArticle() {
     }
@@ -42,7 +44,9 @@ public class RssArticle implements IViewRssArticle {
         mDescription = in.readString();
         mImage = in.readParcelable(Bitmap.class.getClassLoader());
         mImageUrl = in.readString();
-        mPostDate = in.readLong();
+
+        final Long postDate = in.readLong();
+        mPostDate = (postDate.equals(NULL_DATE)) ? null : postDate;
     }
 
     public static final Creator<RssArticle> CREATOR = new Creator<RssArticle>() {
@@ -108,7 +112,7 @@ public class RssArticle implements IViewRssArticle {
         dest.writeString(mDescription);
         dest.writeParcelable(mImage, flags);
         dest.writeString(mImageUrl);
-        dest.writeLong(mPostDate);
+        dest.writeLong(mPostDate == null ? NULL_DATE : mPostDate);
     }
 
     @Override
@@ -117,7 +121,7 @@ public class RssArticle implements IViewRssArticle {
     }
 
     static class Builder implements IBuilder<RssArticle> {
-        private RssArticle mArticle = new RssArticle();
+        private final RssArticle mArticle = new RssArticle();
 
         Builder(final String title) {
             mArticle.mTitle = title;

@@ -32,6 +32,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     }
 
     public void onMenuOpen() {
+        // TODO: Check enable buttons
     }
 
     public void openArticle(final IViewRssArticle article) {
