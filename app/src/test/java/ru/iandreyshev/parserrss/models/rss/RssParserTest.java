@@ -1,5 +1,7 @@
 package ru.iandreyshev.parserrss.models.rss;
 
+import android.support.annotation.NonNull;
+
 import org.jdom2.Element;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +24,7 @@ public class RssParserTest {
                 throw new UnsupportedOperationException();
             }
 
+            @NonNull
             @Override
             protected ArrayList<RssArticle> parseArticles(Element root) throws Exception {
                 fail();
@@ -35,6 +38,7 @@ public class RssParserTest {
                 return null;
             }
 
+            @NonNull
             @Override
             protected ArrayList<RssArticle> parseArticles(Element root) throws Exception {
                 throw new UnsupportedOperationException();

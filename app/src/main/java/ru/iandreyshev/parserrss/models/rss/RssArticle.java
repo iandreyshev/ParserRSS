@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Index;
 import io.objectbox.annotation.Transient;
+import io.objectbox.relation.ToOne;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
@@ -20,8 +20,7 @@ public class RssArticle implements IViewRssArticle {
 
     @Id
     long mId;
-    @Index
-    Long mRssId;
+
     String mTitle;
     @Nullable
     String mOriginUrl;
@@ -31,6 +30,8 @@ public class RssArticle implements IViewRssArticle {
     String mImageUrl;
     @Nullable
     Long mPostDate;
+
+    ToOne<Rss> mTargetRss;
 
     @Transient
     private Bitmap mImage;
@@ -101,10 +102,6 @@ public class RssArticle implements IViewRssArticle {
         return 0;
     }
 
-    public void setRssId(long id) {
-        mRssId = id;
-    }
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mTitle);
@@ -113,11 +110,6 @@ public class RssArticle implements IViewRssArticle {
         dest.writeParcelable(mImage, flags);
         dest.writeString(mImageUrl);
         dest.writeLong(mPostDate == null ? NULL_DATE : mPostDate);
-    }
-
-    @Override
-    public long getRssId() {
-        return mRssId;
     }
 
     static class Builder implements IBuilder<RssArticle> {

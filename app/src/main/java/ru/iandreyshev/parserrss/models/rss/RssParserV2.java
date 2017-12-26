@@ -1,5 +1,8 @@
 package ru.iandreyshev.parserrss.models.rss;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.jdom2.Element;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +30,8 @@ final class RssParserV2 extends RssParseEngine {
     private static final String ARTICLE_IMG_TYPE = "type";
 
     @Override
-    protected Rss.Builder parseRss(final Element root) {
+    @Nullable
+    protected Rss parseRss(final Element root) {
         final Element channel = root.getChild(FEED_NAME);
         final String title = channel.getChildText(FEED_TITLE);
         final String link = channel.getChildText(FEED_ORIGIN);
@@ -37,13 +41,14 @@ final class RssParserV2 extends RssParseEngine {
             return null;
         }
 
-        final Rss.Builder result = new Rss.Builder(title);
-        result.setOrigin(link);
-        result.setDescription(description);
+        final Rss.Builder builder = new Rss.Builder(title);
+        builder.setOrigin(link);
+        builder.setDescription(description);
 
-        return result;
+        return builder.build();
     }
 
+    @NonNull
     @Override
     protected ArrayList<RssArticle> parseArticles(final Element root) {
         final Element channel = root.getChild(FEED_NAME);

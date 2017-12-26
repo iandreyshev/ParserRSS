@@ -1,5 +1,7 @@
 package ru.iandreyshev.parserrss.models.web;
 
+import android.util.Log;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -24,23 +26,11 @@ public class HttpRequestHandler implements IHttpRequestResult {
     private String mBody;
     private Url mUrl;
 
-    public IHttpRequestResult sendGet(final String url) {
-        if (!prepareUrl(url)) {
-            return this;
-        }
-
-        return sendGet(mUrl);
+    public HttpRequestHandler(final String urlString) {
+        setUrl(urlString);
     }
 
-    public IHttpRequestResult sendGet(final Url url) {
-        if (url == null) {
-            mState = State.BadUrl;
-
-            return this;
-        }
-
-        mUrl = url;
-
+    public IHttpRequestResult sendGet() {
         send(new Request.Builder()
                 .url(mUrl.getInstance())
                 .build());
@@ -59,26 +49,13 @@ public class HttpRequestHandler implements IHttpRequestResult {
     }
 
     @Override
-    public String getUrl() {
+    public String getUrlStr() {
         return mUrl.toString();
     }
 
-    private boolean prepareUrl(final String url) {
-        if (url == null) {
-            mState = State.BadUrl;
-
-            return false;
-        }
-
+    public void setUrl(final String url) {
         mUrl = Url.parse(url);
-
-        if (mUrl == null) {
-            mState = State.BadUrl;
-
-            return false;
-        }
-
-        return true;
+        mState = mUrl == null ? State.BadUrl : State.NotSend;
     }
 
     private void send(Request request) {

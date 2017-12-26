@@ -1,18 +1,23 @@
 package ru.iandreyshev.parserrss.models.rss;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import io.objectbox.annotation.Backlink;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
-import io.objectbox.annotation.Transient;
+import io.objectbox.relation.ToMany;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
 public class Rss implements IViewRss {
+    private static final String TAG = Rss.class.getName();
+
     @Id
     long mId;
 
@@ -25,10 +30,8 @@ public class Rss implements IViewRss {
     @Nullable
     String mDescription;
 
-    @Transient
-    private ArrayList<RssArticle> mRssArticles = new ArrayList<>();
-    @Transient
-    private ArrayList<IViewRssArticle> mArticles = new ArrayList<>();
+    @Backlink
+    ToMany<RssArticle> mArticles;
 
     private Rss() {
     }
@@ -60,25 +63,30 @@ public class Rss implements IViewRss {
 
     @Override
     public ArrayList<IViewRssArticle> getArticles() {
+        return new ArrayList<>(mArticles);
+    }
+
+    public List<RssArticle> getRssArticles() {
         return mArticles;
-    }
-
-    public ArrayList<RssArticle> getRssArticles() {
-        return mRssArticles;
-    }
-
-    public void setArticles(final List<RssArticle> articles) {
-        mArticles = new ArrayList<>(articles);
-        mRssArticles = new ArrayList<>(articles);
     }
 
     public void setUrl(final String url) {
         mUrl = url;
     }
 
+    public void setId(long id) {
+        mId = id;
+    }
+
     @Override
     public boolean equals(Object other) {
         return (other instanceof Rss) && ((Rss) other).getUrl().equals(mUrl);
+    }
+
+    void setArticles(final List<RssArticle> newArticles) {
+        mArticles.clear();
+        mArticles.addAll(newArticles);
+        Log.e(TAG, String.format("Add %s new articles", newArticles.size()));
     }
 
     public static class Parser {

@@ -12,19 +12,19 @@ import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @InjectViewState
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
     private final static String TAG = FeedPresenter.class.getName();
     private long mProgressBarUsers;
 
-    public void onUpdateRss(final IViewRss rss) {
-        UpdateRssFromNetTask.execute(new UpdateRssFromNetListener(), rss);
-    }
-
     public void onInsertRss(final String url) {
         GetRssFromNetTask.execute(new GetRssFromNetListener(), url);
+    }
+
+    public void onUpdateRss(final IViewRss rss) {
+        UpdateRssFromNetTask.execute(new UpdateRssFromNetListener(), rss);
     }
 
     public void onDeleteRss(final IViewRss rss) {
@@ -59,12 +59,12 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         private static final String SUCCESS = "Deleting success";
 
         @Override
-        public void onFail(long count, IViewRss rss) {
+        public void onFail(IViewRss rss) {
             getViewState().showShortToast(ERROR);
         }
 
         @Override
-        public void onSuccess(long count, IViewRss rss) {
+        public void onSuccess(IViewRss rss) {
             getViewState().showShortToast(SUCCESS);
             getViewState().removeRss(rss);
         }
@@ -88,6 +88,11 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         private static final String DATABASE_ERROR = "Saving error";
         private static final String DUPLICATE_ERROR = "Rss already exist";
         private static final String SUCCESS = "Rss inserted";
+
+        @Override
+        public void onInvalidUrl() {
+            getViewState().showShortToast(BAD_URL);
+        }
 
         @Override
         public void onNetError(final IHttpRequestResult requestResult) {
@@ -165,7 +170,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onRssDeleted(final IViewRss rss) {
+        public void onRssNotExist(final IViewRss rss) {
             getViewState().showShortToast(RSS_WAS_DELETED);
             getViewState().removeRss(rss);
         }
@@ -198,7 +203,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onSuccess(final ArrayList<IViewRss> rssFromDb) {
+        public void onSuccess(final List<IViewRss> rssFromDb) {
             for (final IViewRss rss : rssFromDb) {
                 getViewState().insertRss(rss);
             }
@@ -210,7 +215,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(ArrayList<IViewRss> result) {
+        public void onPostExecute(List<IViewRss> result) {
             startProgressBar(false);
         }
     }

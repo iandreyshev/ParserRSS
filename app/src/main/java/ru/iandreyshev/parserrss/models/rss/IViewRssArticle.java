@@ -8,8 +8,6 @@ import java.io.Serializable;
 public interface IViewRssArticle extends Parcelable, Serializable {
     long getId();
 
-    long getRssId();
-
     String getTitle();
 
     String getOriginUrl();

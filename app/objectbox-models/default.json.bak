@@ -30,11 +30,16 @@
           "name": "mDescription"
         }
       ],
-      "relations": []
+      "relations": [
+        {
+          "id": "1:1010034729771361257",
+          "name": "mArticles"
+        }
+      ]
     },
     {
       "id": "2:1887863730840755597",
-      "lastPropertyId": "9:2832279044317439382",
+      "lastPropertyId": "8:6959782989321378076",
       "name": "RssArticle",
       "properties": [
         {
@@ -60,18 +65,13 @@
         {
           "id": "7:4955681863776762729",
           "name": "mPostDate"
-        },
-        {
-          "id": "9:2832279044317439382",
-          "indexId": "4:4452936048600984123",
-          "name": "mTargetRssId"
         }
       ],
       "relations": []
     }
   ],
   "lastEntityId": "2:1887863730840755597",
-  "lastIndexId": "4:4452936048600984123",
+  "lastIndexId": "3:1870931293326120339",
   "lastRelationId": "1:1010034729771361257",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
@@ -85,8 +85,6 @@
     8623554236450700882,
     6959782989321378076
   ],
-  "retiredRelationUids": [
-    1010034729771361257
-  ],
+  "retiredRelationUids": [],
   "version": 1
 }

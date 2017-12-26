@@ -3,7 +3,7 @@ package ru.iandreyshev.parserrss.models.async;
 import android.util.Log;
 
 import ru.iandreyshev.parserrss.app.IEvent;
-import ru.iandreyshev.parserrss.models.database.DbFacade;
+import ru.iandreyshev.parserrss.models.database.RssDatabase;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
@@ -12,11 +12,10 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     private static final String TAG = GetRssFromNetTask.class.getName();
 
-    private final DbFacade mDatabase = new DbFacade();
-    private IHttpRequestResult mNetRequestResult;
+    private final RssDatabase mDatabase = new RssDatabase();
+    private HttpRequestHandler mRequestHandler;
     private IEventListener mListener;
     private IEvent mResultEvent;
-    private String mUrl;
     private Rss mRss;
 
     private GetRssFromNetTask() {
@@ -25,14 +24,16 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     public static void execute(final IEventListener listener, final String url) {
         final GetRssFromNetTask task = new GetRssFromNetTask();
         task.setTaskListener(listener);
+        task.mRequestHandler = new HttpRequestHandler(url);
         task.mListener = listener;
-        task.mUrl = url;
         task.execute();
     }
 
     @Override
     protected IViewRss doInBackground(final String... strings) {
-        if (isRssExist()) {
+        if (!validateUrl()) {
+            return null;
+        } else if (!validateExistence()) {
             return null;
         } else if (!getRssFromNet()) {
             return null;
@@ -53,28 +54,38 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
         mResultEvent.doEvent();
     }
 
-    private boolean isRssExist() {
-        try {
-            if (mDatabase.getRssCount(mUrl) > 0) {
-                mResultEvent = () -> mListener.onDuplicateRss();
+    private boolean validateUrl() {
+        if (mRequestHandler.getState() == HttpRequestHandler.State.BadUrl) {
+            mResultEvent = () -> mListener.onInvalidUrl();
 
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateExistence() {
+        try {
+
+            if (mDatabase.getRssCountByUrl(mRequestHandler.getUrlStr()) == 0) {
                 return true;
             }
+
+            mResultEvent = () -> mListener.onDuplicateRss();
+
         } catch (Exception ex) {
             Log.e(TAG, Log.getStackTraceString(ex));
             mResultEvent = () -> mListener.onDbError();
-
-            return true;
         }
 
-        return false;
+        return true;
     }
 
     private boolean getRssFromNet() {
-        mNetRequestResult = new HttpRequestHandler().sendGet(mUrl);
+        mRequestHandler.sendGet();
 
-        if (mNetRequestResult.getState() != HttpRequestHandler.State.Success) {
-            mResultEvent = () -> mListener.onNetError(mNetRequestResult);
+        if (mRequestHandler.getState() != HttpRequestHandler.State.Success) {
+            mResultEvent = () -> mListener.onNetError(mRequestHandler);
 
             return false;
         }
@@ -83,38 +94,37 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     private boolean parseRss() {
-        mRss = Rss.Parser.parse(mNetRequestResult.getResponseBody());
+        if ((mRss = Rss.Parser.parse(mRequestHandler.getResponseBody())) == null) {
+            mResultEvent = () -> mListener.onParsingError();
 
-        if (mRss == null) {
             return false;
         }
 
-        mRss.setUrl(mUrl);
+        mRss.setUrl(mRequestHandler.getUrlStr());
 
         return true;
     }
 
     private boolean saveRssToDatabase() {
         try {
-            if (!mDatabase.putRssIfNotExist(mRss)) {
-                mResultEvent = () -> mListener.onDuplicateRss();
 
-                return false;
+            if (mDatabase.putRssIfSameUrlNotExist(mRss)) {
+                return true;
             }
 
-            mDatabase.putArticles(mRss, mRss.getRssArticles());
+            mResultEvent = () -> mListener.onDuplicateRss();
 
         } catch (Exception ex) {
             Log.e(TAG, Log.getStackTraceString(ex));
             mResultEvent = () -> mListener.onDbError();
-
-            return false;
         }
 
-        return true;
+        return false;
     }
 
     public interface IEventListener extends ITaskListener<IViewRss> {
+        void onInvalidUrl();
+
         void onNetError(final IHttpRequestResult requestResult);
 
         void onParsingError();

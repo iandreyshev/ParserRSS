@@ -1,5 +1,9 @@
 package ru.iandreyshev.parserrss.models.rss;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -9,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 abstract class RssParseEngine {
+    private static final String TAG = RssParseEngine.class.getName();
     private static final String DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonValidating/load-external-dtd";
     private static final List<SAXBuilder> DOC_BUILDERS = new ArrayList<>();
 
@@ -28,26 +33,28 @@ abstract class RssParseEngine {
             }
 
             final Element root = doc.getRootElement();
-            final Rss.Builder rssBuilder = parseRss(root);
+            final Rss rss = parseRss(root);
 
-            if (rssBuilder == null) {
+            if (rss == null) {
                 return null;
             }
 
-            final ArrayList<RssArticle> articles = parseArticles(root);
-            rssBuilder.setArticles(articles == null ? new ArrayList<>() : articles);
+            rss.setArticles(parseArticles(root));
 
-            return rssBuilder.build();
+            return rss;
 
         } catch (Exception ex) {
             return null;
         }
     }
 
-    protected abstract Rss.Builder parseRss(final Element root) throws Exception;
+    @Nullable
+    protected abstract Rss parseRss(final Element root) throws Exception;
 
+    @NonNull
     protected abstract ArrayList<RssArticle> parseArticles(final Element root) throws Exception;
 
+    @Nullable
     private static Document toDocument(final String xmlText) {
         for (final SAXBuilder builder : DOC_BUILDERS) {
             final Document result;

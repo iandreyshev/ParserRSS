@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.app.IEvent;
-import ru.iandreyshev.parserrss.models.database.DbFacade;
+import ru.iandreyshev.parserrss.models.database.RssDatabase;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.rss.Rss;
 
-public class GetRssFromDbTask extends Task<Void, Void, ArrayList<IViewRss>> {
+public class GetRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
     private static final String TAG = GetRssFromDbTask.class.getName();
 
-    private final DbFacade mDatabase = new DbFacade();
-    private final ArrayList<IViewRss> mResult = new ArrayList<>();
+    private final RssDatabase mDatabase = new RssDatabase();
+    private final List<IViewRss> mResult = new ArrayList<>();
     private IEventListener mListener;
     private IEvent mResultEvent;
 
@@ -29,15 +28,11 @@ public class GetRssFromDbTask extends Task<Void, Void, ArrayList<IViewRss>> {
     }
 
     @Override
-    protected ArrayList<IViewRss> doInBackground(Void... voids) {
+    protected List<IViewRss> doInBackground(Void... voids) {
         try {
-            final List<Rss> rssFromDb = mDatabase.getAllRss();
 
-            for (final Rss rss : rssFromDb) {
-                rss.setArticles(mDatabase.getArticles(rss));
-                mResult.add(rss);
-            }
-
+            mResult.addAll(mDatabase.getAllRss());
+            Log.e(TAG, String.format("Take %s rss feeds", mResult.size()));
             mResultEvent = () -> mListener.onSuccess(mResult);
 
         } catch (Exception ex) {
@@ -51,14 +46,14 @@ public class GetRssFromDbTask extends Task<Void, Void, ArrayList<IViewRss>> {
     }
 
     @Override
-    protected void onPostExecute(ArrayList<IViewRss> result) {
+    protected void onPostExecute(List<IViewRss> result) {
         super.onPostExecute(result);
         mResultEvent.doEvent();
     }
 
-    public interface IEventListener extends ITaskListener<ArrayList<IViewRss>> {
+    public interface IEventListener extends ITaskListener<List<IViewRss>> {
         void onLoadError();
 
-        void onSuccess(final ArrayList<IViewRss> rssFromDb);
+        void onSuccess(final List<IViewRss> rssFromDb);
     }
 }

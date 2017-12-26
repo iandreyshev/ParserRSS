@@ -27,18 +27,18 @@ public interface IFeedView extends IBaseView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void startProgressBar(boolean isStart);
 
-    @StateStrategyType(AddToEndSingleStrategy.class)
+    @StateStrategyType(SkipStrategy.class)
     void startUpdate(final IViewRss rss, boolean isStart);
 
-    @StateStrategyType(AddToEndSingleStrategy.class)
+    @StateStrategyType(SkipStrategy.class)
     void enableAddingButton(boolean isEnable);
 
-    @StateStrategyType(AddToEndSingleStrategy.class)
+    @StateStrategyType(SkipStrategy.class)
     void enableDeleteButton(boolean isEnable);
 
-    @StateStrategyType(AddToEndSingleStrategy.class)
+    @StateStrategyType(SkipStrategy.class)
     void enableInfoButton(boolean isEnable);
 
-    @StateStrategyType(AddToEndSingleStrategy.class)
+    @StateStrategyType(SkipStrategy.class)
     void openRssInfo(final IViewRss rss);
 }

@@ -13,5 +13,5 @@ public interface IHttpRequestResult {
 
     String getResponseBody();
 
-    String getUrl();
+    String getUrlStr();
 }
