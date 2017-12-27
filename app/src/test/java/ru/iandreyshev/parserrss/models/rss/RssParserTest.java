@@ -20,7 +20,7 @@ public class RssParserTest {
     public void reset() {
         mFeedParseExceptionParser = new RssParseEngine() {
             @Override
-            protected Rss.Builder parseRss(Element root) throws Exception {
+            protected Rss parseRss(Element root) throws Exception {
                 throw new UnsupportedOperationException();
             }
 
@@ -34,7 +34,7 @@ public class RssParserTest {
         };
         mArticlesParseExceptionParser = new RssParseEngine() {
             @Override
-            protected Rss.Builder parseRss(Element root) throws Exception {
+            protected Rss parseRss(Element root) throws Exception {
                 return null;
             }
 

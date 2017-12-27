@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 
 import java.util.ArrayList;
 
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
 
 public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
@@ -13,22 +13,22 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     private static final String CUT_TITLE_PATTERN = "%s...";
     private static final int MAX_TITLE_LENGTH = 16;
 
-    private final ArrayList<IViewRss> mRssList = new ArrayList<>();
+    private final ArrayList<ViewRss> mRssList = new ArrayList<>();
 
     public FeedTabsAdapter(final FragmentManager manager) {
         super(manager);
     }
 
-    public void insert(final IViewRss rss) {
+    public void insert(final ViewRss rss) {
         mRssList.add(rss);
         notifyDataSetChanged();
     }
 
-    public void update(final IViewRss rss) {
+    public void update(final ViewRss rss) {
         // TODO: Rss articles updating
     }
 
-    public void remove(final IViewRss rss) {
+    public void remove(final ViewRss rss) {
         int position = mRssList.indexOf(rss);
 
         if (position < 0) {
@@ -39,7 +39,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
-    public IViewRss getRss(int position) {
+    public ViewRss getRss(int position) {
         if (position < 0 || position >= mRssList.size()) {
             return null;
         }

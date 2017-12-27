@@ -31,12 +31,11 @@ public class RssDatabase {
 
     public List<Rss> getAllRss() throws Exception {
         Log.e(TAG, String.format("During get all, articles count is %s", mArticleBox.count()));
-
         final ArrayList<Rss> result = new ArrayList<>();
 
         for (final Rss rss : mBoxStore.boxFor(Rss.class).getAll()) {
             result.add(rss);
-            Log.e(TAG, String.format("Load rss with %s articles", rss.getArticles().size()));
+            Log.e(TAG, String.format("Load rss with %s articles", rss.getArticlesViewInfo().size()));
         }
 
         return result;
@@ -57,7 +56,9 @@ public class RssDatabase {
                 return false;
             }
 
+            Log.e(TAG, String.format("Before put rss articles count equal %s", mArticleBox.count()));
             mRssBox.put(rss);
+            Log.e(TAG, String.format("After put rss articles count equal %s", mArticleBox.count()));
 
             return true;
         });
@@ -74,7 +75,7 @@ public class RssDatabase {
                 return false;
             }
 
-            newRss.setId(currentRss.getId());
+            newRss.updateInfo(currentRss);
             mRssBox.put(newRss);
 
             return true;

@@ -17,8 +17,8 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
@@ -56,23 +56,23 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void insertRss(final IViewRss rss) {
+    public void insertRss(final ViewRss rss) {
         mTabsAdapter.insert(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
     }
 
     @Override
-    public void updateArticles(final IViewRss rss) {
+    public void updateArticles(final ViewRss rss) {
         mTabsAdapter.update(rss);
     }
 
     @Override
-    public void removeRss(final IViewRss rss) {
+    public void removeRss(final ViewRss rss) {
         mTabsAdapter.remove(rss);
     }
 
     @Override
-    public void openArticle(final IViewRssArticle article) {
+    public void openArticle(final ViewRssArticle article) {
         final Intent intent = ArticleActivity.getIntent(this)
                 .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, (Parcelable) article)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -91,7 +91,7 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void startUpdate(final IViewRss rss, boolean isStart) {
+    public void startUpdate(final ViewRss rss, boolean isStart) {
     }
 
     @Override
@@ -116,7 +116,7 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void openRssInfo(final IViewRss feed) {
+    public void openRssInfo(final ViewRss feed) {
     }
 
     @Override
@@ -141,7 +141,7 @@ public class FeedActivity extends BaseActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final IViewRss currentRss = mTabsAdapter.getRss(mPager.getCurrentItem());
+        final ViewRss currentRss = mTabsAdapter.getRss(mPager.getCurrentItem());
 
         switch (item.getItemId()) {
             case R.id.feed_options_add:
@@ -159,7 +159,7 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void onArticleClick(final IViewRssArticle article) {
+    public void onArticleClick(final ViewRssArticle article) {
         mFeedPresenter.openArticle(article);
     }
 
@@ -169,7 +169,7 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void onUpdateRss(final IViewRss rss) {
+    public void onUpdateRss(final ViewRss rss) {
         Log.e(TAG, rss.getUrl());
         mFeedPresenter.onUpdateRss(rss);
     }

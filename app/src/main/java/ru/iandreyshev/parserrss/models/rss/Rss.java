@@ -15,7 +15,7 @@ import io.objectbox.relation.ToMany;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
-public class Rss implements IViewRss {
+public final class Rss extends ViewRss {
     private static final String TAG = Rss.class.getName();
 
     @Id
@@ -62,59 +62,29 @@ public class Rss implements IViewRss {
     }
 
     @Override
-    public ArrayList<IViewRssArticle> getArticles() {
-        return new ArrayList<>(mArticles);
+    public ArrayList<ViewRssArticle> getArticlesViewInfo() {
+        return new ArrayList<>(mArticles == null ? new ArrayList<>() : mArticles);
     }
 
-    public List<RssArticle> getRssArticles() {
+    public List<RssArticle> getArticles() {
         return mArticles;
+    }
+
+    public void updateInfo(final Rss rssWithNewInfo) {
+        mTitle = rssWithNewInfo.mTitle;
+        mDescription = rssWithNewInfo.mDescription;
+
+        setArticles(rssWithNewInfo.mArticles);
     }
 
     public void setUrl(final String url) {
         mUrl = url;
     }
 
-    public void setId(long id) {
-        mId = id;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return (other instanceof Rss) && ((Rss) other).getUrl().equals(mUrl);
-    }
-
     void setArticles(final List<RssArticle> newArticles) {
         mArticles.clear();
         mArticles.addAll(newArticles);
         Log.e(TAG, String.format("Add %s new articles", newArticles.size()));
-    }
-
-    public static class Parser {
-        private static final List<RssParseEngine> mParsers = new ArrayList<>();
-
-        static {
-            mParsers.add(new RssParserV2());
-        }
-
-        public static Rss parse(final byte[] rssBytes) {
-            if (rssBytes == null) {
-                return null;
-            }
-
-            return parse(new String(rssBytes));
-        }
-
-        public static Rss parse(final String rssText) {
-            for (final RssParseEngine parser : mParsers) {
-                final Rss rss = parser.parse(rssText);
-
-                if (rss != null) {
-                    return rss;
-                }
-            }
-
-            return null;
-        }
     }
 
     static class Builder implements IBuilder<Rss> {

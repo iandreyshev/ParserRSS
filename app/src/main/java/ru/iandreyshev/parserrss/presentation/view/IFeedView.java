@@ -5,21 +5,21 @@ import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
 
 public interface IFeedView extends IBaseView {
     @StateStrategyType(AddToEndStrategy.class)
-    void insertRss(final IViewRss rss);
+    void insertRss(final ViewRss rss);
 
     @StateStrategyType(AddToEndStrategy.class)
-    void updateArticles(final IViewRss rss);
+    void updateArticles(final ViewRss rss);
 
     @StateStrategyType(AddToEndStrategy.class)
-    void removeRss(final IViewRss rss);
+    void removeRss(final ViewRss rss);
 
     @StateStrategyType(SkipStrategy.class)
-    void openArticle(final IViewRssArticle article);
+    void openArticle(final ViewRssArticle article);
 
     @StateStrategyType(SkipStrategy.class)
     void openAddingRssDialog();
@@ -28,7 +28,7 @@ public interface IFeedView extends IBaseView {
     void startProgressBar(boolean isStart);
 
     @StateStrategyType(SkipStrategy.class)
-    void startUpdate(final IViewRss rss, boolean isStart);
+    void startUpdate(final ViewRss rss, boolean isStart);
 
     @StateStrategyType(SkipStrategy.class)
     void enableAddingButton(boolean isEnable);
@@ -40,5 +40,5 @@ public interface IFeedView extends IBaseView {
     void enableInfoButton(boolean isEnable);
 
     @StateStrategyType(SkipStrategy.class)
-    void openRssInfo(final IViewRss rss);
+    void openRssInfo(final ViewRss rss);
 }

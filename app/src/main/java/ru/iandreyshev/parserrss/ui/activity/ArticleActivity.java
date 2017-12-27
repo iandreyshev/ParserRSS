@@ -14,7 +14,7 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
 
@@ -82,7 +82,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
             return;
         }
 
-        final IViewRssArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
+        final ViewRssArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
 
         if (article == null) {
             mArticlePresenter.onErrorLoadArticle();
@@ -94,7 +94,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         initArticle(article);
     }
 
-    private void initArticle(final IViewRssArticle article) {
+    private void initArticle(final ViewRssArticle article) {
         mTitle.setText(Html.fromHtml(article.getTitle()));
         mText.setText(Html.fromHtml(article.getDescription()));
 

@@ -8,20 +8,11 @@ import static org.junit.Assert.*;
 public class HttpRequestHandlerTest {
     private HttpRequestHandler mHandler;
 
-    @Before
-    public void reset() {
-        mHandler = new HttpRequestHandler();
-    }
-
     @Test
     public void return_invalid_url_state_after_send_with_null_url() {
         final String nullUrl = null;
-        mHandler.sendGet(nullUrl);
-
-        assertEquals(HttpRequestHandler.State.BadUrl, mHandler.getState());
-
-        final Url url = null;
-        mHandler.sendGet(url);
+        mHandler = new HttpRequestHandler(nullUrl);
+        mHandler.sendGet();
 
         assertEquals(HttpRequestHandler.State.BadUrl, mHandler.getState());
     }

@@ -4,25 +4,26 @@ import android.util.Log;
 
 import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.database.RssDatabase;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.RssParser;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 
-public class UpdateRssFromNetTask extends Task<IViewRss, Void, IViewRss> {
+public final class UpdateRssFromNetTask extends Task<ViewRss, Void, ViewRss> {
     private static final String TAG = UpdateRssFromNetTask.class.getName();
 
     private final RssDatabase mDatabase = new RssDatabase();
     private HttpRequestHandler mRequestHandler;
     private IEventListener mListener;
     private IEvent mResultEvent;
-    private IViewRss mUpdatingRss;
+    private ViewRss mUpdatingRss;
     private Rss mRssFromNet;
 
     private UpdateRssFromNetTask() {
     }
 
-    public static void execute(final IEventListener listener, final IViewRss rssToUpdate) {
+    public static void execute(final IEventListener listener, final ViewRss rssToUpdate) {
         final UpdateRssFromNetTask task = new UpdateRssFromNetTask();
         task.setTaskListener(listener);
         task.mRequestHandler = new HttpRequestHandler(rssToUpdate.getUrl());
@@ -32,7 +33,7 @@ public class UpdateRssFromNetTask extends Task<IViewRss, Void, IViewRss> {
     }
 
     @Override
-    protected IViewRss doInBackground(final IViewRss... feedsToUpdate) {
+    protected ViewRss doInBackground(final ViewRss... feedsToUpdate) {
         if (!validateRssExistence()) {
             return null;
         } else if (!getRssFromNet()) {
@@ -49,7 +50,7 @@ public class UpdateRssFromNetTask extends Task<IViewRss, Void, IViewRss> {
     }
 
     @Override
-    public void onPostExecute(final IViewRss rss) {
+    public void onPostExecute(final ViewRss rss) {
         super.onPostExecute(rss);
         mResultEvent.doEvent();
     }
@@ -84,7 +85,7 @@ public class UpdateRssFromNetTask extends Task<IViewRss, Void, IViewRss> {
     }
 
     private boolean parseRss() {
-        if ((mRssFromNet = Rss.Parser.parse(mRequestHandler.getResponseBody())) == null) {
+        if ((mRssFromNet = RssParser.parse(mRequestHandler.getResponseBody())) == null) {
             mResultEvent = () -> mListener.onParsingError(mUpdatingRss);
 
             return false;
@@ -112,15 +113,15 @@ public class UpdateRssFromNetTask extends Task<IViewRss, Void, IViewRss> {
         return false;
     }
 
-    public interface IEventListener extends ITaskListener<IViewRss> {
-        void onRssNotExist(final IViewRss rss);
+    public interface IEventListener extends ITaskListener<ViewRss> {
+        void onRssNotExist(final ViewRss rss);
 
-        void onNetError(final IViewRss rss, final IHttpRequestResult requestResult);
+        void onNetError(final ViewRss rss, final IHttpRequestResult requestResult);
 
-        void onParsingError(final IViewRss rss);
+        void onParsingError(final ViewRss rss);
 
-        void onDbError(final IViewRss rss);
+        void onDbError(final ViewRss rss);
 
-        void onSuccess(final IViewRss rss);
+        void onSuccess(final ViewRss rss);
     }
 }

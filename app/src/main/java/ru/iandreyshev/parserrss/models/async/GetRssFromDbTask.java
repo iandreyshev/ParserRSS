@@ -7,13 +7,13 @@ import java.util.List;
 
 import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.database.RssDatabase;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 
-public class GetRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
+public final class GetRssFromDbTask extends Task<Void, Void, List<ViewRss>> {
     private static final String TAG = GetRssFromDbTask.class.getName();
 
     private final RssDatabase mDatabase = new RssDatabase();
-    private final List<IViewRss> mResult = new ArrayList<>();
+    private final List<ViewRss> mResult = new ArrayList<>();
     private IEventListener mListener;
     private IEvent mResultEvent;
 
@@ -28,7 +28,7 @@ public class GetRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
     }
 
     @Override
-    protected List<IViewRss> doInBackground(Void... voids) {
+    protected List<ViewRss> doInBackground(Void... voids) {
         try {
 
             mResult.addAll(mDatabase.getAllRss());
@@ -46,14 +46,14 @@ public class GetRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
     }
 
     @Override
-    protected void onPostExecute(List<IViewRss> result) {
+    protected void onPostExecute(List<ViewRss> result) {
         super.onPostExecute(result);
         mResultEvent.doEvent();
     }
 
-    public interface IEventListener extends ITaskListener<List<IViewRss>> {
+    public interface IEventListener extends ITaskListener<List<ViewRss>> {
         void onLoadError();
 
-        void onSuccess(final List<IViewRss> rssFromDb);
+        void onSuccess(final List<ViewRss> rssFromDb);
     }
 }

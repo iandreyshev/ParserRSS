@@ -4,12 +4,13 @@ import android.util.Log;
 
 import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.database.RssDatabase;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.RssParser;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 
-public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
+public final class GetRssFromNetTask extends Task<String, Void, ViewRss> {
     private static final String TAG = GetRssFromNetTask.class.getName();
 
     private final RssDatabase mDatabase = new RssDatabase();
@@ -30,7 +31,7 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     @Override
-    protected IViewRss doInBackground(final String... strings) {
+    protected ViewRss doInBackground(final String... strings) {
         if (!validateUrl()) {
             return null;
         } else if (!validateExistence()) {
@@ -49,7 +50,7 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     @Override
-    protected void onPostExecute(final IViewRss rss) {
+    protected void onPostExecute(final ViewRss rss) {
         super.onPostExecute(rss);
         mResultEvent.doEvent();
     }
@@ -94,7 +95,7 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     private boolean parseRss() {
-        if ((mRss = Rss.Parser.parse(mRequestHandler.getResponseBody())) == null) {
+        if ((mRss = RssParser.parse(mRequestHandler.getResponseBody())) == null) {
             mResultEvent = () -> mListener.onParsingError();
 
             return false;
@@ -122,7 +123,7 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
         return false;
     }
 
-    public interface IEventListener extends ITaskListener<IViewRss> {
+    public interface IEventListener extends ITaskListener<ViewRss> {
         void onInvalidUrl();
 
         void onNetError(final IHttpRequestResult requestResult);
@@ -133,6 +134,6 @@ public final class GetRssFromNetTask extends Task<String, Void, IViewRss> {
 
         void onDuplicateRss();
 
-        void onSuccess(final IViewRss rss);
+        void onSuccess(final ViewRss rss);
     }
 }

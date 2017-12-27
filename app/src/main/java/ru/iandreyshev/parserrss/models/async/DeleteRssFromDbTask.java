@@ -4,20 +4,20 @@ import android.util.Log;
 
 import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.database.RssDatabase;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 
-public class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
+public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
     private static final String TAG = DeleteRssFromDbTask.class.getName();
 
     private final RssDatabase mDatabase = new RssDatabase();
     private IEventListener mListener;
-    private IViewRss mRssToDelete;
+    private ViewRss mRssToDelete;
     private IEvent mResultEvent;
 
     private DeleteRssFromDbTask() {
     }
 
-    public static void execute(final IEventListener listener, final IViewRss rssToDelete) {
+    public static void execute(final IEventListener listener, final ViewRss rssToDelete) {
         final DeleteRssFromDbTask task = new DeleteRssFromDbTask();
         task.setTaskListener(listener);
         task.mListener = listener;
@@ -26,7 +26,7 @@ public class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
     }
 
     @Override
-    protected IViewRss doInBackground(final IViewRss... rssToDelete) {
+    protected ViewRss doInBackground(final ViewRss... rssToDelete) {
         try {
 
             mDatabase.removeRss(mRssToDelete.getId());
@@ -41,14 +41,14 @@ public class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
     }
 
     @Override
-    protected void onPostExecute(final IViewRss result) {
+    protected void onPostExecute(final ViewRss result) {
         super.onPostExecute(result);
         mResultEvent.doEvent();
     }
 
-    public interface IEventListener extends ITaskListener<IViewRss> {
-        void onFail(final IViewRss rss);
+    public interface IEventListener extends ITaskListener<ViewRss> {
+        void onFail(final ViewRss rss);
 
-        void onSuccess(final IViewRss rss);
+        void onSuccess(final ViewRss rss);
     }
 }

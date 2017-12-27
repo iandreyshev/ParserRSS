@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
 import ru.iandreyshev.parserrss.ui.activity.FeedActivity;
 import ru.iandreyshev.parserrss.ui.adapter.ArticlesListAdapter;
 import ru.iandreyshev.parserrss.ui.listeners.IOnUpdateRssListener;
@@ -26,15 +26,15 @@ public class FeedTabFragment extends Fragment {
     private static final String RSS_KEY = "RSS_KEY";
     private static final String ARTICLES_KEY = "ARTICLES_KEY";
 
-    private IViewRss mRss;
+    private ViewRss mRss;
     private ArticlesListAdapter mListAdapter;
     private SwipeRefreshLayout mRefreshLayout;
 
-    public static FeedTabFragment newInstance(final IViewRss rss) {
+    public static FeedTabFragment newInstance(final ViewRss rss) {
         final FeedTabFragment fragment = new FeedTabFragment();
         final Bundle fragmentState = new Bundle();
         fragmentState.putSerializable(RSS_KEY, rss);
-        fragmentState.putParcelableArrayList(ARTICLES_KEY, rss.getArticles());
+        fragmentState.putParcelableArrayList(ARTICLES_KEY, rss.getArticlesViewInfo());
         fragment.setArguments(fragmentState);
 
         return fragment;
@@ -46,14 +46,14 @@ public class FeedTabFragment extends Fragment {
         }
     }
 
-    public void update(final ArrayList<IViewRssArticle> newArticles) {
+    public void update(final ArrayList<ViewRssArticle> newArticles) {
         // TODO: Rss articles updating
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstantState) {
         Log.e(TAG, "View created");
-        mRss = (IViewRss) getArguments().getSerializable(RSS_KEY);
+        mRss = (ViewRss) getArguments().getSerializable(RSS_KEY);
         final View view = inflater.inflate(R.layout.feed_list, viewGroup, false);
 
         initListAdapter();

@@ -4,8 +4,8 @@ import ru.iandreyshev.parserrss.models.async.DeleteRssFromDbTask;
 import ru.iandreyshev.parserrss.models.async.GetRssFromDbTask;
 import ru.iandreyshev.parserrss.models.async.GetRssFromNetTask;
 import ru.iandreyshev.parserrss.models.async.UpdateRssFromNetTask;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.rss.IViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
@@ -23,11 +23,11 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         GetRssFromNetTask.execute(new GetRssFromNetListener(), url);
     }
 
-    public void onUpdateRss(final IViewRss rss) {
+    public void onUpdateRss(final ViewRss rss) {
         UpdateRssFromNetTask.execute(new UpdateRssFromNetListener(), rss);
     }
 
-    public void onDeleteRss(final IViewRss rss) {
+    public void onDeleteRss(final ViewRss rss) {
         DeleteRssFromDbTask.execute(new DeletingRssListener(), rss);
     }
 
@@ -35,11 +35,11 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         // TODO: Check enable buttons
     }
 
-    public void openArticle(final IViewRssArticle article) {
+    public void openArticle(final ViewRssArticle article) {
         getViewState().openArticle(article);
     }
 
-    public void openRssInfo(final IViewRss rss) {
+    public void openRssInfo(final ViewRss rss) {
         getViewState().openRssInfo(rss);
     }
 
@@ -59,12 +59,12 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         private static final String SUCCESS = "Deleting success";
 
         @Override
-        public void onFail(IViewRss rss) {
+        public void onFail(ViewRss rss) {
             getViewState().showShortToast(ERROR);
         }
 
         @Override
-        public void onSuccess(IViewRss rss) {
+        public void onSuccess(ViewRss rss) {
             getViewState().showShortToast(SUCCESS);
             getViewState().removeRss(rss);
         }
@@ -75,7 +75,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(final IViewRss result) {
+        public void onPostExecute(final ViewRss result) {
             startProgressBar(false);
         }
     }
@@ -125,7 +125,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onSuccess(final IViewRss rss) {
+        public void onSuccess(final ViewRss rss) {
             getViewState().insertRss(rss);
             getViewState().showShortToast(SUCCESS);
         }
@@ -136,7 +136,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(IViewRss result) {
+        public void onPostExecute(ViewRss result) {
             startProgressBar(false);
         }
     }
@@ -150,7 +150,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         private static final String RSS_WAS_DELETED = "Rss was deleted";
 
         @Override
-        public void onNetError(final IViewRss rss, final IHttpRequestResult requestResult) {
+        public void onNetError(final ViewRss rss, final IHttpRequestResult requestResult) {
             switch (requestResult.getState()) {
                 case BadUrl:
                     getViewState().showShortToast(BAD_URL);
@@ -165,23 +165,23 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onParsingError(final IViewRss rss) {
+        public void onParsingError(final ViewRss rss) {
             getViewState().showShortToast(INVALID_RSS_FORMAT);
         }
 
         @Override
-        public void onRssNotExist(final IViewRss rss) {
+        public void onRssNotExist(final ViewRss rss) {
             getViewState().showShortToast(RSS_WAS_DELETED);
             getViewState().removeRss(rss);
         }
 
         @Override
-        public void onDbError(final IViewRss rss) {
+        public void onDbError(final ViewRss rss) {
             getViewState().showShortToast(SAVING_ERROR);
         }
 
         @Override
-        public void onSuccess(final IViewRss rss) {
+        public void onSuccess(final ViewRss rss) {
             getViewState().updateArticles(rss);
         }
 
@@ -190,7 +190,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(IViewRss result) {
+        public void onPostExecute(ViewRss result) {
         }
     }
 
@@ -203,8 +203,8 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onSuccess(final List<IViewRss> rssFromDb) {
-            for (final IViewRss rss : rssFromDb) {
+        public void onSuccess(final List<ViewRss> rssFromDb) {
+            for (final ViewRss rss : rssFromDb) {
                 getViewState().insertRss(rss);
             }
         }
@@ -215,7 +215,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(List<IViewRss> result) {
+        public void onPostExecute(List<ViewRss> result) {
             startProgressBar(false);
         }
     }

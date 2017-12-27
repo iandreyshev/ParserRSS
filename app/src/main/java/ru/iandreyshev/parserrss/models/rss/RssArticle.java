@@ -14,7 +14,7 @@ import io.objectbox.relation.ToOne;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
-public class RssArticle implements IViewRssArticle {
+public final class RssArticle extends ViewRssArticle {
     private static final String TAG = RssArticle.class.getName();
     private static final Long NULL_DATE = -1L;
 
