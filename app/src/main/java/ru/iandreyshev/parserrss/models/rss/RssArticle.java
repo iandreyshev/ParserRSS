@@ -35,20 +35,6 @@ public final class RssArticle extends ViewRssArticle {
     @Transient
     private Bitmap mImage;
 
-    private RssArticle() {
-    }
-
-    private RssArticle(Parcel in) {
-        mTitle = in.readString();
-        mOriginUrl = in.readString();
-        mDescription = in.readString();
-        mImage = in.readParcelable(Bitmap.class.getClassLoader());
-        mImageUrl = in.readString();
-
-        final Long postDate = in.readLong();
-        mPostDate = (postDate.equals(NULL_DATE)) ? null : postDate;
-    }
-
     public static final Creator<RssArticle> CREATOR = new Creator<RssArticle>() {
         @Override
         public RssArticle createFromParcel(Parcel in) {
@@ -109,6 +95,20 @@ public final class RssArticle extends ViewRssArticle {
         dest.writeParcelable(mImage, flags);
         dest.writeString(mImageUrl);
         dest.writeLong(mPostDate == null ? NULL_DATE : mPostDate);
+    }
+
+    private RssArticle() {
+    }
+
+    private RssArticle(Parcel in) {
+        mTitle = in.readString();
+        mOriginUrl = in.readString();
+        mDescription = in.readString();
+        mImage = in.readParcelable(Bitmap.class.getClassLoader());
+        mImageUrl = in.readString();
+
+        final Long postDate = in.readLong();
+        mPostDate = (postDate.equals(NULL_DATE)) ? null : postDate;
     }
 
     void bindRss(final Rss rss) {

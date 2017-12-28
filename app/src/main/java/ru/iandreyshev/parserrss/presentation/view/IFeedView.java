@@ -1,7 +1,5 @@
 package ru.iandreyshev.parserrss.presentation.view;
 
-import android.support.annotation.NonNull;
-
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;

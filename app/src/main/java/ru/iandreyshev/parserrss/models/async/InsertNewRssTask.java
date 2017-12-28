@@ -5,7 +5,7 @@ import android.util.Log;
 import ru.iandreyshev.parserrss.models.database.RssDatabase;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 
-public class InsertNewRssTask extends GetRssFromNetTask {
+public final class InsertNewRssTask extends GetRssFromNetTask {
     private final static String TAG = InsertNewRssTask.class.getName();
 
     private final RssDatabase mDatabase = new RssDatabase();
@@ -15,15 +15,15 @@ public class InsertNewRssTask extends GetRssFromNetTask {
         new InsertNewRssTask(listener, url).execute();
     }
 
-    protected void setTaskListener(final IEventListener listener) {
-        super.setTaskListener(listener);
-        mListener = listener;
-    }
-
     public interface IEventListener extends GetRssFromNetTask.IEventListener {
         void onRssAlreadyExist();
 
         void onDatabaseError();
+    }
+
+    protected void setTaskListener(final IEventListener listener) {
+        super.setTaskListener(listener);
+        mListener = listener;
     }
 
     @Override

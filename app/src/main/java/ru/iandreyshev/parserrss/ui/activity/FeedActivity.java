@@ -26,7 +26,6 @@ import ru.iandreyshev.parserrss.ui.adapter.FeedTabsAdapter;
 import ru.iandreyshev.parserrss.ui.fragment.AddRssDialog;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener;
-import ru.iandreyshev.parserrss.ui.listeners.IOnUpdateRssListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 

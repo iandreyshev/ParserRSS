@@ -2,10 +2,8 @@ package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;

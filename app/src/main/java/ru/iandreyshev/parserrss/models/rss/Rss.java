@@ -1,7 +1,6 @@
 package ru.iandreyshev.parserrss.models.rss;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +28,6 @@ public final class Rss extends ViewRss {
     @Nullable
     String mDescription;
     List<RssArticle> mArticles = new ArrayList<>();
-
-    private Rss() {
-    }
 
     @Override
     public long getId() {
@@ -85,6 +81,9 @@ public final class Rss extends ViewRss {
 
     public void setArticles(final List<RssArticle> newArticles) {
         mArticles = newArticles == null ? new ArrayList<>() : new ArrayList<>(newArticles);
+    }
+
+    private Rss() {
     }
 
     static class Builder implements IBuilder<Rss> {

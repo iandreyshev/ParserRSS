@@ -2,7 +2,6 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.os.AsyncTask;
 import android.support.annotation.CallSuper;
-import android.support.v4.os.IResultReceiver;
 
 import ru.iandreyshev.parserrss.app.IEvent;
 

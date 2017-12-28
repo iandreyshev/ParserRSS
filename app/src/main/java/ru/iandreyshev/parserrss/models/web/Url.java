@@ -28,12 +28,12 @@ public class Url {
         return mInstance.toString();
     }
 
+    private Url(final HttpUrl url) {
+        mInstance = url;
+    }
+
     @NonNull
     HttpUrl getInstance() {
         return mInstance;
-    }
-
-    private Url(final HttpUrl url) {
-        mInstance = url;
     }
 }

@@ -2,7 +2,6 @@ package ru.iandreyshev.parserrss.models.web;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +32,10 @@ public class HttpRequestHandler implements IHttpRequestResult {
     }
 
     public void sendGet() {
+        if (mState == State.BadUrl) {
+            return;
+        }
+
         send(new Request.Builder()
                 .url(mUrl.getInstance())
                 .build());
@@ -56,7 +59,7 @@ public class HttpRequestHandler implements IHttpRequestResult {
     }
 
     public void setUrl(final String url) {
-        mUrl = Url.parse(url);
+        mUrl = Url.parse(url == null ? "" : url);
         mState = mUrl == null ? State.BadUrl : State.NotSend;
     }
 

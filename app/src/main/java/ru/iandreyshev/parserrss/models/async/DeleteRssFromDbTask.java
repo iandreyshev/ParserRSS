@@ -16,9 +16,6 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
     private ViewRss mRssToDelete;
     private IEvent mResultEvent;
 
-    private DeleteRssFromDbTask() {
-    }
-
     public static void execute(final IEventListener listener, final ViewRss rssToDelete) {
         if (rssToDelete == null) {
             return;
@@ -29,6 +26,12 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
         task.mListener = listener;
         task.mRssToDelete = rssToDelete;
         task.execute();
+    }
+
+    public interface IEventListener extends ITaskListener<ViewRss> {
+        void onFail(final ViewRss rss);
+
+        void onSuccess(final ViewRss rss);
     }
 
     @Nullable
@@ -53,9 +56,6 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
         mResultEvent.doEvent();
     }
 
-    public interface IEventListener extends ITaskListener<ViewRss> {
-        void onFail(final ViewRss rss);
-
-        void onSuccess(final ViewRss rss);
+    private DeleteRssFromDbTask() {
     }
 }
