@@ -1,5 +1,7 @@
 package ru.iandreyshev.parserrss.presentation.view;
 
+import android.support.annotation.NonNull;
+
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
@@ -13,9 +15,6 @@ public interface IFeedView extends IBaseView {
     void insertRss(final ViewRss rss);
 
     @StateStrategyType(AddToEndStrategy.class)
-    void updateArticles(final ViewRss rss);
-
-    @StateStrategyType(AddToEndStrategy.class)
     void removeRss(final ViewRss rss);
 
     @StateStrategyType(SkipStrategy.class)
@@ -26,9 +25,6 @@ public interface IFeedView extends IBaseView {
 
     @StateStrategyType(AddToEndSingleStrategy.class)
     void startProgressBar(boolean isStart);
-
-    @StateStrategyType(SkipStrategy.class)
-    void startUpdate(final ViewRss rss, boolean isStart);
 
     @StateStrategyType(SkipStrategy.class)
     void enableAddingButton(boolean isEnable);

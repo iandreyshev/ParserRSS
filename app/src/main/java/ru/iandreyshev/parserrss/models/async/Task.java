@@ -2,12 +2,15 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.os.AsyncTask;
 import android.support.annotation.CallSuper;
+import android.support.v4.os.IResultReceiver;
+
+import ru.iandreyshev.parserrss.app.IEvent;
 
 abstract class Task<T, U, V> extends AsyncTask<T, U, V> {
     private ITaskListener<V> mListener;
+    private IEvent mResultEvent;
 
-    @CallSuper
-    void setTaskListener(final ITaskListener<V> listener) {
+    protected void setTaskListener(final ITaskListener<V> listener) {
         mListener = listener;
     }
 
@@ -25,5 +28,12 @@ abstract class Task<T, U, V> extends AsyncTask<T, U, V> {
         if (mListener != null) {
             mListener.onPostExecute(result);
         }
+        if (mResultEvent != null) {
+            mResultEvent.doEvent();
+        }
+    }
+
+    protected void setResultEvent(final IEvent resultEvent) {
+        mResultEvent = resultEvent;
     }
 }

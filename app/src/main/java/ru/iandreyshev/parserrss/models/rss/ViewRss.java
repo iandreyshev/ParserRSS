@@ -1,7 +1,9 @@
 package ru.iandreyshev.parserrss.models.rss;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ViewRss implements Serializable {
     public abstract long getId();
@@ -14,10 +16,16 @@ public abstract class ViewRss implements Serializable {
 
     public abstract String getOrigin();
 
-    public abstract ArrayList<ViewRssArticle> getArticlesViewInfo();
+    @NonNull
+    public abstract List<ViewRssArticle> getViewArticles();
 
     @Override
     public final boolean equals(Object other) {
         return (other instanceof ViewRss) && getUrl().equals(((ViewRss) other).getUrl());
+    }
+
+    @Override
+    public final int hashCode() {
+        return getUrl().hashCode();
     }
 }

@@ -31,7 +31,7 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnUpdateRssListener;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 public class FeedActivity extends BaseActivity
-        implements IFeedView, IOnArticleClickListener, IOnSubmitAddRssListener, IOnUpdateRssListener {
+        implements IFeedView, IOnArticleClickListener, IOnSubmitAddRssListener {
     private static final String TAG = FeedActivity.class.getName();
 
     @InjectPresenter
@@ -62,11 +62,6 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void updateArticles(final ViewRss rss) {
-        mTabsAdapter.update(rss);
-    }
-
-    @Override
     public void removeRss(final ViewRss rss) {
         mTabsAdapter.remove(rss);
     }
@@ -88,10 +83,6 @@ public class FeedActivity extends BaseActivity
     @Override
     public void startProgressBar(boolean isStart) {
         mProgressBar.setVisibility(isStart ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void startUpdate(final ViewRss rss, boolean isStart) {
     }
 
     @Override
@@ -166,12 +157,6 @@ public class FeedActivity extends BaseActivity
     @Override
     public void onSubmitAddRss(final String url) {
         mFeedPresenter.onInsertRss(url);
-    }
-
-    @Override
-    public void onUpdateRss(final ViewRss rss) {
-        Log.e(TAG, rss.getUrl());
-        mFeedPresenter.onUpdateRss(rss);
     }
 
     @Override

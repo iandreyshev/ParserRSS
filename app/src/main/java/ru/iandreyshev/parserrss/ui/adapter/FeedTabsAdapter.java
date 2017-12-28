@@ -2,8 +2,10 @@ package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
@@ -24,18 +26,8 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void update(final ViewRss rss) {
-        // TODO: Rss articles updating
-    }
-
     public void remove(final ViewRss rss) {
-        int position = mRssList.indexOf(rss);
-
-        if (position < 0) {
-            return;
-        }
-
-        mRssList.remove(position);
+        mRssList.remove(rss);
         notifyDataSetChanged();
     }
 
@@ -49,7 +41,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return FeedTabFragment.newInstance(mRssList.get(position));
+        return FeedTabFragment.newInstance(getRss(position));
     }
 
     @Override
@@ -59,7 +51,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title = mRssList.get(position).getTitle();
+        String title = getRss(position).getTitle();
 
         if (title.length() > MAX_TITLE_LENGTH) {
             title = title.substring(0, MAX_TITLE_LENGTH - 1);
@@ -70,7 +62,7 @@ public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     }
 
     @Override
-    public int getItemPosition(Object item) {
+    public int getItemPosition(final Object item) {
         return POSITION_NONE;
     }
 }

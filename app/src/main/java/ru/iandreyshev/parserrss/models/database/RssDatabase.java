@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.database;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import io.objectbox.exception.DbException;
 import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.rss.RssArticle;
+import ru.iandreyshev.parserrss.models.rss.RssArticle_;
 import ru.iandreyshev.parserrss.models.rss.Rss_;
 
 public class RssDatabase {
@@ -29,25 +31,33 @@ public class RssDatabase {
         mArticleBox = mBoxStore.boxFor(RssArticle.class);
     }
 
-    public List<Rss> getAllRss() throws Exception {
-        Log.e(TAG, String.format("During get all, articles count is %s", mArticleBox.count()));
-        final ArrayList<Rss> result = new ArrayList<>();
-
-        for (final Rss rss : mBoxStore.boxFor(Rss.class).getAll()) {
-            result.add(rss);
-            Log.e(TAG, String.format("Load rss with %s articles", rss.getArticlesViewInfo().size()));
-        }
-
-        return result;
+    public long getRssCount(final String url) {
+        return mRssBox.find(Rss_.mUrl, url).size();
     }
 
-    public long getRssCountByUrl(final String url) throws Exception {
-        return mRssBox.find(Rss_.mUrl, url).size();
+    @NonNull
+    public List<Rss> getAllRss() throws Exception {
+        return mBoxStore.callInTx(() -> {
+            Log.e(TAG, String.format("During get all, articles count is %s", mArticleBox.count()));
+            final ArrayList<Rss> result = new ArrayList<>();
+
+            for (final Rss rss : mRssBox.getAll()) {
+                final List<RssArticle> articles = mArticleBox.query()
+                        .equal(RssArticle_.mRssId, rss.getId())
+                        .build()
+                        .find();
+                rss.setArticles(articles);
+                result.add(rss);
+                Log.e(TAG, String.format("Load rss with %s articles", rss.getViewArticles().size()));
+            }
+
+            return result;
+        });
     }
 
     public boolean putRssIfSameUrlNotExist(final Rss rss) throws Exception {
         return mBoxStore.callInTx(() -> {
-            final Rss rssWithSameUrl = mRssBox.query()
+            Rss rssWithSameUrl = mRssBox.query()
                     .equal(Rss_.mUrl, rss.getUrl())
                     .build()
                     .findFirst();
@@ -56,33 +66,50 @@ public class RssDatabase {
                 return false;
             }
 
-            Log.e(TAG, String.format("Before put rss articles count equal %s", mArticleBox.count()));
+            mArticleBox.query()
+                    .equal(RssArticle_.mRssId, rss.getId())
+                    .build()
+                    .remove();
             mRssBox.put(rss);
-            Log.e(TAG, String.format("After put rss articles count equal %s", mArticleBox.count()));
+            rss.bindArticles();
+            mArticleBox.put(rss.getArticles());
 
             return true;
         });
     }
 
-    public boolean updateRssIfExistByUrl(final Rss newRss) throws Exception {
+    public boolean updateRssWithSameUrl(final Rss newRss) throws Exception {
         return mBoxStore.callInTx(() -> {
-            final Rss currentRss = mRssBox.query()
+            Rss rssWithSameUrl = mRssBox.query()
                     .equal(Rss_.mUrl, newRss.getUrl())
                     .build()
                     .findFirst();
 
-            if (currentRss == null) {
+            if (rssWithSameUrl == null) {
                 return false;
             }
 
-            newRss.updateInfo(currentRss);
+            newRss.setId(rssWithSameUrl.getId());
+            newRss.bindArticles();
             mRssBox.put(newRss);
+
+            mArticleBox.query()
+                    .equal(RssArticle_.mRssId, newRss.getId())
+                    .build()
+                    .remove();
+            mArticleBox.put(newRss.getArticles());
 
             return true;
         });
     }
 
-    public void removeRss(long id) throws Exception {
-        mRssBox.remove(id);
+    public void removeRss(long rssId) throws Exception {
+        mBoxStore.runInTx(() -> {
+            mRssBox.remove(rssId);
+            mArticleBox.query()
+                    .equal(RssArticle_.mRssId, rssId)
+                    .build()
+                    .remove();
+        });
     }
 }

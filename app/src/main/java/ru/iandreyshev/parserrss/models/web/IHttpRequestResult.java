@@ -1,5 +1,8 @@
 package ru.iandreyshev.parserrss.models.web;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 public interface IHttpRequestResult {
     enum State {
         NotSend,
@@ -9,9 +12,12 @@ public interface IHttpRequestResult {
         PermissionDenied,
     }
 
+    @NonNull
     HttpRequestHandler.State getState();
 
+    @Nullable
     String getResponseBody();
 
+    @Nullable
     String getUrlStr();
 }

@@ -1,5 +1,7 @@
 package ru.iandreyshev.parserrss.models.web;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
@@ -30,26 +32,26 @@ public class HttpRequestHandler implements IHttpRequestResult {
         setUrl(urlString);
     }
 
-    public IHttpRequestResult sendGet() {
+    public void sendGet() {
         send(new Request.Builder()
                 .url(mUrl.getInstance())
                 .build());
-
-        return this;
     }
 
+    @NonNull
     @Override
     public State getState() {
         return mState;
     }
 
+    @Nullable
     @Override
     public String getResponseBody() {
         return mBody;
     }
 
     @Override
-    public String getUrlStr() {
+    public String getUrlStr() throws NullPointerException {
         return mUrl.toString();
     }
 

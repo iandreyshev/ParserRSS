@@ -1,10 +1,14 @@
 package ru.iandreyshev.parserrss.models.web;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import okhttp3.HttpUrl;
 
 public class Url {
     private final HttpUrl mInstance;
 
+    @Nullable
     public static Url parse(final String url) {
         if (url == null) {
             return null;
@@ -24,6 +28,7 @@ public class Url {
         return mInstance.toString();
     }
 
+    @NonNull
     HttpUrl getInstance() {
         return mInstance;
     }

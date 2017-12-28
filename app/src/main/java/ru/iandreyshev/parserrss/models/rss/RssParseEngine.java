@@ -24,6 +24,7 @@ abstract class RssParseEngine {
         DOC_BUILDERS.add(new SAXBuilder());
     }
 
+    @Nullable
     public final Rss parse(final String rssText) {
         try {
             final Document doc = toDocument(rssText);

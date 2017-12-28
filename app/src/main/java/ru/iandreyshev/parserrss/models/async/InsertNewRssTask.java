@@ -5,18 +5,23 @@ import android.util.Log;
 import ru.iandreyshev.parserrss.models.database.RssDatabase;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 
-public final class UpdateRssFromNetTask extends GetRssFromNetTask {
-    private final static String TAG = UpdateRssFromNetTask.class.getName();
+public class InsertNewRssTask extends GetRssFromNetTask {
+    private final static String TAG = InsertNewRssTask.class.getName();
 
     private final RssDatabase mDatabase = new RssDatabase();
     private IEventListener mListener;
 
     public static void execute(final IEventListener listener, final String url) {
-        new UpdateRssFromNetTask(listener, url).execute();
+        new InsertNewRssTask(listener, url).execute();
+    }
+
+    protected void setTaskListener(final IEventListener listener) {
+        super.setTaskListener(listener);
+        mListener = listener;
     }
 
     public interface IEventListener extends GetRssFromNetTask.IEventListener {
-        void onRssNotExist();
+        void onRssAlreadyExist();
 
         void onDatabaseError();
     }
@@ -28,8 +33,8 @@ public final class UpdateRssFromNetTask extends GetRssFromNetTask {
 
             return false;
 
-        } else if (mDatabase.getRssCount(getUrl()) == 0) {
-            setResultEvent(() -> mListener.onRssNotExist());
+        } else if (mDatabase.getRssCount(getUrl()) > 0) {
+            setResultEvent(() -> mListener.onRssAlreadyExist());
 
             return false;
         }
@@ -41,21 +46,21 @@ public final class UpdateRssFromNetTask extends GetRssFromNetTask {
     protected Rss onSuccess(final Rss rss) {
         try {
 
-            if (mDatabase.updateRssWithSameUrl(rss)) {
+            if (mDatabase.putRssIfSameUrlNotExist(rss)) {
                 setResultEvent(() -> mListener.onSuccess(rss));
             } else {
-                setResultEvent(() -> mListener.onRssNotExist());
+                setResultEvent(() -> mListener.onRssAlreadyExist());
             }
 
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             Log.e(TAG, Log.getStackTraceString(ex));
             setResultEvent(() -> mListener.onDatabaseError());
         }
 
-        return null;
+        return rss;
     }
 
-    private UpdateRssFromNetTask(final IEventListener listener, final String url) {
+    private InsertNewRssTask(final IEventListener listener, final String url) {
         super(listener, url);
         mListener = listener;
     }

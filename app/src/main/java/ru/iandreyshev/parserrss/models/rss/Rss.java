@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.rss;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -7,11 +8,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import io.objectbox.annotation.Backlink;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
-import io.objectbox.relation.ToMany;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
@@ -29,9 +28,7 @@ public final class Rss extends ViewRss {
     String mOrigin;
     @Nullable
     String mDescription;
-
-    @Backlink
-    ToMany<RssArticle> mArticles;
+    List<RssArticle> mArticles = new ArrayList<>();
 
     private Rss() {
     }
@@ -61,30 +58,33 @@ public final class Rss extends ViewRss {
         return mOrigin;
     }
 
+    @NonNull
     @Override
-    public ArrayList<ViewRssArticle> getArticlesViewInfo() {
-        return new ArrayList<>(mArticles == null ? new ArrayList<>() : mArticles);
+    public List<ViewRssArticle> getViewArticles() {
+        return new ArrayList<>(mArticles);
     }
 
+    @NonNull
     public List<RssArticle> getArticles() {
         return mArticles;
     }
 
-    public void updateInfo(final Rss rssWithNewInfo) {
-        mTitle = rssWithNewInfo.mTitle;
-        mDescription = rssWithNewInfo.mDescription;
-
-        setArticles(rssWithNewInfo.mArticles);
+    public void setId(long newId) {
+        mId = newId;
     }
 
     public void setUrl(final String url) {
         mUrl = url;
     }
 
-    void setArticles(final List<RssArticle> newArticles) {
-        mArticles.clear();
-        mArticles.addAll(newArticles);
-        Log.e(TAG, String.format("Add %s new articles", newArticles.size()));
+    public void bindArticles() {
+        for (final RssArticle article : mArticles) {
+            article.bindRss(this);
+        }
+    }
+
+    public void setArticles(final List<RssArticle> newArticles) {
+        mArticles = newArticles == null ? new ArrayList<>() : new ArrayList<>(newArticles);
     }
 
     static class Builder implements IBuilder<Rss> {
@@ -94,6 +94,7 @@ public final class Rss extends ViewRss {
             mRss.mTitle = rssTitle;
         }
 
+        @NonNull
         @Override
         public Rss build() {
             return mRss;

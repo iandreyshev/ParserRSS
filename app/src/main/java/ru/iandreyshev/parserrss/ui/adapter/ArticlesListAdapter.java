@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import ru.iandreyshev.parserrss.R;
@@ -22,7 +23,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     private final LayoutInflater mInflater;
-    private final ArrayList<ViewRssArticle> mArticles = new ArrayList<>();
+    private final List<ViewRssArticle> mArticles = new ArrayList<>();
     private IOnArticleClickListener mArticleClickListener;
 
     public ArticlesListAdapter(Context context) {
@@ -33,13 +34,10 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         mArticleClickListener = listener;
     }
 
-    public void setArticles(final ArrayList<ViewRssArticle> newItems) {
+    public void setArticles(final List<ViewRssArticle> newItems) {
+        mArticles.clear();
         mArticles.addAll(newItems);
         notifyDataSetChanged();
-    }
-
-    public ArrayList<ViewRssArticle> getArticles() {
-        return mArticles;
     }
 
     @Override

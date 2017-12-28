@@ -2,6 +2,8 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.util.Log;
 
+import javax.annotation.Nullable;
+
 import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.database.RssDatabase;
 import ru.iandreyshev.parserrss.models.rss.ViewRss;
@@ -18,6 +20,10 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
     }
 
     public static void execute(final IEventListener listener, final ViewRss rssToDelete) {
+        if (rssToDelete == null) {
+            return;
+        }
+
         final DeleteRssFromDbTask task = new DeleteRssFromDbTask();
         task.setTaskListener(listener);
         task.mListener = listener;
@@ -25,6 +31,7 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
         task.execute();
     }
 
+    @Nullable
     @Override
     protected ViewRss doInBackground(final ViewRss... rssToDelete) {
         try {
@@ -37,12 +44,12 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
             mResultEvent = () -> mListener.onFail(mRssToDelete);
         }
 
-        return null;
+        return mRssToDelete;
     }
 
     @Override
     protected void onPostExecute(final ViewRss result) {
-        super.onPostExecute(result);
+        super.onPostExecute(mRssToDelete);
         mResultEvent.doEvent();
     }
 

@@ -2,6 +2,7 @@ package ru.iandreyshev.parserrss.models.rss;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import java.util.Date;
 
@@ -10,7 +11,6 @@ import javax.annotation.Nullable;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Transient;
-import io.objectbox.relation.ToOne;
 import ru.iandreyshev.parserrss.app.IBuilder;
 
 @Entity
@@ -20,6 +20,7 @@ public final class RssArticle extends ViewRssArticle {
 
     @Id
     long mId;
+    long mRssId;
 
     String mTitle;
     @Nullable
@@ -30,8 +31,6 @@ public final class RssArticle extends ViewRssArticle {
     String mImageUrl;
     @Nullable
     Long mPostDate;
-
-    ToOne<Rss> mTargetRss;
 
     @Transient
     private Bitmap mImage;
@@ -112,6 +111,10 @@ public final class RssArticle extends ViewRssArticle {
         dest.writeLong(mPostDate == null ? NULL_DATE : mPostDate);
     }
 
+    void bindRss(final Rss rss) {
+        mRssId = rss.getId();
+    }
+
     static class Builder implements IBuilder<RssArticle> {
         private final RssArticle mArticle = new RssArticle();
 
@@ -155,6 +158,7 @@ public final class RssArticle extends ViewRssArticle {
             return this;
         }
 
+        @NonNull
         @Override
         public RssArticle build() {
             return mArticle;

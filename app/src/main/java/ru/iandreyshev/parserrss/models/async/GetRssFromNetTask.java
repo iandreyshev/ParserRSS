@@ -1,139 +1,105 @@
 package ru.iandreyshev.parserrss.models.async;
 
-import android.util.Log;
+import javax.annotation.Nullable;
 
-import ru.iandreyshev.parserrss.app.IEvent;
-import ru.iandreyshev.parserrss.models.database.RssDatabase;
 import ru.iandreyshev.parserrss.models.rss.RssParser;
 import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.models.rss.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 
-public final class GetRssFromNetTask extends Task<String, Void, ViewRss> {
+abstract class GetRssFromNetTask extends Task<String, Void, ViewRss> {
     private static final String TAG = GetRssFromNetTask.class.getName();
 
-    private final RssDatabase mDatabase = new RssDatabase();
     private HttpRequestHandler mRequestHandler;
+    private Rss mNewRss;
     private IEventListener mListener;
-    private IEvent mResultEvent;
-    private Rss mRss;
 
-    private GetRssFromNetTask() {
+    protected interface IEventListener extends ITaskListener<ViewRss> {
+        void onInvalidUrl();
+
+        void onNetError(final IHttpRequestResult requestResult);
+
+        void onParserError();
+
+        void onSuccess(final ViewRss result);
     }
 
-    public static void execute(final IEventListener listener, final String url) {
-        final GetRssFromNetTask task = new GetRssFromNetTask();
-        task.setTaskListener(listener);
-        task.mRequestHandler = new HttpRequestHandler(url);
-        task.mListener = listener;
-        task.execute();
+    protected GetRssFromNetTask(final IEventListener listener, final String url) {
+        setTaskListener(listener);
+        mRequestHandler = new HttpRequestHandler(url);
+        mListener = listener;
     }
 
-    @Override
-    protected ViewRss doInBackground(final String... strings) {
-        if (!validateUrl()) {
-            return null;
-        } else if (!validateExistence()) {
-            return null;
-        } else if (!getRssFromNet()) {
-            return null;
-        } else if (!parseRss()) {
-            return null;
-        } else if (!saveRssToDatabase()) {
-            return null;
+    protected void onInvalidUrl() {
+    }
+
+    protected void onNetError(final IHttpRequestResult requestResult) {
+    }
+
+    protected void onParserError() {
+    }
+
+    protected abstract Rss onSuccess(final Rss rss);
+
+    protected boolean isUrlValid() {
+        if (mRequestHandler.getState() != HttpRequestHandler.State.BadUrl) {
+            return true;
         }
 
-        mResultEvent = () -> mListener.onSuccess(mRss);
+        setResultEvent(() -> mListener.onInvalidUrl());
 
-        return mRss;
+        return false;
     }
 
-    @Override
-    protected void onPostExecute(final ViewRss rss) {
-        super.onPostExecute(rss);
-        mResultEvent.doEvent();
-    }
-
-    private boolean validateUrl() {
-        if (mRequestHandler.getState() == HttpRequestHandler.State.BadUrl) {
-            mResultEvent = () -> mListener.onInvalidUrl();
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean validateExistence() {
-        try {
-
-            if (mDatabase.getRssCountByUrl(mRequestHandler.getUrlStr()) == 0) {
-                return true;
-            }
-
-            mResultEvent = () -> mListener.onDuplicateRss();
-
-        } catch (Exception ex) {
-            Log.e(TAG, Log.getStackTraceString(ex));
-            mResultEvent = () -> mListener.onDbError();
-        }
-
-        return true;
-    }
-
-    private boolean getRssFromNet() {
+    protected boolean getRssFromNet() {
         mRequestHandler.sendGet();
 
-        if (mRequestHandler.getState() != HttpRequestHandler.State.Success) {
-            mResultEvent = () -> mListener.onNetError(mRequestHandler);
-
-            return false;
+        if (mRequestHandler.getState() == HttpRequestHandler.State.Success) {
+            return true;
         }
 
-        return true;
+        setResultEvent(() -> mListener.onNetError(mRequestHandler));
+
+        return false;
     }
 
-    private boolean parseRss() {
-        if ((mRss = RssParser.parse(mRequestHandler.getResponseBody())) == null) {
-            mResultEvent = () -> mListener.onParsingError();
+    protected boolean parseRss() {
+        if ((mNewRss = RssParser.parse(mRequestHandler.getResponseBody())) != null) {
+            mNewRss.setUrl(mRequestHandler.getUrlStr());
+            setResultEvent(() -> mListener.onParserError());
 
-            return false;
-        }
-
-        mRss.setUrl(mRequestHandler.getUrlStr());
-
-        return true;
-    }
-
-    private boolean saveRssToDatabase() {
-        try {
-
-            if (mDatabase.putRssIfSameUrlNotExist(mRss)) {
-                return true;
-            }
-
-            mResultEvent = () -> mListener.onDuplicateRss();
-
-        } catch (Exception ex) {
-            Log.e(TAG, Log.getStackTraceString(ex));
-            mResultEvent = () -> mListener.onDbError();
+            return true;
         }
 
         return false;
     }
 
-    public interface IEventListener extends ITaskListener<ViewRss> {
-        void onInvalidUrl();
+    @Nullable
+    @Override
+    protected final ViewRss doInBackground(final String... strings) {
+        if (!isUrlValid()) {
+            onInvalidUrl();
 
-        void onNetError(final IHttpRequestResult requestResult);
+            return null;
 
-        void onParsingError();
+        } else if (!getRssFromNet()) {
+            onNetError(mRequestHandler);
 
-        void onDbError();
+            return null;
 
-        void onDuplicateRss();
+        } else if (!parseRss()) {
+            onParserError();
 
-        void onSuccess(final ViewRss rss);
+            return null;
+
+        }
+
+        return onSuccess(mNewRss);
+    }
+
+    @Nullable
+    protected final String getUrl() {
+        return mRequestHandler.getUrlStr();
     }
 }
