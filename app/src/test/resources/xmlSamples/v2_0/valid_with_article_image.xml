@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+    <channel>
+        <title>Feed title</title>
+        <description>Feed description</description>
+        <link>http://domain.com</link>
+
+        <item>
+            <title>Article title</title>
+            <description>Article text</description>
+            <link>http://domain.com</link>
+            <enclosure url="Article_image_url" length="100" type="image/png" />
+        </item>
+
+        <item>
+            <title>Article title</title>
+            <description>Article text</description>
+            <link>http://domain.com</link>
+            <enclosure url="Article_image_url" length="100" type="image/jpeg" />
+        </item>
+
+    </channel>
+
+</rss>

@@ -1,0 +1,17 @@
+<rss version="2.0">
+
+    <channel>
+        <title>Feed title</title>
+        <description>Feed description</description>
+        <link>http://domain.com</link>
+
+        <item>
+            <title>Article title</title>
+            <description>Article text</description>
+            <link>http://domain.com</link>
+            <pubDate>Sun, 19 May 2002 15:21:36 GMT</pubDate>
+        </item>
+
+    </channel>
+
+</rss>
