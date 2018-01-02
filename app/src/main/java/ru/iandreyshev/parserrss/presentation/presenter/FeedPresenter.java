@@ -1,10 +1,14 @@
 package ru.iandreyshev.parserrss.presentation.presenter;
 
+import android.support.annotation.NonNull;
+
+import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.async.DeleteRssFromDbTask;
 import ru.iandreyshev.parserrss.models.async.GetAllRssFromDbTask;
 import ru.iandreyshev.parserrss.models.async.InsertNewRssTask;
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
-import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 
@@ -15,26 +19,21 @@ import java.util.List;
 
 @InjectViewState
 public final class FeedPresenter extends MvpPresenter<IFeedView> {
-    private final static String TAG = FeedPresenter.class.getName();
     private long mProgressBarUserCount;
 
     public void onInsertRss(final String url) {
         InsertNewRssTask.execute(new InsertRssFromNetListener(), url);
     }
 
-    public void onDeleteRss(final ViewRss rss) {
+    public void onDeleteRss(final IViewRss rss) {
         DeleteRssFromDbTask.execute(new DeletingRssListener(), rss);
     }
 
-    public void openArticle(final ViewRssArticle article) {
+    public void openArticle(final IViewArticle article) {
         getViewState().openArticle(article);
     }
 
-    public void openRssInfo(final ViewRss rss) {
-        if (rss == null) {
-            return;
-        }
-
+    public void openRssInfo(@NonNull final IViewRss rss) {
         getViewState().openRssInfo(rss);
     }
 
@@ -50,17 +49,13 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     }
 
     private class DeletingRssListener implements DeleteRssFromDbTask.IEventListener {
-        private static final String ERROR = "Delete error";
-        private static final String SUCCESS = "Deleting success";
-
         @Override
-        public void onFail(ViewRss rss) {
-            getViewState().showShortToast(ERROR);
+        public void onFail(IViewRss rss) {
+            getViewState().showShortToast(App.getStr(R.string.toast_error_deleting_from_db));
         }
 
         @Override
-        public void onSuccess(ViewRss rss) {
-            getViewState().showShortToast(SUCCESS);
+        public void onSuccess(IViewRss rss) {
             getViewState().removeRss(rss);
         }
 
@@ -70,28 +65,20 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(final ViewRss result) {
+        public void onPostExecute(final IViewRss result) {
             startProgressBar(false);
         }
     }
 
     private class InsertRssFromNetListener implements InsertNewRssTask.IEventListener {
-        private static final String BAD_URL = "Invalid url";
-        private static final String BAD_CONNECTION = "Connection error";
-        private static final String NET_PERMISSION_DENIED = "Internet permission denied";
-        private static final String INVALID_RSS_FORMAT = "Invalid rss format";
-        private static final String DATABASE_ERROR = "Saving error";
-        private static final String DUPLICATE_ERROR = "Rss already exist";
-        private static final String SUCCESS = "Rss inserted";
-
         @Override
         public void onInvalidUrl() {
-            getViewState().showShortToast(BAD_URL);
+            getViewState().showShortToast(App.getStr(R.string.toast_invalid_url));
         }
 
         @Override
         public void onParserError() {
-            getViewState().showShortToast(INVALID_RSS_FORMAT);
+            getViewState().showShortToast(App.getStr(R.string.toast_invalid_rss_format));
         }
 
         @Override
@@ -99,29 +86,28 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
             switch (requestResult.getState()) {
 
                 case BadConnection:
-                    getViewState().showShortToast(BAD_CONNECTION);
+                    getViewState().showShortToast(App.getStr(R.string.toast_bad_connection));
                     break;
 
                 case PermissionDenied:
-                    getViewState().showShortToast(NET_PERMISSION_DENIED);
+                    getViewState().showShortToast(App.getStr(R.string.toast_internet_permission_denied));
                     break;
             }
         }
 
         @Override
         public void onRssAlreadyExist() {
-            getViewState().showShortToast(DUPLICATE_ERROR);
+            getViewState().showShortToast(App.getStr(R.string.toast_rss_already_exist));
         }
 
         @Override
         public void onDatabaseError() {
-            getViewState().showShortToast(DATABASE_ERROR);
+            getViewState().showShortToast(App.getStr(R.string.toast_error_saving_to_db));
         }
 
         @Override
-        public void onSuccess(final ViewRss rss) {
+        public void onSuccess(final IViewRss rss) {
             getViewState().insertRss(rss);
-            getViewState().showShortToast(SUCCESS);
         }
 
         @Override
@@ -130,22 +116,20 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(final ViewRss result) {
+        public void onPostExecute(final IViewRss result) {
             startProgressBar(false);
         }
     }
 
     private class LoadFromDatabaseListener implements GetAllRssFromDbTask.IEventListener {
-        private static final String ERROR = "Loading error";
-
         @Override
         public void onLoadError() {
-            getViewState().showShortToast(ERROR);
+            getViewState().showShortToast(App.getStr(R.string.toast_error_loading_from_db));
         }
 
         @Override
-        public void onSuccess(final List<ViewRss> rssFromDb) {
-            for (final ViewRss rss : rssFromDb) {
+        public void onSuccess(final List<IViewRss> rssFromDb) {
+            for (final IViewRss rss : rssFromDb) {
                 getViewState().insertRss(rss);
             }
         }
@@ -156,7 +140,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
         }
 
         @Override
-        public void onPostExecute(List<ViewRss> result) {
+        public void onPostExecute(List<IViewRss> result) {
             startProgressBar(false);
         }
     }

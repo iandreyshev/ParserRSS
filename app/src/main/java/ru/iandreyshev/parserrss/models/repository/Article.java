@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.rss;
+package ru.iandreyshev.parserrss.models.repository;
 
 import android.graphics.Bitmap;
 import android.os.Parcel;
@@ -11,11 +11,10 @@ import javax.annotation.Nullable;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Transient;
-import ru.iandreyshev.parserrss.app.IBuilder;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 @Entity
-public final class RssArticle extends ViewRssArticle {
-    private static final String TAG = RssArticle.class.getName();
+public final class Article implements IViewArticle {
     private static final Long NULL_DATE = -1L;
 
     @Id
@@ -35,23 +34,28 @@ public final class RssArticle extends ViewRssArticle {
     @Transient
     private Bitmap mImage;
 
-    public static final Creator<RssArticle> CREATOR = new Creator<RssArticle>() {
+    public static final Creator<Article> CREATOR = new Creator<Article>() {
         @Override
-        public RssArticle createFromParcel(Parcel in) {
-            return new RssArticle(in);
+        public Article createFromParcel(Parcel in) {
+            return new Article(in);
         }
 
         @Override
-        public RssArticle[] newArray(int size) {
-            return new RssArticle[size];
+        public Article[] newArray(int size) {
+            return new Article[size];
         }
     };
+
+    public Article(@NonNull final String title) {
+        mTitle = title;
+    }
 
     @Override
     public long getId() {
         return mId;
     }
 
+    @NonNull
     @Override
     public String getTitle() {
         return mTitle;
@@ -82,6 +86,34 @@ public final class RssArticle extends ViewRssArticle {
         return mImageUrl;
     }
 
+    public void setTitle(final String title) {
+        mTitle = title;
+    }
+
+    void setRssId(long id) {
+        mRssId = id;
+    }
+
+    public void setDescription(final String text) {
+        mDescription = text;
+    }
+
+    public void setImage(final Bitmap image) {
+        mImage = image;
+    }
+
+    public void setDate(final Date date) {
+        mPostDate = date.getTime();
+    }
+
+    public void setImageUrl(final String url) {
+        mImageUrl = url;
+    }
+
+    public void setOrigin(final String origin) {
+        mOriginUrl = origin;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -97,10 +129,7 @@ public final class RssArticle extends ViewRssArticle {
         dest.writeLong(mPostDate == null ? NULL_DATE : mPostDate);
     }
 
-    private RssArticle() {
-    }
-
-    private RssArticle(Parcel in) {
+    private Article(Parcel in) {
         mTitle = in.readString();
         mOriginUrl = in.readString();
         mDescription = in.readString();
@@ -109,59 +138,5 @@ public final class RssArticle extends ViewRssArticle {
 
         final Long postDate = in.readLong();
         mPostDate = (postDate.equals(NULL_DATE)) ? null : postDate;
-    }
-
-    void bindRss(final Rss rss) {
-        mRssId = rss.getId();
-    }
-
-    static class Builder implements IBuilder<RssArticle> {
-        private final RssArticle mArticle = new RssArticle();
-
-        Builder(final String title) {
-            mArticle.mTitle = title;
-        }
-
-        Builder setTitle(final String title) {
-            mArticle.mTitle = title;
-
-            return this;
-        }
-
-        Builder setDescription(final String text) {
-            mArticle.mDescription = text;
-
-            return this;
-        }
-
-        Builder setImage(final Bitmap image) {
-            mArticle.mImage = image;
-
-            return this;
-        }
-
-        Builder setDate(final Date date) {
-            mArticle.mPostDate = date.getTime();
-
-            return this;
-        }
-
-        Builder setImageUrl(final String url) {
-            mArticle.mImageUrl = url;
-
-            return this;
-        }
-
-        Builder setOrigin(final String origin) {
-            mArticle.mOriginUrl = origin;
-
-            return this;
-        }
-
-        @NonNull
-        @Override
-        public RssArticle build() {
-            return mArticle;
-        }
     }
 }

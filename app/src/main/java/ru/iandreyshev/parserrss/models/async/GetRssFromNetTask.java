@@ -2,27 +2,25 @@ package ru.iandreyshev.parserrss.models.async;
 
 import javax.annotation.Nullable;
 
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.rss.RssParser;
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
-import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.repository.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 
-abstract class GetRssFromNetTask extends Task<String, Void, ViewRss> {
-    private static final String TAG = GetRssFromNetTask.class.getName();
-
+abstract class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     private HttpRequestHandler mRequestHandler;
     private Rss mNewRss;
     private IEventListener mListener;
 
-    protected interface IEventListener extends ITaskListener<ViewRss> {
+    protected interface IEventListener extends ITaskListener<IViewRss> {
         void onInvalidUrl();
 
         void onNetError(final IHttpRequestResult requestResult);
 
         void onParserError();
 
-        void onSuccess(final ViewRss result);
+        void onSuccess(final IViewRss result);
     }
 
     GetRssFromNetTask(final IEventListener listener, final String url) {
@@ -77,7 +75,7 @@ abstract class GetRssFromNetTask extends Task<String, Void, ViewRss> {
 
     @Nullable
     @Override
-    protected final ViewRss doInBackground(final String... strings) {
+    protected final IViewRss doInBackground(final String... strings) {
         if (!isUrlValid()) {
             onInvalidUrl();
 

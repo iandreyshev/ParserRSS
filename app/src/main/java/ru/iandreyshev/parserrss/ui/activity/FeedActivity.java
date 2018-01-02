@@ -17,13 +17,14 @@ import android.widget.ProgressBar;
 import butterknife.BindView;
 
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
-import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.ui.adapter.FeedTabsAdapter;
 import ru.iandreyshev.parserrss.ui.fragment.AddRssDialog;
+import ru.iandreyshev.parserrss.ui.fragment.RssInfoDialog;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener;
 
@@ -55,18 +56,18 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void insertRss(final ViewRss rss) {
+    public void insertRss(final IViewRss rss) {
         mTabsAdapter.insert(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
     }
 
     @Override
-    public void removeRss(final ViewRss rss) {
+    public void removeRss(final IViewRss rss) {
         mTabsAdapter.remove(rss);
     }
 
     @Override
-    public void openArticle(final ViewRssArticle article) {
+    public void openArticle(final IViewArticle article) {
         final Intent intent = ArticleActivity.getIntent(this)
                 .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, (Parcelable) article)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -106,7 +107,8 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void openRssInfo(final ViewRss feed) {
+    public void openRssInfo(final IViewRss feed) {
+        RssInfoDialog.show(getSupportFragmentManager(), feed);
     }
 
     @Override
@@ -131,7 +133,7 @@ public class FeedActivity extends BaseActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final ViewRss currentRss = mTabsAdapter.getRss(mPager.getCurrentItem());
+        final IViewRss currentRss = mTabsAdapter.getRss(mPager.getCurrentItem());
 
         switch (item.getItemId()) {
             case R.id.feed_options_add:
@@ -149,7 +151,7 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
-    public void onArticleClick(final ViewRssArticle article) {
+    public void onArticleClick(final IViewArticle article) {
         mFeedPresenter.openArticle(article);
     }
 

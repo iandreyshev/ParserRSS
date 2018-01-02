@@ -2,13 +2,13 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.util.Log;
 
-import ru.iandreyshev.parserrss.models.database.RssDatabase;
-import ru.iandreyshev.parserrss.models.rss.Rss;
+import ru.iandreyshev.parserrss.models.repository.Database;
+import ru.iandreyshev.parserrss.models.repository.Rss;
 
 public final class InsertNewRssTask extends GetRssFromNetTask {
     private final static String TAG = InsertNewRssTask.class.getName();
 
-    private final RssDatabase mDatabase = new RssDatabase();
+    private final Database mDatabase = new Database();
     private IEventListener mListener;
 
     public static void execute(final IEventListener listener, final String url) {

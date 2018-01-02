@@ -11,8 +11,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.iandreyshev.parserrss.models.repository.Rss;
+import ru.iandreyshev.parserrss.models.repository.Article;
+
 abstract class RssParseEngine {
-    private static final String TAG = RssParseEngine.class.getName();
     private static final String DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonValidating/load-external-dtd";
     private static final List<SAXBuilder> DOC_BUILDERS = new ArrayList<>();
 
@@ -52,7 +54,7 @@ abstract class RssParseEngine {
     protected abstract Rss parseRss(final Element root) throws Exception;
 
     @NonNull
-    protected abstract ArrayList<RssArticle> parseArticles(final Element root) throws Exception;
+    protected abstract ArrayList<Article> parseArticles(final Element root) throws Exception;
 
     @Nullable
     private static Document toDocument(final String xmlText) {

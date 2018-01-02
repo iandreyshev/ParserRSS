@@ -14,7 +14,7 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
 
@@ -27,9 +27,8 @@ import java.util.Locale;
 
 public class ArticleActivity extends BaseActivity implements IArticleView {
     public static final String ARTICLE_BOUND_KEY = "Article_to_open";
-    private static final String TOOLBAR_TITLE = "Article";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
-    private static final String TAG = "ArticleActivity";
+    private static final String TAG = ArticleActivity.class.getName();
 
     @InjectPresenter
     ArticlePresenter mArticlePresenter;
@@ -82,7 +81,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
             return;
         }
 
-        final ViewRssArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
+        final IViewArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
 
         if (article == null) {
             mArticlePresenter.onErrorLoadArticle();
@@ -94,7 +93,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         initArticle(article);
     }
 
-    private void initArticle(final ViewRssArticle article) {
+    private void initArticle(final IViewArticle article) {
         mTitle.setText(Html.fromHtml(article.getTitle()));
         mText.setText(Html.fromHtml(article.getDescription()));
 
@@ -111,6 +110,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
 
     private void initToolbar() {
         try {
+
             setSupportActionBar(mToolbar);
 
             if (getSupportActionBar() == null) {
@@ -119,10 +119,10 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
 
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setTitle(TOOLBAR_TITLE);
+            getSupportActionBar().setTitle(getString(R.string.article_toolbar_title));
+
         } catch (Exception ex) {
-            Log.e(TAG, "Catch exception then during setup action bar.");
-            ex.printStackTrace();
+            Log.e(TAG, Log.getStackTraceString(ex));
         }
     }
 

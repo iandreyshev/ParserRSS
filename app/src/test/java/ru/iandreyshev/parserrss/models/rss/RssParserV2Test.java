@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ru.iandreyshev.parserrss.TestUtils;
+import ru.iandreyshev.parserrss.models.repository.Rss;
 
 import static org.junit.Assert.*;
 
@@ -65,7 +66,7 @@ public class RssParserV2Test {
 
         assertEquals(2, rss.getViewArticles().size());
 
-        for (final ViewRssArticle article : rss.getViewArticles()) {
+        for (final IViewArticle article : rss.getViewArticles()) {
 
             assertEquals(ARTICLE_TITLE, article.getTitle());
             assertEquals(ARTICLE_TEXT, article.getDescription());
@@ -80,7 +81,7 @@ public class RssParserV2Test {
 
         assertEquals(2, rss.getViewArticles().size());
 
-        for (final ViewRssArticle article : rss.getViewArticles()) {
+        for (final IViewArticle article : rss.getViewArticles()) {
 
             assertEquals(ARTICLE_IMG_URL, article.getImageUrl());
 
@@ -112,7 +113,7 @@ public class RssParserV2Test {
     public void not_parse_articles_image_if_they_do_not_have_url_or_type() {
         final Rss rss = parseFile("valid_with_articles_enclosure_without_required_element");
 
-        for (final ViewRssArticle article : rss.getViewArticles()) {
+        for (final IViewArticle article : rss.getViewArticles()) {
 
             assertNull(article.getImageUrl());
 

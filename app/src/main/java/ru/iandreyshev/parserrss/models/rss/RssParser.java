@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.iandreyshev.parserrss.models.repository.Rss;
+
 public class RssParser {
     private static final List<RssParseEngine> mParsers = new ArrayList<>();
 
