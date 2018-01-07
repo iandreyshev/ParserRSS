@@ -39,7 +39,7 @@
     },
     {
       "id": "2:1887863730840755597",
-      "lastPropertyId": "9:2832279044317439382",
+      "lastPropertyId": "10:6028772999437422509",
       "name": "RssArticle",
       "properties": [
         {
@@ -65,6 +65,10 @@
         {
           "id": "7:4955681863776762729",
           "name": "mPostDate"
+        },
+        {
+          "id": "10:6028772999437422509",
+          "name": "mRssId"
         }
       ],
       "relations": []

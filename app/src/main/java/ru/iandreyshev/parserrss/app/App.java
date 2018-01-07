@@ -6,13 +6,18 @@ import android.util.Log;
 import io.objectbox.BoxStore;
 import io.objectbox.android.AndroidObjectBrowser;
 import io.objectbox.android.BuildConfig;
-import ru.iandreyshev.parserrss.models.rss.MyObjectBox;
+import ru.iandreyshev.parserrss.models.repository.MyObjectBox;
 
 public class App extends Application {
     private static final String TAG = App.class.getName();
     private static final String START_MESSAGE_PATTERN = "Using ObjectBox %s (%s)";
 
+    private static App mInstance;
     private static BoxStore mBoxStore;
+
+    public App() {
+        mInstance = this;
+    }
 
     @Override
     public void onCreate() {
@@ -25,6 +30,10 @@ public class App extends Application {
         }
 
         Log.d(TAG, String.format(START_MESSAGE_PATTERN, BoxStore.getVersion(), BoxStore.getVersionNative()));
+    }
+
+    public static String getStr(int id) {
+        return mInstance.getString(id);
     }
 
     public static BoxStore getBoxStore() {

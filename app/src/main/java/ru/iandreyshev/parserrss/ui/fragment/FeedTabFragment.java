@@ -14,8 +14,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
-import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedTabPresenter;
 import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
 import ru.iandreyshev.parserrss.ui.adapter.ArticlesListAdapter;
@@ -25,13 +25,11 @@ public class FeedTabFragment extends BaseFragment implements IFeedTabView {
     @InjectPresenter
     FeedTabPresenter mPresenter;
 
-    private static final String TAG = FeedTabFragment.class.getName();
-
-    private ViewRss mRss;
+    private IViewRss mRss;
     private ArticlesListAdapter mListAdapter;
     private SwipeRefreshLayout mRefreshLayout;
 
-    public static FeedTabFragment newInstance(final ViewRss rss) {
+    public static FeedTabFragment newInstance(final IViewRss rss) {
         final FeedTabFragment fragment = new FeedTabFragment();
         fragment.mRss = rss;
 
@@ -61,7 +59,7 @@ public class FeedTabFragment extends BaseFragment implements IFeedTabView {
     }
 
     @Override
-    public void setArticles(final List<ViewRssArticle> newArticles) {
+    public void setArticles(final List<IViewArticle> newArticles) {
         mListAdapter.setArticles(newArticles);
     }
 

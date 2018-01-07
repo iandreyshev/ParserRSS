@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import ru.iandreyshev.parserrss.TestUtils;
+import ru.iandreyshev.parserrss.models.repository.Rss;
+import ru.iandreyshev.parserrss.models.repository.Article;
 
 import static org.junit.Assert.*;
 
@@ -26,7 +28,7 @@ public class RssParserTest {
 
             @NonNull
             @Override
-            protected ArrayList<RssArticle> parseArticles(Element root) throws Exception {
+            protected ArrayList<Article> parseArticles(Element root) throws Exception {
                 fail();
 
                 return null;
@@ -40,7 +42,7 @@ public class RssParserTest {
 
             @NonNull
             @Override
-            protected ArrayList<RssArticle> parseArticles(Element root) throws Exception {
+            protected ArrayList<Article> parseArticles(Element root) throws Exception {
                 throw new UnsupportedOperationException();
             }
         };

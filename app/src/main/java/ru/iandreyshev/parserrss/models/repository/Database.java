@@ -1,7 +1,6 @@
-package ru.iandreyshev.parserrss.models.database;
+package ru.iandreyshev.parserrss.models.repository;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,25 +9,19 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.exception.DbException;
 import ru.iandreyshev.parserrss.app.App;
-import ru.iandreyshev.parserrss.models.rss.Rss;
-import ru.iandreyshev.parserrss.models.rss.RssArticle;
-import ru.iandreyshev.parserrss.models.rss.RssArticle_;
-import ru.iandreyshev.parserrss.models.rss.Rss_;
 
-public class RssDatabase {
-    private static final String TAG = RssDatabase.class.getName();
-
+public class Database {
     private final BoxStore mBoxStore = App.getBoxStore();
     private Box<Rss> mRssBox;
-    private Box<RssArticle> mArticleBox;
+    private Box<Article> mArticleBox;
 
-    public RssDatabase() throws DbException {
+    public Database() throws DbException {
         if (mBoxStore == null) {
             throw new DbException("Box-store is null in constructor");
         }
 
         mRssBox = mBoxStore.boxFor(Rss.class);
-        mArticleBox = mBoxStore.boxFor(RssArticle.class);
+        mArticleBox = mBoxStore.boxFor(Article.class);
     }
 
     public long getRssCount(final String url) {
@@ -38,17 +31,15 @@ public class RssDatabase {
     @NonNull
     public List<Rss> getAllRss() throws Exception {
         return mBoxStore.callInTx(() -> {
-            Log.e(TAG, String.format("During get all, articles count is %s", mArticleBox.count()));
             final ArrayList<Rss> result = new ArrayList<>();
 
             for (final Rss rss : mRssBox.getAll()) {
-                final List<RssArticle> articles = mArticleBox.query()
-                        .equal(RssArticle_.mRssId, rss.getId())
+                final List<Article> articles = mArticleBox.query()
+                        .equal(Article_.mRssId, rss.getId())
                         .build()
                         .find();
                 rss.setArticles(articles);
                 result.add(rss);
-                Log.e(TAG, String.format("Load rss with %s articles", rss.getViewArticles().size()));
             }
 
             return result;
@@ -67,11 +58,11 @@ public class RssDatabase {
             }
 
             mArticleBox.query()
-                    .equal(RssArticle_.mRssId, rss.getId())
+                    .equal(Article_.mRssId, rss.getId())
                     .build()
                     .remove();
             mRssBox.put(rss);
-            rss.bindArticles();
+            bindArticles(rss);
             mArticleBox.put(rss.getArticles());
 
             return true;
@@ -90,11 +81,11 @@ public class RssDatabase {
             }
 
             newRss.setId(rssWithSameUrl.getId());
-            newRss.bindArticles();
+            bindArticles(newRss);
             mRssBox.put(newRss);
 
             mArticleBox.query()
-                    .equal(RssArticle_.mRssId, newRss.getId())
+                    .equal(Article_.mRssId, newRss.getId())
                     .build()
                     .remove();
             mArticleBox.put(newRss.getArticles());
@@ -107,9 +98,15 @@ public class RssDatabase {
         mBoxStore.runInTx(() -> {
             mRssBox.remove(rssId);
             mArticleBox.query()
-                    .equal(RssArticle_.mRssId, rssId)
+                    .equal(Article_.mRssId, rssId)
                     .build()
                     .remove();
         });
+    }
+
+    private void bindArticles(final Rss rss) {
+        for (final Article article : rss.getArticles()) {
+            article.setRssId(rss.getId());
+        }
     }
 }

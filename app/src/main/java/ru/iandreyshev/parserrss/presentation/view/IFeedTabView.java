@@ -5,12 +5,12 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import java.util.List;
 
-import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 public interface IFeedTabView extends IBaseView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void startUpdate(boolean isStart);
 
     @StateStrategyType(AddToEndSingleStrategy.class)
-    void setArticles(final List<ViewRssArticle> newArticles);
+    void setArticles(final List<IViewArticle> newArticles);
 }

@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.app.IEvent;
-import ru.iandreyshev.parserrss.models.database.RssDatabase;
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.models.repository.Database;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 
-public final class GetAllRssFromDbTask extends Task<Void, Void, List<ViewRss>> {
+public final class GetAllRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
     private static final String TAG = GetAllRssFromDbTask.class.getName();
 
-    private final RssDatabase mDatabase = new RssDatabase();
-    private final List<ViewRss> mResult = new ArrayList<>();
+    private final Database mDatabase = new Database();
+    private final List<IViewRss> mResult = new ArrayList<>();
     private IEventListener mListener;
     private IEvent mResultEvent;
 
@@ -25,15 +25,15 @@ public final class GetAllRssFromDbTask extends Task<Void, Void, List<ViewRss>> {
         task.execute();
     }
 
-    public interface IEventListener extends ITaskListener<List<ViewRss>> {
+    public interface IEventListener extends ITaskListener<List<IViewRss>> {
         void onLoadError();
 
-        void onSuccess(final List<ViewRss> rssFromDb);
+        void onSuccess(final List<IViewRss> rssFromDb);
     }
 
     @NonNull
     @Override
-    protected List<ViewRss> doInBackground(Void... voids) {
+    protected List<IViewRss> doInBackground(Void... voids) {
         try {
 
             mResult.addAll(mDatabase.getAllRss());
@@ -49,7 +49,7 @@ public final class GetAllRssFromDbTask extends Task<Void, Void, List<ViewRss>> {
     }
 
     @Override
-    protected void onPostExecute(List<ViewRss> result) {
+    protected void onPostExecute(List<IViewRss> result) {
         super.onPostExecute(result);
         mResultEvent.doEvent();
     }

@@ -5,18 +5,18 @@ import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
-import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 public interface IFeedView extends IBaseView {
     @StateStrategyType(AddToEndStrategy.class)
-    void insertRss(final ViewRss rss);
+    void insertRss(final IViewRss rss);
 
     @StateStrategyType(AddToEndStrategy.class)
-    void removeRss(final ViewRss rss);
+    void removeRss(final IViewRss rss);
 
     @StateStrategyType(SkipStrategy.class)
-    void openArticle(final ViewRssArticle article);
+    void openArticle(final IViewArticle article);
 
     @StateStrategyType(SkipStrategy.class)
     void openAddingRssDialog();
@@ -34,5 +34,5 @@ public interface IFeedView extends IBaseView {
     void enableInfoButton(boolean isEnable);
 
     @StateStrategyType(SkipStrategy.class)
-    void openRssInfo(final ViewRss rss);
+    void openRssInfo(final IViewRss rss);
 }

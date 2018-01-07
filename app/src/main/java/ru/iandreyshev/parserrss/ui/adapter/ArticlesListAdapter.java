@@ -15,15 +15,14 @@ import java.util.List;
 import java.util.Locale;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.ViewRssArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
-    private static final String TAG = ArticlesListAdapter.class.getName();
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     private final LayoutInflater mInflater;
-    private final List<ViewRssArticle> mArticles = new ArrayList<>();
+    private final List<IViewArticle> mArticles = new ArrayList<>();
     private IOnArticleClickListener mArticleClickListener;
 
     public ArticlesListAdapter(Context context) {
@@ -34,7 +33,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         mArticleClickListener = listener;
     }
 
-    public void setArticles(final List<ViewRssArticle> newItems) {
+    public void setArticles(final List<IViewArticle> newItems) {
         mArticles.clear();
         mArticles.addAll(newItems);
         notifyDataSetChanged();
@@ -49,7 +48,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final ViewRssArticle article = mArticles.get(position);
+        final IViewArticle article = mArticles.get(position);
 
         if (article != null) {
             holder.setContent(article);
@@ -62,7 +61,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private ViewRssArticle mContent;
+        private IViewArticle mContent;
         private final TextView mTitle;
         private final TextView mDescription;
         private final TextView mDate;
@@ -85,7 +84,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             });
         }
 
-        void setContent(ViewRssArticle content) {
+        void setContent(IViewArticle content) {
             this.mContent = content;
 
             mTitle.setText(Html.fromHtml(mContent.getTitle()));

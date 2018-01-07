@@ -5,18 +5,18 @@ import android.util.Log;
 import javax.annotation.Nullable;
 
 import ru.iandreyshev.parserrss.app.IEvent;
-import ru.iandreyshev.parserrss.models.database.RssDatabase;
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.models.repository.Database;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 
-public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
+public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
     private static final String TAG = DeleteRssFromDbTask.class.getName();
 
-    private final RssDatabase mDatabase = new RssDatabase();
+    private final Database mDatabase = new Database();
     private IEventListener mListener;
-    private ViewRss mRssToDelete;
+    private IViewRss mRssToDelete;
     private IEvent mResultEvent;
 
-    public static void execute(final IEventListener listener, final ViewRss rssToDelete) {
+    public static void execute(final IEventListener listener, final IViewRss rssToDelete) {
         if (rssToDelete == null) {
             return;
         }
@@ -28,15 +28,15 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
         task.execute();
     }
 
-    public interface IEventListener extends ITaskListener<ViewRss> {
-        void onFail(final ViewRss rss);
+    public interface IEventListener extends ITaskListener<IViewRss> {
+        void onFail(final IViewRss rss);
 
-        void onSuccess(final ViewRss rss);
+        void onSuccess(final IViewRss rss);
     }
 
     @Nullable
     @Override
-    protected ViewRss doInBackground(final ViewRss... rssToDelete) {
+    protected IViewRss doInBackground(final IViewRss... rssToDelete) {
         try {
 
             mDatabase.removeRss(mRssToDelete.getId());
@@ -51,7 +51,7 @@ public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
     }
 
     @Override
-    protected void onPostExecute(final ViewRss result) {
+    protected void onPostExecute(final IViewRss result) {
         super.onPostExecute(mRssToDelete);
         mResultEvent.doEvent();
     }

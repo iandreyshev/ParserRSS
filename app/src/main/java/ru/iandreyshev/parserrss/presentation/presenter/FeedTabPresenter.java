@@ -1,23 +1,21 @@
 package ru.iandreyshev.parserrss.presentation.presenter;
 
-import android.util.Log;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
+import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.async.UpdateRssFromNetTask;
-import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
 
 @InjectViewState
 public class FeedTabPresenter extends MvpPresenter<IFeedTabView> {
-    private static final String TAG = FeedTabPresenter.class.getName();
+    private IViewRss mRss;
 
-    private ViewRss mRss;
-
-    public void init(final ViewRss rss) {
-        if (rss == null) {
+    public void init(final IViewRss rss) {
+        if (mRss != null) {
             return;
         }
 
@@ -35,37 +33,29 @@ public class FeedTabPresenter extends MvpPresenter<IFeedTabView> {
     }
 
     private class UpdateFromNetListener implements UpdateRssFromNetTask.IEventListener {
-        private static final String BAD_CONNECTION = "Connection error";
-        private static final String BAD_URL = "Invalid url";
-        private static final String NET_PERMISSION_DENIED = "Internet permission denied";
-        private static final String PARSER_ERROR = "Invalid rss format";
-        private static final String DATABASE_ERROR = "Saving error";
-        private static final String RSS_WAS_DELETED = "Rss not exist";
-
         @Override
         public void onPreExecute() {
             getViewState().startUpdate(true);
         }
 
         @Override
-        public void onPostExecute(final ViewRss result) {
-            Log.e(TAG, "Stop update");
+        public void onPostExecute(final IViewRss result) {
             getViewState().startUpdate(false);
         }
 
         @Override
         public void onRssNotExist() {
-            getViewState().showShortToast(RSS_WAS_DELETED);
+            getViewState().showShortToast(App.getStr(R.string.toast_rss_not_exist));
         }
 
         @Override
         public void onDatabaseError() {
-            getViewState().showShortToast(DATABASE_ERROR);
+            getViewState().showShortToast(App.getStr(R.string.toast_error_saving_to_db));
         }
 
         @Override
         public void onInvalidUrl() {
-            getViewState().showShortToast(BAD_URL);
+            getViewState().showShortToast(App.getStr(R.string.toast_invalid_url));
         }
 
         @Override
@@ -73,22 +63,22 @@ public class FeedTabPresenter extends MvpPresenter<IFeedTabView> {
             switch (requestResult.getState()) {
 
                 case BadConnection:
-                    getViewState().showShortToast(BAD_CONNECTION);
+                    getViewState().showShortToast(App.getStr(R.string.toast_bad_connection));
                     break;
 
                 case PermissionDenied:
-                    getViewState().showShortToast(NET_PERMISSION_DENIED);
+                    getViewState().showShortToast(App.getStr(R.string.toast_internet_permission_denied));
                     break;
             }
         }
 
         @Override
         public void onParserError() {
-            getViewState().showShortToast(PARSER_ERROR);
+            getViewState().showShortToast(App.getStr(R.string.toast_invalid_rss_format));
         }
 
         @Override
-        public void onSuccess(final ViewRss result) {
+        public void onSuccess(final IViewRss result) {
             getViewState().setArticles(result.getViewArticles());
         }
     }

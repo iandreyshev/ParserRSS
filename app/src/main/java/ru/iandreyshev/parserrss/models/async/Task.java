@@ -9,7 +9,7 @@ abstract class Task<T, U, V> extends AsyncTask<T, U, V> {
     private ITaskListener<V> mListener;
     private IEvent mResultEvent;
 
-    protected void setTaskListener(final ITaskListener<V> listener) {
+    void setTaskListener(final ITaskListener<V> listener) {
         mListener = listener;
     }
 
@@ -32,7 +32,7 @@ abstract class Task<T, U, V> extends AsyncTask<T, U, V> {
         }
     }
 
-    protected void setResultEvent(final IEvent resultEvent) {
+    void setResultEvent(final IEvent resultEvent) {
         mResultEvent = resultEvent;
     }
 }
