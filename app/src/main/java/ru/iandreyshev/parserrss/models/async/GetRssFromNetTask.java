@@ -30,12 +30,15 @@ abstract class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     protected void onInvalidUrl() {
+        // Implement in subclasses if it need
     }
 
     protected void onNetError(final IHttpRequestResult requestResult) {
+        // Implement in subclasses if it need
     }
 
     protected void onParserError() {
+        // Implement in subclasses if it need
     }
 
     protected abstract Rss onSuccess(final Rss rss);

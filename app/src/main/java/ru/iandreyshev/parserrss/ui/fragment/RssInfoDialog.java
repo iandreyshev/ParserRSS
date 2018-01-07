@@ -32,7 +32,7 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
 
         final Dialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setNeutralButton(R.string.rss_info_dialog_button, null)
+                .setPositiveButton(R.string.rss_info_dialog_button, null)
                 .create();
 
         setCancelable(false);

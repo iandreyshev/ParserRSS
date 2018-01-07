@@ -50,6 +50,9 @@ public final class Article implements IViewArticle {
         mTitle = title;
     }
 
+    Article() {
+    }
+
     @Override
     public long getId() {
         return mId;

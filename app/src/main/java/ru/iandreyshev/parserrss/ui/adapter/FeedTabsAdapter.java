@@ -2,13 +2,14 @@ package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
 
-public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
+public class FeedTabsAdapter extends FragmentStatePagerAdapter {
     private static final String CUT_TITLE_PATTERN = "%s...";
     private static final int MAX_TITLE_LENGTH = 16;
 

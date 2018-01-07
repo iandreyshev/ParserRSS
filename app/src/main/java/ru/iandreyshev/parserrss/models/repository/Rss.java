@@ -31,6 +31,9 @@ public final class Rss implements IViewRss {
         mTitle = title;
     }
 
+    Rss() {
+    }
+
     @Override
     public long getId() {
         return mId;
