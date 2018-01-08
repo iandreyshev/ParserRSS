@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.app.IEvent;
+import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.repository.Database;
+import ru.iandreyshev.parserrss.models.repository.Rss;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 
 public final class GetAllRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
@@ -36,8 +38,10 @@ public final class GetAllRssFromDbTask extends Task<Void, Void, List<IViewRss>> 
     protected List<IViewRss> doInBackground(Void... voids) {
         try {
 
-            mResult.addAll(mDatabase.getAllRss());
-            Log.e(TAG, String.format("Take %s rss feeds", mResult.size()));
+            for (final Rss rss : mDatabase.getAllRss()) {
+                rss.setArticles(Utils.sortByDateDESC(rss.getArticles()));
+                mResult.add(rss);
+            }
             mResultEvent = () -> mListener.onSuccess(mResult);
 
         } catch (Exception ex) {

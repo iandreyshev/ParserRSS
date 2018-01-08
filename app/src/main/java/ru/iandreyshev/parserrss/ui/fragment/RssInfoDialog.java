@@ -1,6 +1,9 @@
 package ru.iandreyshev.parserrss.ui.fragment;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -13,13 +16,16 @@ import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.web.Url;
 
 public class RssInfoDialog extends MvpAppCompatDialogFragment {
     private IViewRss mRss;
+    private Uri mLinkToOriginal;
 
     public static void show(final FragmentManager fragmentManager, @NonNull final IViewRss rss) {
         final RssInfoDialog dialog = new RssInfoDialog();
         dialog.mRss = rss;
+        dialog.mLinkToOriginal = rss.getOrigin() == null ? null : Uri.parse(rss.getOrigin());
         dialog.show(fragmentManager, RssInfoDialog.class.getName());
     }
 
@@ -30,10 +36,15 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
         final View view = inflater.inflate(R.layout.rss_info_dialog, null);
         initViewContent(view);
 
-        return new AlertDialog.Builder(getActivity())
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setPositiveButton(R.string.rss_info_dialog_button, null)
-                .create();
+                .setPositiveButton(R.string.rss_info_dialog_button, null);
+
+        if (mLinkToOriginal != null) {
+            builder.setNeutralButton(R.string.rss_info_open_original_button, this::onOpenOriginalButtonClick);
+        }
+
+        return builder.create();
     }
 
     private void initViewContent(final View view) {
@@ -44,5 +55,9 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
             final TextView description = view.findViewById(R.id.rss_info_description);
             description.setText(mRss.getDescription());
         }
+    }
+
+    public void onOpenOriginalButtonClick(DialogInterface dialog, int which) {
+        startActivity(new Intent(Intent.ACTION_VIEW, mLinkToOriginal));
     }
 }

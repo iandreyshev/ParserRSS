@@ -67,7 +67,7 @@ public final class Rss implements IViewRss {
     }
 
     @NonNull
-    List<Article> getArticles() {
+    public List<Article> getArticles() {
         return mArticles;
     }
 
