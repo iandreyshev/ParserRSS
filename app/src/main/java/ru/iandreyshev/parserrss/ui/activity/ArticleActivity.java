@@ -27,6 +27,7 @@ import java.util.Locale;
 
 public class ArticleActivity extends BaseActivity implements IArticleView {
     public static final String ARTICLE_BOUND_KEY = "Article_to_open";
+    private static final long DEFAULT_ARTICLE_ID = 0;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
     private static final String TAG = ArticleActivity.class.getName();
 
@@ -93,16 +94,8 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
 
         ButterKnife.bind(this);
 
-        final Bundle extras = getIntent().getExtras();
-
-        if (extras == null) {
-            mArticlePresenter.onErrorLoadArticle();
-
-            return;
-        }
-
         initToolbar();
-        mArticlePresenter.onLoadArticle(extras.getLong(ARTICLE_BOUND_KEY));
+        initArticle();
     }
 
     private void initToolbar() {
@@ -115,6 +108,11 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    private void initArticle() {
+        long articleId = getIntent().getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID);
+        mArticlePresenter.setArticleId(articleId);
     }
 
     private void setViewVisible(View view, boolean isVisible) {

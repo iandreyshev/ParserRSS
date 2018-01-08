@@ -12,13 +12,15 @@ import com.arellomobile.mvp.MvpPresenter;
 
 @InjectViewState
 public class ArticlePresenter extends MvpPresenter<IArticleView> {
-    public void onErrorLoadArticle() {
-        getViewState().showShortToast(App.getStr(R.string.article_error_load));
-        getViewState().openFeed();
-    }
+    private Long mArticleId;
 
-    public void onLoadArticle(long articleId) {
-        GetArticleFromDbTask.execute(articleId, new GetArticleFromDbListener());
+    public void setArticleId(long articleId) {
+        if (mArticleId != null) {
+            return;
+        }
+
+        mArticleId = articleId;
+        GetArticleFromDbTask.execute(mArticleId, new GetArticleFromDbListener());
     }
 
     private class GetArticleFromDbListener implements ITaskListener<IViewArticle> {
@@ -32,7 +34,8 @@ public class ArticlePresenter extends MvpPresenter<IArticleView> {
             getViewState().startProgressBar(false);
 
             if (result == null) {
-                onErrorLoadArticle();
+                getViewState().showShortToast(App.getStr(R.string.article_error_load));
+                getViewState().openFeed();
             } else {
                 getViewState().initArticle(result);
             }

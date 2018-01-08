@@ -11,7 +11,7 @@ import java.util.TreeSet;
 import ru.iandreyshev.parserrss.models.repository.Article;
 import ru.iandreyshev.parserrss.models.repository.Rss;
 
-public class Utils {
+public final class Utils {
     private static final String CUT_TAB_TITLE_PATTERN = "%s...";
     private static final int MAX_TAB_TITLE_LINE_LENGTH = 16;
 

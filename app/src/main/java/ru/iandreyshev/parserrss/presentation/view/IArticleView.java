@@ -15,6 +15,6 @@ public interface IArticleView extends IBaseView {
     @StateStrategyType(AddToEndSingleStrategy.class)
     void startProgressBar(boolean isStart);
 
-    @StateStrategyType(SkipStrategy.class)
+    @StateStrategyType(AddToEndSingleStrategy.class)
     void initArticle(@NonNull final IViewArticle article);
 }
