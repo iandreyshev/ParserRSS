@@ -74,18 +74,21 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     private class InsertRssFromNetListener implements InsertNewRssTask.IEventListener {
         @Override
         public void onInvalidUrl() {
+            Log.e(getClass().getName(), "URL");
             getViewState().showShortToast(App.getStr(R.string.toast_invalid_url));
         }
 
         @Override
         public void onParserError() {
+            Log.e(getClass().getName(), "Parser");
             getViewState().showShortToast(App.getStr(R.string.toast_invalid_rss_format));
         }
 
         @Override
         public void onNetError(final IHttpRequestResult requestResult) {
-            switch (requestResult.getState()) {
+            Log.e(getClass().getName(), "Net");
 
+            switch (requestResult.getState()) {
                 case BadConnection:
                     getViewState().showShortToast(App.getStr(R.string.toast_bad_connection));
                     break;
@@ -103,6 +106,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
 
         @Override
         public void onDatabaseError() {
+            Log.e(getClass().getName(), "OnDB");
             getViewState().showShortToast(App.getStr(R.string.toast_error_saving_to_db));
         }
 
