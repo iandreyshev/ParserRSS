@@ -46,7 +46,7 @@ public class FeedTabFragment extends BaseFragment implements IFeedTabView {
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstantState) {
         final View view = inflater.inflate(R.layout.feed_list, viewGroup, false);
 
-        initListAdapter();
+        initListAdapter(view);
         initRefreshLayout(view);
         initRecyclerView(view);
 
@@ -63,8 +63,8 @@ public class FeedTabFragment extends BaseFragment implements IFeedTabView {
         mListAdapter.setArticles(newArticles);
     }
 
-    private void initListAdapter() {
-        mListAdapter = new ArticlesListAdapter(getContext());
+    private void initListAdapter(final View fragmentView) {
+        mListAdapter = new ArticlesListAdapter(getContext(), fragmentView.findViewById(R.id.feed_items_list));
         mListAdapter.setArticleClickListener((IOnArticleClickListener) getContext());
     }
 

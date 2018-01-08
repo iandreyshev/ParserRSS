@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:text="@string/add_feed_dialog_title"
-        android:textAllCaps="true"
-        android:textColor="@color/colorBlack"
+        android:textColor="@color/primaryDarkText"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -22,5 +21,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/add_feed_dialog_link_placeholder"
-        android:inputType="textPersonName" />
+        android:inputType="textUri" />
 </LinearLayout>

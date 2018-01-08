@@ -90,4 +90,14 @@ public final class Rss implements IViewRss {
     public void setOrigin(final String origin) {
         mOrigin = origin;
     }
+
+    @Override
+    public final boolean equals(Object other) {
+        return (other instanceof Rss) && mUrl.equals(((Rss) other).mUrl);
+    }
+
+    @Override
+    public final int hashCode() {
+        return mUrl.hashCode();
+    }
 }

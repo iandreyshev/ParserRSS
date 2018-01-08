@@ -30,14 +30,10 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
         final View view = inflater.inflate(R.layout.rss_info_dialog, null);
         initViewContent(view);
 
-        final Dialog dialog = new AlertDialog.Builder(getActivity())
+        return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setPositiveButton(R.string.rss_info_dialog_button, null)
                 .create();
-
-        setCancelable(false);
-
-        return dialog;
     }
 
     private void initViewContent(final View view) {

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3f51b5</color>
-    <color name="colorPrimaryDark">#303f9f</color>
-    <color name="colorAccent">#fffefe</color>
+    <color name="statusBarBackground">#060A0F</color>
+    <color name="toolBarBackground">#181E27</color>
+    <color name="toolbarMenuBackground">#FFF</color>
 
-    <color name="colorYellow">#e89f40</color>
-    <color name="colorBlack">#000000</color>
-    <color name="colorGray">#4d5257</color>
-    <color name="colorWhite">#f8f4f3</color>
-    <color name="colorRed">#c84334</color>
+    <color name="tabsIndicator">#FFF</color>
+
+    <color name="primaryLightText">#FFF</color>
+    <color name="secondaryLightText">#aaaaaa</color>
+
+    <color name="primaryDarkText">#000</color>
+    <color name="secondaryDarkText">#555</color>
 </resources>

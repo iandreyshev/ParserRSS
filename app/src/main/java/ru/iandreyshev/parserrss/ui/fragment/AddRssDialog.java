@@ -32,15 +32,11 @@ public class AddRssDialog extends MvpAppCompatDialogFragment implements DialogIn
         final View view = inflater.inflate(R.layout.add_feed_dialog, null);
         mField = view.findViewById(R.id.add_feed_dialog_url_field);
 
-        final Dialog dialog = new AlertDialog.Builder(getActivity())
+        return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setPositiveButton(R.string.add_feed_dialog_submit_button, this)
                 .setNegativeButton(R.string.add_feed_dialog_cancel_button, null)
                 .create();
-
-        setCancelable(false);
-
-        return dialog;
     }
 
     @Override

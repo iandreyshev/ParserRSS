@@ -2,17 +2,14 @@ package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 
+import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
 
-public class FeedTabsAdapter extends FragmentStatePagerAdapter {
-    private static final String CUT_TITLE_PATTERN = "%s...";
-    private static final int MAX_TITLE_LENGTH = 16;
-
+public class FeedTabsAdapter extends SmartFragmentStatePagerAdapter {
     private final ArrayList<IViewRss> mRssList = new ArrayList<>();
 
     public FeedTabsAdapter(final FragmentManager manager) {
@@ -49,18 +46,13 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title = getRss(position).getTitle();
-
-        if (title.length() > MAX_TITLE_LENGTH) {
-            title = title.substring(0, MAX_TITLE_LENGTH - 1);
-            title = String.format(CUT_TITLE_PATTERN, title);
-        }
-
-        return title;
+        return Utils.truncateTabsTitle(getRss(position).getTitle());
     }
 
     @Override
     public int getItemPosition(final Object item) {
-        return POSITION_NONE;
+        int position = mRssList.indexOf(item);
+
+        return position < 0 ? POSITION_NONE : position;
     }
 }

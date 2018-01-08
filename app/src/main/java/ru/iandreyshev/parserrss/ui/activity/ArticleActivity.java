@@ -109,21 +109,15 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     }
 
     private void initToolbar() {
-        try {
+        mToolbar.setTitle(getString(R.string.article_toolbar_title));
+        setSupportActionBar(mToolbar);
 
-            setSupportActionBar(mToolbar);
-
-            if (getSupportActionBar() == null) {
-                return;
-            }
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setTitle(getString(R.string.article_toolbar_title));
-
-        } catch (Exception ex) {
-            Log.e(TAG, Log.getStackTraceString(ex));
+        if (getSupportActionBar() == null) {
+            return;
         }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void setViewVisible(View view, boolean isVisible) {

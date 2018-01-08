@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -30,21 +31,20 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class FeedActivity extends BaseActivity
-        implements IFeedView, IOnArticleClickListener, IOnSubmitAddRssListener {
-    private static final String TAG = FeedActivity.class.getName();
-
+public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleClickListener, IOnSubmitAddRssListener {
     @InjectPresenter
     FeedPresenter mFeedPresenter;
 
     @BindView(R.id.feed_toolbar)
     Toolbar mToolbar;
-    @BindView(R.id.feed_progress_bar)
-    ProgressBar mProgressBar;
     @BindView(R.id.feed_tabs_layout)
     TabLayout mTabs;
     @BindView(R.id.feed_view_pager)
     ViewPager mPager;
+    @BindView(R.id.feed_content_message_layout)
+    ConstraintLayout mContentMessageLayout;
+    @BindView(R.id.feed_progress_bar)
+    ProgressBar mProgressBar;
 
     private FeedTabsAdapter mTabsAdapter;
     private MenuItem mMenuAddButton;
@@ -59,11 +59,13 @@ public class FeedActivity extends BaseActivity
     public void insertRss(final IViewRss rss) {
         mTabsAdapter.insert(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
+        onFeedUpdate();
     }
 
     @Override
     public void removeRss(final IViewRss rss) {
         mTabsAdapter.remove(rss);
+        onFeedUpdate();
     }
 
     @Override
@@ -87,23 +89,17 @@ public class FeedActivity extends BaseActivity
 
     @Override
     public void enableAddingButton(boolean isEnable) {
-        if (mMenuAddButton != null) {
-            mMenuAddButton.setEnabled(isEnable);
-        }
+        mMenuAddButton.setEnabled(isEnable);
     }
 
     @Override
     public void enableDeleteButton(boolean isEnable) {
-        if (mMenuDeleteButton != null) {
-            mMenuDeleteButton.setEnabled(isEnable);
-        }
+        mMenuDeleteButton.setEnabled(isEnable);
     }
 
     @Override
     public void enableInfoButton(boolean isEnable) {
-        if (mMenuInfoButton != null) {
-            mMenuInfoButton.setEnabled(isEnable);
-        }
+        mMenuInfoButton.setEnabled(isEnable);
     }
 
     @Override
@@ -161,6 +157,15 @@ public class FeedActivity extends BaseActivity
     }
 
     @Override
+    public void onFeedUpdate() {
+        boolean isFeedEmpty = mTabsAdapter.getCount() == 0;
+
+        mContentMessageLayout.setVisibility(isFeedEmpty ? View.VISIBLE : View.GONE);
+        mPager.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
+        mTabs.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -170,8 +175,9 @@ public class FeedActivity extends BaseActivity
 
         initToolbar();
         initTabsView();
+        initContentMessage();
 
-        Log.e(TAG, "End create");
+        onFeedUpdate();
     }
 
     private void initToolbar() {
@@ -184,5 +190,9 @@ public class FeedActivity extends BaseActivity
         mTabsAdapter = new FeedTabsAdapter(getSupportFragmentManager());
         mPager.setAdapter(mTabsAdapter);
         mTabs.setupWithViewPager(mPager, true);
+    }
+
+    private void initContentMessage() {
+        mContentMessageLayout.setOnClickListener(v -> openAddingRssDialog());
     }
 }

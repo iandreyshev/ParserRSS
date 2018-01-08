@@ -1,6 +1,7 @@
 package ru.iandreyshev.parserrss.presentation.presenter;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.app.App;
