@@ -2,6 +2,7 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.util.Log;
 
+import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.repository.Rss;
 
@@ -42,6 +43,7 @@ public final class UpdateRssFromNetTask extends GetRssFromNetTask {
         try {
 
             if (mDatabase.updateRssWithSameUrl(rss)) {
+                rss.setArticles(Utils.sortByDateDESC(rss.getArticles()));
                 setResultEvent(() -> mListener.onSuccess(rss));
             } else {
                 setResultEvent(() -> mListener.onRssNotExist());

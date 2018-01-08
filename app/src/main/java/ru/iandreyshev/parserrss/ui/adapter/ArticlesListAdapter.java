@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +20,19 @@ import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
+    private static final int MIN_SCROLL_SPEED_TO_LOAD_IMAGE = 30;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     private final LayoutInflater mInflater;
     private final List<IViewArticle> mArticles = new ArrayList<>();
     private IOnArticleClickListener mArticleClickListener;
+    private RecyclerView mListView;
 
-    public ArticlesListAdapter(Context context) {
+    public ArticlesListAdapter(Context context, final RecyclerView listView) {
         mInflater = LayoutInflater.from(context);
+        mListView = listView;
+
+        mListView.addOnScrollListener(new ListScrollListener());
     }
 
     public void setArticleClickListener(final IOnArticleClickListener listener) {
@@ -104,6 +110,13 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             if (mContent.getPostDate() != null) {
                 mDate.setText(DATE_FORMAT.format(mContent.getPostDate()));
             }
+        }
+    }
+
+    private class ListScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            Log.e(getClass().getName(), Integer.toString(dy));
         }
     }
 }

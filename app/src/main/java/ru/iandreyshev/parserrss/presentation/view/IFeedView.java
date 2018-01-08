@@ -35,4 +35,7 @@ public interface IFeedView extends IBaseView {
 
     @StateStrategyType(SkipStrategy.class)
     void openRssInfo(final IViewRss rss);
+
+    @StateStrategyType(SkipStrategy.class)
+    void onFeedUpdate();
 }

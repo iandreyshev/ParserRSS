@@ -17,7 +17,7 @@ import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.ui.activity.FeedActivity;
 import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener;
 
-public class AddRssDialog extends MvpAppCompatDialogFragment implements DialogInterface.OnClickListener {
+public class AddRssDialog extends MvpAppCompatDialogFragment {
     private IOnSubmitAddRssListener mOnSubmitListener;
     private EditText mField;
 
@@ -32,19 +32,14 @@ public class AddRssDialog extends MvpAppCompatDialogFragment implements DialogIn
         final View view = inflater.inflate(R.layout.add_feed_dialog, null);
         mField = view.findViewById(R.id.add_feed_dialog_url_field);
 
-        final Dialog dialog = new AlertDialog.Builder(getActivity())
+        return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setPositiveButton(R.string.add_feed_dialog_submit_button, this)
+                .setPositiveButton(R.string.add_feed_dialog_submit_button, this::onAddButtonClick)
                 .setNegativeButton(R.string.add_feed_dialog_cancel_button, null)
                 .create();
-
-        setCancelable(false);
-
-        return dialog;
     }
 
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public void onAddButtonClick(DialogInterface dialog, int which) {
         if (mOnSubmitListener != null) {
             mOnSubmitListener.onSubmitAddRss(mField.getText().toString());
         }

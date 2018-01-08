@@ -2,6 +2,7 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.util.Log;
 
+import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.repository.Rss;
 
@@ -19,11 +20,6 @@ public final class InsertNewRssTask extends GetRssFromNetTask {
         void onRssAlreadyExist();
 
         void onDatabaseError();
-    }
-
-    protected void setTaskListener(final IEventListener listener) {
-        super.setTaskListener(listener);
-        mListener = listener;
     }
 
     @Override
@@ -47,6 +43,7 @@ public final class InsertNewRssTask extends GetRssFromNetTask {
         try {
 
             if (mDatabase.putRssIfSameUrlNotExist(rss)) {
+                rss.setArticles(Utils.sortByDateDESC(rss.getArticles()));
                 setResultEvent(() -> mListener.onSuccess(rss));
             } else {
                 setResultEvent(() -> mListener.onRssAlreadyExist());
