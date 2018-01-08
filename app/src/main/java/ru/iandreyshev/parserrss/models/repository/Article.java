@@ -34,18 +34,6 @@ public final class Article implements IViewArticle {
     @Transient
     private Bitmap mImage;
 
-    public static final Creator<Article> CREATOR = new Creator<Article>() {
-        @Override
-        public Article createFromParcel(Parcel in) {
-            return new Article(in);
-        }
-
-        @Override
-        public Article[] newArray(int size) {
-            return new Article[size];
-        }
-    };
-
     public Article(@NonNull final String title) {
         mTitle = title;
     }
@@ -115,31 +103,5 @@ public final class Article implements IViewArticle {
 
     public void setOrigin(final String origin) {
         mOriginUrl = origin;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mTitle);
-        dest.writeString(mOriginUrl);
-        dest.writeString(mDescription);
-        dest.writeParcelable(mImage, flags);
-        dest.writeString(mImageUrl);
-        dest.writeLong(mPostDate == null ? NULL_DATE : mPostDate);
-    }
-
-    private Article(Parcel in) {
-        mTitle = in.readString();
-        mOriginUrl = in.readString();
-        mDescription = in.readString();
-        mImage = in.readParcelable(Bitmap.class.getClassLoader());
-        mImageUrl = in.readString();
-
-        final Long postDate = in.readLong();
-        mPostDate = (postDate.equals(NULL_DATE)) ? null : postDate;
     }
 }

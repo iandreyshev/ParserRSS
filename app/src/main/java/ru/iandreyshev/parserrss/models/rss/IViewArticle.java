@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
-public interface IViewArticle extends Parcelable, Serializable {
+public interface IViewArticle {
     long getId();
 
     @NonNull

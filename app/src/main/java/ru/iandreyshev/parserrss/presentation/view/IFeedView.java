@@ -16,7 +16,7 @@ public interface IFeedView extends IBaseView {
     void removeRss(final IViewRss rss);
 
     @StateStrategyType(SkipStrategy.class)
-    void openArticle(final IViewArticle article);
+    void openArticle(long articleId);
 
     @StateStrategyType(SkipStrategy.class)
     void openAddingRssDialog();

@@ -6,8 +6,8 @@
         android:id="@+id/feed_options_add"
         android:orderInCategory="0"
         android:title="@string/feed_options_add"
-        app:showAsAction="always|collapseActionView"
-        app:icon="@drawable/ic_add_circle_outline_black_24dp"/>
+        android:icon="@drawable/ic_add_rss"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/feed_options_info"

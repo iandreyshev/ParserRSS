@@ -3,8 +3,8 @@ package ru.iandreyshev.parserrss.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Html;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -57,12 +57,32 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     }
 
     @Override
+    public void startProgressBar(boolean isStart) {
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
             openFeed();
         }
 
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public void initArticle(@NonNull final IViewArticle article) {
+        mTitle.setText(Html.fromHtml(article.getTitle()));
+        mText.setText(Html.fromHtml(article.getDescription()));
+
+        setViewVisible(mImage, (article.getImage() != null));
+        setViewVisible(mDate, (article.getPostDate() != null));
+
+        if (article.getImage() != null) {
+            mImage.setImageBitmap(article.getImage());
+        }
+        if (article.getPostDate() != null) {
+            mDate.setText(DATE_FORMAT.format(article.getPostDate()));
+        }
     }
 
     @Override
@@ -81,31 +101,8 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
             return;
         }
 
-        final IViewArticle article = extras.getParcelable(ARTICLE_BOUND_KEY);
-
-        if (article == null) {
-            mArticlePresenter.onErrorLoadArticle();
-
-            return;
-        }
-
         initToolbar();
-        initArticle(article);
-    }
-
-    private void initArticle(final IViewArticle article) {
-        mTitle.setText(Html.fromHtml(article.getTitle()));
-        mText.setText(Html.fromHtml(article.getDescription()));
-
-        setViewVisible(mImage, (article.getImage() != null));
-        setViewVisible(mDate, (article.getPostDate() != null));
-
-        if (article.getImage() != null) {
-            mImage.setImageBitmap(article.getImage());
-        }
-        if (article.getPostDate() != null) {
-            mDate.setText(DATE_FORMAT.format(article.getPostDate()));
-        }
+        mArticlePresenter.onLoadArticle(extras.getLong(ARTICLE_BOUND_KEY));
     }
 
     private void initToolbar() {

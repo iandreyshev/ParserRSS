@@ -29,14 +29,14 @@ public class HttpRequestHandler implements IHttpRequestResult {
         setUrl(urlString);
     }
 
-    public void sendGet() {
-        if (mState == State.BadUrl) {
-            return;
+    public State sendGet() {
+        if (mState != State.BadUrl) {
+            send(new Request.Builder()
+                    .url(mUrl.getInstance())
+                    .build());
         }
 
-        send(new Request.Builder()
-                .url(mUrl.getInstance())
-                .build());
+        return mState;
     }
 
     @NonNull

@@ -31,7 +31,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     }
 
     public void openArticle(final IViewArticle article) {
-        getViewState().openArticle(article);
+        getViewState().openArticle(article.getId());
     }
 
     public void openRssInfo(@NonNull final IViewRss rss) {

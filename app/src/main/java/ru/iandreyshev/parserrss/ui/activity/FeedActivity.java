@@ -8,7 +8,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,9 +68,9 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     }
 
     @Override
-    public void openArticle(final IViewArticle article) {
+    public void openArticle(long articleId) {
         final Intent intent = ArticleActivity.getIntent(this)
-                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, (Parcelable) article)
+                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, articleId)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         startActivity(intent);
@@ -175,7 +174,6 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
 
         initToolbar();
         initTabsView();
-        initContentMessage();
 
         onFeedUpdate();
     }
@@ -190,9 +188,5 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
         mTabsAdapter = new FeedTabsAdapter(getSupportFragmentManager());
         mPager.setAdapter(mTabsAdapter);
         mTabs.setupWithViewPager(mPager, true);
-    }
-
-    private void initContentMessage() {
-        mContentMessageLayout.setOnClickListener(v -> openAddingRssDialog());
     }
 }

@@ -24,7 +24,7 @@ abstract class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     GetRssFromNetTask(final IEventListener listener, final String url) {
-        setTaskListener(listener);
+        super(listener);
         mRequestHandler = new HttpRequestHandler(url);
         mListener = listener;
     }

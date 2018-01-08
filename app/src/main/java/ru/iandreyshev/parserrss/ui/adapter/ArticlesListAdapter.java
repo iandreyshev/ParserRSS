@@ -1,6 +1,8 @@
 package ru.iandreyshev.parserrss.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -10,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.PresenterType;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +22,9 @@ import java.util.Locale;
 
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
+import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter;
+import ru.iandreyshev.parserrss.presentation.view.IFeedItemView;
+import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 
 public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
@@ -26,13 +34,10 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
     private final LayoutInflater mInflater;
     private final List<IViewArticle> mArticles = new ArrayList<>();
     private IOnArticleClickListener mArticleClickListener;
-    private RecyclerView mListView;
 
     public ArticlesListAdapter(Context context, final RecyclerView listView) {
         mInflater = LayoutInflater.from(context);
-        mListView = listView;
-
-        mListView.addOnScrollListener(new ListScrollListener());
+        listView.addOnScrollListener(new ListScrollListener());
     }
 
     public void setArticleClickListener(final IOnArticleClickListener listener) {
@@ -66,7 +71,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         return mArticles.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements IFeedItemView {
         private IViewArticle mContent;
         private final TextView mTitle;
         private final TextView mDescription;
@@ -110,6 +115,19 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             if (mContent.getPostDate() != null) {
                 mDate.setText(DATE_FORMAT.format(mContent.getPostDate()));
             }
+        }
+
+        @Override
+        public void showShortToast(String message) {
+        }
+
+        @Override
+        public void showLongToast(String message) {
+        }
+
+        @Override
+        public void insertImage(@NonNull Bitmap bitmap) {
+            mImage.setImageBitmap(bitmap);
         }
     }
 

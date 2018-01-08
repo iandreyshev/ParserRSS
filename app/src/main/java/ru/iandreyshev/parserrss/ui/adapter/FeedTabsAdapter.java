@@ -3,15 +3,17 @@ package ru.iandreyshev.parserrss.ui.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
 
 public class FeedTabsAdapter extends FragmentStatePagerAdapter {
-    private final ArrayList<IViewRss> mRssList = new ArrayList<>();
+    private final List<IViewRss> mRssList = new ArrayList<>();
 
     public FeedTabsAdapter(final FragmentManager manager) {
         super(manager);
@@ -23,8 +25,9 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
     }
 
     public void remove(final IViewRss rss) {
-        mRssList.remove(rss);
-        notifyDataSetChanged();
+        if (mRssList.remove(rss)) {
+            notifyDataSetChanged();
+        }
     }
 
     public IViewRss getRss(int position) {
@@ -52,8 +55,6 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(final Object item) {
-        int position = mRssList.indexOf(item);
-
-        return position < 0 ? POSITION_NONE : position;
+        return PagerAdapter.POSITION_NONE;
     }
 }

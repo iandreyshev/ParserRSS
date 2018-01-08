@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.PresenterType;
 
 import java.util.List;
 
@@ -17,11 +18,14 @@ import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedTabPresenter;
+import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter;
 import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
 import ru.iandreyshev.parserrss.ui.adapter.ArticlesListAdapter;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 
 public class FeedTabFragment extends BaseFragment implements IFeedTabView {
+    @InjectPresenter(type = PresenterType.GLOBAL, tag = "glimg")
+    ImagesLoadPresenter mImageLoadPresenter;
     @InjectPresenter
     FeedTabPresenter mPresenter;
 
@@ -34,6 +38,10 @@ public class FeedTabFragment extends BaseFragment implements IFeedTabView {
         fragment.mRss = rss;
 
         return fragment;
+    }
+
+    public IViewRss getRss() {
+        return mRss;
     }
 
     @Override
