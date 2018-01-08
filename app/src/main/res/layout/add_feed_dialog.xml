@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/add_feed_dialog_layout"
     android:layout_width="match_parent"
@@ -21,5 +22,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/add_feed_dialog_link_placeholder"
-        android:inputType="textUri" />
+        android:inputType="textUri"
+        android:theme="@style/AppTheme.AddRssDialog" />
 </LinearLayout>

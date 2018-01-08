@@ -11,4 +11,5 @@
 
     <color name="primaryDarkText">#000</color>
     <color name="secondaryDarkText">#555</color>
+    <color name="accentDark">#2980B9</color>
 </resources>

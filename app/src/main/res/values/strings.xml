@@ -12,7 +12,7 @@
     <string name="feed_options_info">Info</string>
     <string name="feed_options_delete">Delete</string>
 
-    <string name="add_feed_dialog_title">New feed</string>
+    <string name="add_feed_dialog_title">New RSS</string>
     <string name="add_feed_dialog_link_placeholder">URL</string>
     <string name="add_feed_dialog_submit_button">OK</string>
     <string name="add_feed_dialog_cancel_button">Cancel</string>

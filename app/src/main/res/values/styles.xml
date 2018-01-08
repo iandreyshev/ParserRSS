@@ -2,7 +2,11 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimaryDark">@color/statusBarBackground</item>
-        <item name="colorAccent">@color/primaryDarkText</item>
+        <item name="colorAccent">@color/accentDark</item>
+    </style>
+
+    <style name="AppTheme.AddRssDialog" parent="AppTheme">
+        <item name="colorAccent">@color/secondaryDarkText</item>
     </style>
 
     <style name="ToolbarCardViewStyle" parent="Theme.AppCompat.Light">
