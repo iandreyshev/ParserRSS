@@ -26,13 +26,10 @@ public class ArticlePresenter extends MvpPresenter<IArticleView> {
     private class GetArticleFromDbListener implements ITaskListener<IViewArticle> {
         @Override
         public void onPreExecute() {
-            getViewState().startProgressBar(true);
         }
 
         @Override
         public void onPostExecute(final IViewArticle result) {
-            getViewState().startProgressBar(false);
-
             if (result == null) {
                 getViewState().showShortToast(App.getStr(R.string.article_error_load));
                 getViewState().openFeed();

@@ -12,32 +12,42 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.PresenterType;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import ru.iandreyshev.parserrss.R;
+import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter;
 import ru.iandreyshev.parserrss.presentation.view.IFeedItemView;
-import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
+import ru.iandreyshev.parserrss.ui.listeners.IOnImageInsertListener;
+import ru.iandreyshev.parserrss.ui.listeners.IOnImageRequestListener;
 
-public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ViewHolder> {
-    private static final int MIN_SCROLL_SPEED_TO_LOAD_IMAGE = 30;
+public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapter.ListItem> {
+    private static final int MIN_SCROLL_SPEED_TO_LOAD_IMAGE = 20;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     private final LayoutInflater mInflater;
     private final List<IViewArticle> mArticles = new ArrayList<>();
     private IOnArticleClickListener mArticleClickListener;
+    private IOnImageRequestListener mOnImageRequestListener;
+    private int mScrollVelocity;
 
     public ArticlesListAdapter(Context context, final RecyclerView listView) {
         mInflater = LayoutInflater.from(context);
-        listView.addOnScrollListener(new ListScrollListener());
+        listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                mScrollVelocity = Math.abs(dy);
+            }
+        });
+    }
+
+    public void setImageRequestListener(final IOnImageRequestListener listener) {
+        mOnImageRequestListener = listener;
     }
 
     public void setArticleClickListener(final IOnArticleClickListener listener) {
@@ -51,19 +61,23 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
     }
 
     @Override
-    public ArticlesListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ListItem onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = mInflater.inflate(R.layout.feed_item, parent, false);
 
-        return new ViewHolder(view, mArticleClickListener);
+        return new ListItem(view, mArticleClickListener);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        final IViewArticle article = mArticles.get(position);
+    public void onBindViewHolder(ListItem holder, int position) {
+        holder.setContent(mArticles.get(position));
 
-        if (article != null) {
-            holder.setContent(article);
+        if (mOnImageRequestListener != null && mScrollVelocity < MIN_SCROLL_SPEED_TO_LOAD_IMAGE) {
+            mOnImageRequestListener.loadImage(holder.mContent, holder);
         }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(ListItem holder){
     }
 
     @Override
@@ -71,7 +85,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         return mArticles.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements IFeedItemView {
+    class ListItem extends RecyclerView.ViewHolder implements IOnImageInsertListener {
         private IViewArticle mContent;
         private final TextView mTitle;
         private final TextView mDescription;
@@ -79,7 +93,7 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         private final ImageView mImage;
         private final IOnArticleClickListener mClickListener;
 
-        ViewHolder(View view, IOnArticleClickListener clickListener) {
+        ListItem(View view, IOnArticleClickListener clickListener) {
             super(view);
 
             mTitle = view.findViewById(R.id.item_title);
@@ -101,13 +115,13 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
             mTitle.setText(Html.fromHtml(mContent.getTitle()));
             mDescription.setText(Html.fromHtml(mContent.getDescription()));
 
-            loadImage();
+            loadImage(Utils.toBitmap(mContent.getImage()));
             loadDate();
         }
 
-        void loadImage() {
-            if (mContent.getImage() != null) {
-                mImage.setImageBitmap(mContent.getImage());
+        void loadImage(final Bitmap image) {
+            if (image != null) {
+                mImage.setImageBitmap(image);
             }
         }
 
@@ -118,23 +132,8 @@ public class ArticlesListAdapter extends RecyclerView.Adapter<ArticlesListAdapte
         }
 
         @Override
-        public void showShortToast(String message) {
-        }
-
-        @Override
-        public void showLongToast(String message) {
-        }
-
-        @Override
-        public void insertImage(@NonNull Bitmap bitmap) {
-            mImage.setImageBitmap(bitmap);
-        }
-    }
-
-    private class ListScrollListener extends RecyclerView.OnScrollListener {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            Log.e(getClass().getName(), Integer.toString(dy));
+        public void insert(@NonNull final Bitmap image) {
+            loadImage(image);
         }
     }
 }

@@ -2,47 +2,48 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import ru.iandreyshev.parserrss.models.repository.Database;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 
-public final class GetImageFromNetTask extends Task<String, Void, Bitmap> {
-    private IEventListener mListener;
+public final class GetImageFromNetTask extends Task<IViewArticle, Void, Bitmap> {
+    private static final String TAG = GetImageFromNetTask.class.getName();
+
+    private final Database mDatabase = new Database();
     private HttpRequestHandler mRequestHandler;
+    private IViewArticle mArticle;
 
-    public static void execute(final String url, final IEventListener listener) {
+    public static void execute(final IViewArticle article, final ITaskListener<Bitmap> listener) {
         final GetImageFromNetTask task = new GetImageFromNetTask(listener);
-        task.mListener = listener;
-        task.mRequestHandler = new HttpRequestHandler(url);
-        task.executeOnExecutor(TaskExecutor.getInstance());
-    }
-
-    public interface IEventListener extends ITaskListener<Bitmap> {
-        void onSuccess(@NonNull final Bitmap bitmap);
+        task.mArticle = article;
+        task.mRequestHandler = new HttpRequestHandler(article.getImageUrl());
+        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     @Nullable
     @Override
-    protected Bitmap doInBackground(final String... strings) {
+    protected Bitmap doInBackground(final IViewArticle... articles) {
         final HttpRequestHandler.State result = mRequestHandler.sendGet();
+        byte[] image = mRequestHandler.getResponseBody();
 
-        if (result != HttpRequestHandler.State.Success || mRequestHandler.getResponseBody() == null) {
+        if (result != HttpRequestHandler.State.Success || image == null) {
+            Log.e(getClass().getName(), result.toString());
             return null;
         }
 
-        byte[] data = mRequestHandler.getResponseBody().getBytes();
+        try {
+            mDatabase.updateArticleImage(mArticle.getId(), image);
+            mArticle.setImage(image);
+        } catch (Exception ex) {
+            Log.e(TAG, Log.getStackTraceString(ex));
 
-        return BitmapFactory.decodeByteArray(data, 0, data.length);
-    }
-
-    @Override
-    protected void onPostExecute(final Bitmap result) {
-        super.onPostExecute(result);
-
-        if (result != null && mListener != null) {
-            mListener.onSuccess(result);
+            return null;
         }
+
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
     private GetImageFromNetTask(final ITaskListener<Bitmap> listener) {

@@ -24,7 +24,7 @@ public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
         final DeleteRssFromDbTask task = new DeleteRssFromDbTask(listener);
         task.mListener = listener;
         task.mRssToDelete = rssToDelete;
-        task.executeOnExecutor(TaskExecutor.getInstance());
+        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     public interface IEventListener extends ITaskListener<IViewRss> {

@@ -14,7 +14,7 @@ public final class GetArticleFromDbTask extends Task<Long, Void, IViewArticle> {
     public static void execute(long id, final ITaskListener<IViewArticle> listener) {
         final GetArticleFromDbTask task = new GetArticleFromDbTask(listener);
         task.mArticleId = id;
-        task.executeOnExecutor(TaskExecutor.getInstance());
+        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     @Override

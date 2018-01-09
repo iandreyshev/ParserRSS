@@ -1,6 +1,9 @@
 package ru.iandreyshev.parserrss.app;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,5 +54,14 @@ public final class Utils {
         sortedSet.addAll(list);
 
         return new ArrayList<>(sortedSet);
+    }
+
+    @Nullable
+    public static Bitmap toBitmap(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 }

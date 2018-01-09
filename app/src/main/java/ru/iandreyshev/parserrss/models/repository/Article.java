@@ -1,7 +1,5 @@
 package ru.iandreyshev.parserrss.models.repository;
 
-import android.graphics.Bitmap;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import java.util.Date;
@@ -10,13 +8,10 @@ import javax.annotation.Nullable;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Transient;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 @Entity
 public final class Article implements IViewArticle {
-    private static final Long NULL_DATE = -1L;
-
     @Id
     long mId;
     long mRssId;
@@ -30,9 +25,8 @@ public final class Article implements IViewArticle {
     String mImageUrl;
     @Nullable
     Long mPostDate;
-
-    @Transient
-    private Bitmap mImage;
+    @Nullable
+    byte[] mImage;
 
     public Article(@NonNull final String title) {
         mTitle = title;
@@ -68,7 +62,7 @@ public final class Article implements IViewArticle {
     }
 
     @Override
-    public Bitmap getImage() {
+    public byte[] getImage() {
         return mImage;
     }
 
@@ -89,7 +83,8 @@ public final class Article implements IViewArticle {
         mDescription = text;
     }
 
-    public void setImage(final Bitmap image) {
+    @Override
+    public void setImage(final byte[] image) {
         mImage = image;
     }
 

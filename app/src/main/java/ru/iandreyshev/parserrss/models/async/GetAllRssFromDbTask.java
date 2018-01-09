@@ -23,7 +23,7 @@ public final class GetAllRssFromDbTask extends Task<Void, Void, List<IViewRss>> 
     public static void execute(final IEventListener listener) {
         final GetAllRssFromDbTask task = new GetAllRssFromDbTask(listener);
         task.mListener = listener;
-        task.executeOnExecutor(TaskExecutor.getInstance());
+        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     public interface IEventListener extends ITaskListener<List<IViewRss>> {

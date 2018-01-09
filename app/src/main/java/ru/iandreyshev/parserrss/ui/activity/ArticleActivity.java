@@ -2,6 +2,8 @@ package ru.iandreyshev.parserrss.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Html;
@@ -14,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
@@ -58,10 +61,6 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     }
 
     @Override
-    public void startProgressBar(boolean isStart) {
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
             openFeed();
@@ -79,7 +78,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
         setViewVisible(mDate, (article.getPostDate() != null));
 
         if (article.getImage() != null) {
-            mImage.setImageBitmap(article.getImage());
+            mImage.setImageBitmap(Utils.toBitmap(article.getImage()));
         }
         if (article.getPostDate() != null) {
             mDate.setText(DATE_FORMAT.format(article.getPostDate()));

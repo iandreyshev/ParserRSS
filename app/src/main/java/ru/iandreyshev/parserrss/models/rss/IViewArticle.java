@@ -1,10 +1,6 @@
 package ru.iandreyshev.parserrss.models.rss;
 
-import android.graphics.Bitmap;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
-import java.io.Serializable;
 
 public interface IViewArticle {
     long getId();
@@ -18,7 +14,9 @@ public interface IViewArticle {
 
     Long getPostDate();
 
-    Bitmap getImage();
+    byte[] getImage();
 
     String getImageUrl();
+
+    void setImage(byte[] image);
 }

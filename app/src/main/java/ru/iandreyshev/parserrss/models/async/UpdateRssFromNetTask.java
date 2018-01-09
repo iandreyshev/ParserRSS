@@ -13,7 +13,7 @@ public final class UpdateRssFromNetTask extends GetRssFromNetTask {
     private IEventListener mListener;
 
     public static void execute(final IEventListener listener, final String url) {
-        new UpdateRssFromNetTask(listener, url).executeOnExecutor(TaskExecutor.getInstance());
+        new UpdateRssFromNetTask(listener, url).executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     public interface IEventListener extends GetRssFromNetTask.IEventListener {

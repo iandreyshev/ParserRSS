@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.repository;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -10,6 +11,7 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.exception.DbException;
 import ru.iandreyshev.parserrss.app.App;
+import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 public class Database {
     private final BoxStore mBoxStore = App.getBoxStore();
@@ -32,6 +34,12 @@ public class Database {
     @Nullable
     public Article getArticleById(long id) throws Exception {
         return mArticleBox.get(id);
+    }
+
+    public void updateArticleImage(long id, byte[] bytes) throws Exception {
+        final Article article = mArticleBox.get(id);
+        article.setImage(bytes);
+        mArticleBox.put(article);
     }
 
     @NonNull
@@ -81,7 +89,7 @@ public class Database {
                     .equal(Rss_.mUrl, newRss.getUrl())
                     .build()
                     .findFirst();
-
+    
             if (rssWithSameUrl == null) {
                 return false;
             }

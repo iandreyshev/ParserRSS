@@ -13,7 +13,7 @@ public final class InsertNewRssTask extends GetRssFromNetTask {
     private IEventListener mListener;
 
     public static void execute(final IEventListener listener, final String url) {
-        new InsertNewRssTask(listener, url).executeOnExecutor(TaskExecutor.getInstance());
+        new InsertNewRssTask(listener, url).executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     public interface IEventListener extends GetRssFromNetTask.IEventListener {
