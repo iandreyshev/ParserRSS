@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.models.async;
 
-interface ITaskListener<T> {
+public interface ITaskListener<T> {
     void onPreExecute();
 
     void onPostExecute(T result);

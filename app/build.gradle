@@ -52,7 +52,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }
 
-task copyResDirectoryToClasses(type: Copy){
+task copyResDirectoryToClasses(type: Copy) {
     from "${projectDir}/src/test/res"
     into "${buildDir}/intermediates/classes/test/debug/res"
 }

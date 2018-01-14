@@ -24,7 +24,7 @@ abstract class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     GetRssFromNetTask(final IEventListener listener, final String url) {
-        setTaskListener(listener);
+        super(listener);
         mRequestHandler = new HttpRequestHandler(url);
         mListener = listener;
     }
@@ -66,12 +66,13 @@ abstract class GetRssFromNetTask extends Task<String, Void, IViewRss> {
     }
 
     protected boolean parseRss() {
-        if ((mNewRss = RssParser.parse(mRequestHandler.getResponseBody())) != null) {
+        if ((mNewRss = RssParser.parse(mRequestHandler.getResponseBodyAsString())) != null) {
             mNewRss.setUrl(mRequestHandler.getUrlStr());
-            setResultEvent(() -> mListener.onParserError());
 
             return true;
         }
+
+        setResultEvent(() -> mListener.onParserError());
 
         return false;
     }

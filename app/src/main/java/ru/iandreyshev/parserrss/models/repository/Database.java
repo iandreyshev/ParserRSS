@@ -1,6 +1,7 @@
 package ru.iandreyshev.parserrss.models.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,22 @@ public class Database {
 
     public long getRssCount(final String url) {
         return mRssBox.find(Rss_.mUrl, url).size();
+    }
+
+    @Nullable
+    public Rss getRssById(long id) throws Exception {
+        return mRssBox.get(id);
+    }
+
+    @Nullable
+    public Article getArticleById(long id) throws Exception {
+        return mArticleBox.get(id);
+    }
+
+    public void updateArticleImage(long id, byte[] bytes) throws Exception {
+        final Article article = mArticleBox.get(id);
+        article.setImage(bytes);
+        mArticleBox.put(article);
     }
 
     @NonNull

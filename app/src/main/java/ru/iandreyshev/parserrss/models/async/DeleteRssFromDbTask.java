@@ -21,11 +21,10 @@ public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
             return;
         }
 
-        final DeleteRssFromDbTask task = new DeleteRssFromDbTask();
-        task.setTaskListener(listener);
+        final DeleteRssFromDbTask task = new DeleteRssFromDbTask(listener);
         task.mListener = listener;
         task.mRssToDelete = rssToDelete;
-        task.execute();
+        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     public interface IEventListener extends ITaskListener<IViewRss> {
@@ -56,6 +55,7 @@ public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
         mResultEvent.doEvent();
     }
 
-    private DeleteRssFromDbTask() {
+    private DeleteRssFromDbTask(final ITaskListener<IViewRss> listener) {
+        super(listener);
     }
 }

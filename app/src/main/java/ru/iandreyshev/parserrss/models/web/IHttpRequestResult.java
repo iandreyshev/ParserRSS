@@ -16,7 +16,10 @@ public interface IHttpRequestResult {
     HttpRequestHandler.State getState();
 
     @Nullable
-    String getResponseBody();
+    String getResponseBodyAsString();
+
+    @Nullable
+    byte[] getResponseBody();
 
     @Nullable
     String getUrlStr();

@@ -13,8 +13,10 @@ public interface IViewRss extends Serializable {
 
     String getDescription();
 
+    @NonNull
     String getUrl();
 
+    @NonNull
     String getOrigin();
 
     @NonNull

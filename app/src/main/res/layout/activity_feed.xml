@@ -1,103 +1,99 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/feed_common_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        style="@style/ToolbarCardViewStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/ToolbarCardViewStyle" >
+        android:layout_height="wrap_content">
 
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/feed_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/toolBarBackground"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/feed_toolbar_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="@style/ToolbarTextAppearance"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/feed_progress_bar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/feed_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
+                    android:theme="@style/FeedProgressBarTheme"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/feed_tabs_layout"
+            style="@style/FeedTabsTheme"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            app:tabGravity="fill"
+            app:tabMode="scrollable" />
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/feed_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/toolBarBackground"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <TextView
-                        android:id="@+id/feed_toolbar_title"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/feed_title"
-                        android:textAppearance="@style/ToolbarTextAppearance"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/feed_progress_bar"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ProgressBar
-                        android:id="@+id/feed_progress_bar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginTop="15dp"
-                        android:theme="@style/FeedProgressBarTheme"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </android.support.constraint.ConstraintLayout>
-
-            </android.support.v7.widget.Toolbar>
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/feed_tabs_layout"
-                style="@style/FeedTabsTheme"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:tabGravity="fill"
-                app:tabMode="scrollable" />
-
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/feed_content_message_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <TextView
-            android:id="@+id/feed_content_message"
+            android:id="@+id/feed_content_message_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/feed_content_message"
+            android:text="@string/feed_content_message_title"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/secondaryLightText"
             android:textSize="18sp"
-            android:textStyle="italic"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/feed_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="visible">
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v4.view.ViewPager>
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.PresenterType;
 
 import java.util.List;
 
@@ -34,6 +35,10 @@ public class FeedTabFragment extends BaseFragment implements IFeedTabView {
         fragment.mRss = rss;
 
         return fragment;
+    }
+
+    public IViewRss getRss() {
+        return mRss;
     }
 
     @Override

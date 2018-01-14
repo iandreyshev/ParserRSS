@@ -1,7 +1,5 @@
 package ru.iandreyshev.parserrss.models.repository;
 
-import android.graphics.Bitmap;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import java.util.Date;
@@ -10,44 +8,28 @@ import javax.annotation.Nullable;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Transient;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 @Entity
 public final class Article implements IViewArticle {
-    private static final Long NULL_DATE = -1L;
-
     @Id
     long mId;
     long mRssId;
 
     String mTitle;
-    @Nullable
     String mOriginUrl;
-    @Nullable
     String mDescription;
     @Nullable
     String mImageUrl;
     @Nullable
     Long mPostDate;
+    @Nullable
+    byte[] mImage;
 
-    @Transient
-    private Bitmap mImage;
-
-    public static final Creator<Article> CREATOR = new Creator<Article>() {
-        @Override
-        public Article createFromParcel(Parcel in) {
-            return new Article(in);
-        }
-
-        @Override
-        public Article[] newArray(int size) {
-            return new Article[size];
-        }
-    };
-
-    public Article(@NonNull final String title) {
+    public Article(@NonNull String title, @NonNull String description, @NonNull String originUrl) {
         mTitle = title;
+        mDescription = description;
+        mOriginUrl = originUrl;
     }
 
     Article() {
@@ -65,11 +47,13 @@ public final class Article implements IViewArticle {
     }
 
     @Override
+    @NonNull
     public String getOriginUrl() {
         return mOriginUrl;
     }
 
     @Override
+    @NonNull
     public String getDescription() {
         return mDescription;
     }
@@ -80,13 +64,17 @@ public final class Article implements IViewArticle {
     }
 
     @Override
-    public Bitmap getImage() {
+    public byte[] getImage() {
         return mImage;
     }
 
     @Override
     public String getImageUrl() {
         return mImageUrl;
+    }
+
+    public Long getRssId() {
+        return mRssId;
     }
 
     public void setTitle(final String title) {
@@ -101,7 +89,8 @@ public final class Article implements IViewArticle {
         mDescription = text;
     }
 
-    public void setImage(final Bitmap image) {
+    @Override
+    public void setImage(final byte[] image) {
         mImage = image;
     }
 
@@ -118,28 +107,12 @@ public final class Article implements IViewArticle {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public final boolean equals(Object other) {
+        return (other instanceof Article) && mOriginUrl.equals(((Article) other).mOriginUrl);
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mTitle);
-        dest.writeString(mOriginUrl);
-        dest.writeString(mDescription);
-        dest.writeParcelable(mImage, flags);
-        dest.writeString(mImageUrl);
-        dest.writeLong(mPostDate == null ? NULL_DATE : mPostDate);
-    }
-
-    private Article(Parcel in) {
-        mTitle = in.readString();
-        mOriginUrl = in.readString();
-        mDescription = in.readString();
-        mImage = in.readParcelable(Bitmap.class.getClassLoader());
-        mImageUrl = in.readString();
-
-        final Long postDate = in.readLong();
-        mPostDate = (postDate.equals(NULL_DATE)) ? null : postDate;
+    public final int hashCode() {
+        return mOriginUrl.hashCode();
     }
 }

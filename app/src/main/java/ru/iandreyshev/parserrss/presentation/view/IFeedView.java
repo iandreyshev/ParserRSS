@@ -6,7 +6,6 @@ import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 public interface IFeedView extends IBaseView {
     @StateStrategyType(AddToEndStrategy.class)
@@ -16,7 +15,7 @@ public interface IFeedView extends IBaseView {
     void removeRss(final IViewRss rss);
 
     @StateStrategyType(SkipStrategy.class)
-    void openArticle(final IViewArticle article);
+    void openArticle(long articleId);
 
     @StateStrategyType(SkipStrategy.class)
     void openAddingRssDialog();

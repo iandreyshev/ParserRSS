@@ -3,5 +3,5 @@ package ru.iandreyshev.parserrss.ui.listeners;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 public interface IOnArticleClickListener {
-    void onArticleClick(final IViewArticle article);
+    void onArticleClick(IViewArticle article);
 }

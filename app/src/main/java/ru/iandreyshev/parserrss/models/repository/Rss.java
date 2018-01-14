@@ -21,14 +21,14 @@ public final class Rss implements IViewRss {
     String mTitle;
     @Index
     String mUrl;
-    @Nullable
     String mOrigin;
     @Nullable
     String mDescription;
     List<Article> mArticles = new ArrayList<>();
 
-    public Rss(@NonNull final String title) {
+    public Rss(@NonNull final String title, @NonNull final String origin) {
         mTitle = title;
+        mOrigin = origin;
     }
 
     Rss() {
@@ -51,11 +51,13 @@ public final class Rss implements IViewRss {
     }
 
     @Override
+    @NonNull
     public String getUrl() {
         return mUrl;
     }
 
     @Override
+    @NonNull
     public String getOrigin() {
         return mOrigin;
     }

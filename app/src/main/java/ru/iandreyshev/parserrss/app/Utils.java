@@ -1,17 +1,18 @@
 package ru.iandreyshev.parserrss.app;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import ru.iandreyshev.parserrss.models.repository.Article;
-import ru.iandreyshev.parserrss.models.repository.Rss;
 
-public class Utils {
+public final class Utils {
     private static final String CUT_TAB_TITLE_PATTERN = "%s...";
     private static final int MAX_TAB_TITLE_LINE_LENGTH = 16;
 
@@ -51,5 +52,14 @@ public class Utils {
         sortedSet.addAll(list);
 
         return new ArrayList<>(sortedSet);
+    }
+
+    @Nullable
+    public static Bitmap toBitmap(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 }

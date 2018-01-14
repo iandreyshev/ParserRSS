@@ -22,21 +22,21 @@ public class HttpRequestHandler implements IHttpRequestResult {
             .writeTimeout(WRITE_TIMEOUT_SEC, TimeUnit.SECONDS)
             .build();
     private State mState = State.NotSend;
-    private String mBody;
+    private byte[] mBody;
     private Url mUrl;
 
     public HttpRequestHandler(final String urlString) {
         setUrl(urlString);
     }
 
-    public void sendGet() {
-        if (mState == State.BadUrl) {
-            return;
+    public State sendGet() {
+        if (mState != State.BadUrl) {
+            send(new Request.Builder()
+                    .url(mUrl.getInstance())
+                    .build());
         }
 
-        send(new Request.Builder()
-                .url(mUrl.getInstance())
-                .build());
+        return mState;
     }
 
     @NonNull
@@ -47,7 +47,13 @@ public class HttpRequestHandler implements IHttpRequestResult {
 
     @Nullable
     @Override
-    public String getResponseBody() {
+    public String getResponseBodyAsString() {
+        return mBody == null ? null : new String(mBody);
+    }
+
+    @Nullable
+    @Override
+    public byte[] getResponseBody() {
         return mBody;
     }
 
@@ -71,7 +77,7 @@ public class HttpRequestHandler implements IHttpRequestResult {
 
                     return;
                 }
-                mBody = body.string();
+                mBody = body.bytes();
                 mState = State.Success;
 
             } catch (Exception ex) {

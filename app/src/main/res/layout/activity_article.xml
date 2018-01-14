@@ -1,14 +1,15 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        style="@style/ToolbarCardViewStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/ToolbarCardViewStyle" >
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/article_toolbar"
@@ -16,15 +17,17 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            app:titleTextAppearance="@style/ToolbarTextAppearance" />
+            app:titleTextAppearance="@style/ToolbarTextAppearance"
+            app:layout_scrollFlags="scroll|enterAlways|snap" />
 
-    </android.support.v7.widget.CardView>
+    </android.support.design.widget.AppBarLayout>
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -68,9 +71,12 @@
             <ImageView
                 android:id="@+id/article_image"
                 android:layout_width="match_parent"
-                android:layout_height="254dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
                 android:maxLines="1"
+                android:scaleType="centerCrop"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -84,13 +90,13 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
-                android:textSize="16sp"
                 android:textColor="@color/primaryDarkText"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/article_image" />
 
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
