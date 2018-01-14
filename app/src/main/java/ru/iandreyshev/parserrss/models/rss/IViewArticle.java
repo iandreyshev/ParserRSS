@@ -8,8 +8,10 @@ public interface IViewArticle {
     @NonNull
     String getTitle();
 
+    @NonNull
     String getOriginUrl();
 
+    @NonNull
     String getDescription();
 
     Long getPostDate();

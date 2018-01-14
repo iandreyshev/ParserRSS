@@ -17,9 +17,7 @@ public final class Article implements IViewArticle {
     long mRssId;
 
     String mTitle;
-    @Nullable
     String mOriginUrl;
-    @Nullable
     String mDescription;
     @Nullable
     String mImageUrl;
@@ -28,8 +26,10 @@ public final class Article implements IViewArticle {
     @Nullable
     byte[] mImage;
 
-    public Article(@NonNull final String title) {
+    public Article(@NonNull String title, @NonNull String description, @NonNull String originUrl) {
         mTitle = title;
+        mDescription = description;
+        mOriginUrl = originUrl;
     }
 
     Article() {
@@ -47,11 +47,13 @@ public final class Article implements IViewArticle {
     }
 
     @Override
+    @NonNull
     public String getOriginUrl() {
         return mOriginUrl;
     }
 
     @Override
+    @NonNull
     public String getDescription() {
         return mDescription;
     }

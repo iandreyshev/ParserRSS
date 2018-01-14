@@ -89,7 +89,7 @@ public class Database {
                     .equal(Rss_.mUrl, newRss.getUrl())
                     .build()
                     .findFirst();
-    
+
             if (rssWithSameUrl == null) {
                 return false;
             }

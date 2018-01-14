@@ -78,10 +78,7 @@ final class RssParserV2 extends RssParseEngine {
             return null;
         }
 
-        final Article article = new Article(title);
-        article.setDescription(description);
-        article.setOrigin(origin);
-
+        final Article article = new Article(title, description, origin);
         parseArticleDate(item, article);
         parseArticleImage(item, article);
 

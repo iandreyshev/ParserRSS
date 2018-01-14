@@ -51,11 +51,13 @@ public final class Rss implements IViewRss {
     }
 
     @Override
+    @NonNull
     public String getUrl() {
         return mUrl;
     }
 
     @Override
+    @NonNull
     public String getOrigin() {
         return mOrigin;
     }

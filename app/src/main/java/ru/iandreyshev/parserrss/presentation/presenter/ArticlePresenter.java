@@ -32,7 +32,7 @@ public class ArticlePresenter extends MvpPresenter<IArticleView> {
         public void onPostExecute(final IViewArticle result) {
             if (result == null) {
                 getViewState().showShortToast(App.getStr(R.string.article_error_load));
-                getViewState().openFeed();
+                getViewState().closeArticle();
             } else {
                 getViewState().initArticle(result);
             }

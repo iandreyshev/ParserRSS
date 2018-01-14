@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import butterknife.BindView;
 
@@ -40,8 +41,8 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     TabLayout mTabs;
     @BindView(R.id.feed_view_pager)
     ViewPager mPager;
-    @BindView(R.id.feed_content_message_layout)
-    ConstraintLayout mContentMessageLayout;
+    @BindView(R.id.feed_content_message_title)
+    TextView mContentMessage;
     @BindView(R.id.feed_progress_bar)
     ProgressBar mProgressBar;
 
@@ -71,7 +72,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     public void openArticle(long articleId) {
         final Intent intent = ArticleActivity.getIntent(this)
                 .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, articleId)
-                .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
         startActivity(intent);
     }
@@ -118,16 +119,14 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
 
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
-        boolean isMenuOpened = super.onMenuOpened(featureId, menu);
-
         mMenuInfoButton.setEnabled(mTabsAdapter.getCount() > 0);
         mMenuDeleteButton.setEnabled(mTabsAdapter.getCount() > 0);
 
-        return isMenuOpened;
+        return super.onMenuOpened(featureId, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         final IViewRss currentRss = mTabsAdapter.getRss(mPager.getCurrentItem());
 
         switch (item.getItemId()) {
@@ -159,7 +158,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     public void onFeedUpdate() {
         boolean isFeedEmpty = mTabsAdapter.getCount() == 0;
 
-        mContentMessageLayout.setVisibility(isFeedEmpty ? View.VISIBLE : View.GONE);
+        mContentMessage.setVisibility(isFeedEmpty ? View.VISIBLE : View.GONE);
         mPager.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
         mTabs.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
     }

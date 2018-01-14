@@ -10,7 +10,7 @@ import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 public interface IArticleView extends IBaseView {
     @StateStrategyType(SkipStrategy.class)
-    void openFeed();
+    void closeArticle();
 
     @StateStrategyType(AddToEndSingleStrategy.class)
     void initArticle(@NonNull final IViewArticle article);

@@ -2,11 +2,11 @@ package ru.iandreyshev.parserrss.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Html;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -47,13 +47,14 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     ImageView mImage;
     @BindView(R.id.article_toolbar)
     Toolbar mToolbar;
+    Uri mOriginalUrl;
 
     public static Intent getIntent(final Context context) {
         return new Intent(context, ArticleActivity.class);
     }
 
     @Override
-    public void openFeed() {
+    public void closeArticle() {
         Intent intent = FeedActivity.getIntent(this)
                 .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
@@ -61,9 +62,21 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.article_options_menu, menu);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == android.R.id.home) {
-            openFeed();
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                closeArticle();
+                break;
+            case R.id.article_option_open_in_browser:
+                startActivity(new Intent(Intent.ACTION_VIEW,mOriginalUrl));
+                break;
         }
 
         return super.onOptionsItemSelected(menuItem);
@@ -71,6 +84,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView {
 
     @Override
     public void initArticle(@NonNull final IViewArticle article) {
+        mOriginalUrl = Uri.parse(article.getOriginUrl());
         mTitle.setText(Html.fromHtml(article.getTitle()));
         mText.setText(Html.fromHtml(article.getDescription()));
 

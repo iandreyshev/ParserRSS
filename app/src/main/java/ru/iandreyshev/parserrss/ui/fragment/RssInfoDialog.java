@@ -16,16 +16,13 @@ import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.web.Url;
 
 public class RssInfoDialog extends MvpAppCompatDialogFragment {
     private IViewRss mRss;
-    private Uri mLinkToOriginal;
 
     public static void show(final FragmentManager fragmentManager, @NonNull final IViewRss rss) {
         final RssInfoDialog dialog = new RssInfoDialog();
         dialog.mRss = rss;
-        dialog.mLinkToOriginal = rss.getOrigin() == null ? null : Uri.parse(rss.getOrigin());
         dialog.show(fragmentManager, RssInfoDialog.class.getName());
     }
 
@@ -38,11 +35,8 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setPositiveButton(R.string.rss_info_dialog_button, null);
-
-        if (mLinkToOriginal != null) {
-            builder.setNeutralButton(R.string.rss_info_open_original_button, this::onOpenOriginalButtonClick);
-        }
+                .setPositiveButton(R.string.rss_info_dialog_button, null)
+                .setNeutralButton(R.string.rss_info_open_original_button, this::onOpenOriginalButtonClick);
 
         return builder.create();
     }
@@ -58,6 +52,6 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
     }
 
     public void onOpenOriginalButtonClick(DialogInterface dialog, int which) {
-        startActivity(new Intent(Intent.ACTION_VIEW, mLinkToOriginal));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRss.getOrigin())));
     }
 }

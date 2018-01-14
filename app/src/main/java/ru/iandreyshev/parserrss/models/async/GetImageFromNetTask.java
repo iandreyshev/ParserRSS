@@ -30,7 +30,6 @@ public final class GetImageFromNetTask extends Task<IViewArticle, Void, Bitmap> 
         byte[] image = mRequestHandler.getResponseBody();
 
         if (result != HttpRequestHandler.State.Success || image == null) {
-            Log.e(getClass().getName(), result.toString());
             return null;
         }
 
