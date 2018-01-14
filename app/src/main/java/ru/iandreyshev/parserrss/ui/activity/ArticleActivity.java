@@ -63,7 +63,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
     @Override
     public void closeArticle() {
         Intent intent = FeedActivity.getIntent(this)
-                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
         startActivity(intent);
     }
