@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.models.repository;
 
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -11,7 +10,6 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 import io.objectbox.exception.DbException;
 import ru.iandreyshev.parserrss.app.App;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 public class Database {
     private final BoxStore mBoxStore = App.getBoxStore();
@@ -29,6 +27,11 @@ public class Database {
 
     public long getRssCount(final String url) {
         return mRssBox.find(Rss_.mUrl, url).size();
+    }
+
+    @Nullable
+    public Rss getRssById(long id) throws Exception {
+        return mRssBox.get(id);
     }
 
     @Nullable

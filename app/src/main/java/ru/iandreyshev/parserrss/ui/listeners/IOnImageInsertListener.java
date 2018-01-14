@@ -4,5 +4,5 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 public interface IOnImageInsertListener {
-    void insert(@NonNull Bitmap bitmap);
+    void onImageInsert(@NonNull Bitmap bitmap);
 }

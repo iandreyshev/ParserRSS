@@ -18,16 +18,11 @@ import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedTabPresenter;
-import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter;
 import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
 import ru.iandreyshev.parserrss.ui.adapter.ArticlesListAdapter;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
-import ru.iandreyshev.parserrss.ui.listeners.IOnImageInsertListener;
-import ru.iandreyshev.parserrss.ui.listeners.IOnImageRequestListener;
 
 public class FeedTabFragment extends BaseFragment implements IFeedTabView {
-    @InjectPresenter(type = PresenterType.GLOBAL, tag = "glimg")
-    ImagesLoadPresenter mImageLoadPresenter;
     @InjectPresenter
     FeedTabPresenter mPresenter;
 
@@ -76,7 +71,6 @@ public class FeedTabFragment extends BaseFragment implements IFeedTabView {
     private void initListAdapter(final View fragmentView) {
         mListAdapter = new ArticlesListAdapter(getContext(), fragmentView.findViewById(R.id.feed_items_list));
         mListAdapter.setArticleClickListener((IOnArticleClickListener) getContext());
-        mListAdapter.setImageRequestListener(mImageLoadPresenter);
     }
 
     private void initRefreshLayout(final View fragmentView) {

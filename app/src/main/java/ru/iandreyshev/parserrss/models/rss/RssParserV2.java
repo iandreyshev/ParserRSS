@@ -37,16 +37,14 @@ final class RssParserV2 extends RssParseEngine {
     protected Rss parseRss(final Element root) {
         final Element channel = root.getChild(FEED_NAME);
         final String title = channel.getChildText(FEED_TITLE);
-        final String link = channel.getChildText(FEED_ORIGIN);
-        final String description = channel.getChildText(FEED_DESCRIPTION);
+        final String origin = channel.getChildText(FEED_ORIGIN);
 
-        if (title == null || link == null || description == null) {
+        if (title == null || origin == null) {
             return null;
         }
 
-        final Rss rss = new Rss(title);
-        rss.setOrigin(link);
-        rss.setDescription(description);
+        final Rss rss = new Rss(title, origin);
+        rss.setDescription(channel.getChildText(FEED_DESCRIPTION));
 
         return rss;
     }

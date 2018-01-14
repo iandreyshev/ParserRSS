@@ -3,8 +3,6 @@ package ru.iandreyshev.parserrss.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -173,12 +171,10 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
 
         initToolbar();
         initTabsView();
-
         onFeedUpdate();
     }
 
     private void initToolbar() {
-        mToolbar.setTitle(getResources().getString(R.string.feed_title));
         setSupportActionBar(mToolbar);
         startProgressBar(false);
     }
@@ -186,6 +182,6 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     private void initTabsView() {
         mTabsAdapter = new FeedTabsAdapter(getSupportFragmentManager());
         mPager.setAdapter(mTabsAdapter);
-        mTabs.setupWithViewPager(mPager, true);
+        mTabs.setupWithViewPager(mPager);
     }
 }

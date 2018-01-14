@@ -73,6 +73,10 @@ public final class Article implements IViewArticle {
         return mImageUrl;
     }
 
+    public Long getRssId() {
+        return mRssId;
+    }
+
     public void setTitle(final String title) {
         mTitle = title;
     }
@@ -100,5 +104,15 @@ public final class Article implements IViewArticle {
 
     public void setOrigin(final String origin) {
         mOriginUrl = origin;
+    }
+
+    @Override
+    public final boolean equals(Object other) {
+        return (other instanceof Article) && mOriginUrl.equals(((Article) other).mOriginUrl);
+    }
+
+    @Override
+    public final int hashCode() {
+        return mOriginUrl.hashCode();
     }
 }

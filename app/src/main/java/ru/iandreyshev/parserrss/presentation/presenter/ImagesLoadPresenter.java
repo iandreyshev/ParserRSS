@@ -1,36 +1,24 @@
 package ru.iandreyshev.parserrss.presentation.presenter;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
-import ru.iandreyshev.parserrss.models.async.GetImageFromNetTask;
+import ru.iandreyshev.parserrss.models.async.GetArticleImageTask;
 import ru.iandreyshev.parserrss.models.async.ITaskListener;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
-import ru.iandreyshev.parserrss.ui.listeners.IOnImageInsertListener;
-import ru.iandreyshev.parserrss.ui.listeners.IOnImageRequestListener;
+import ru.iandreyshev.parserrss.presentation.view.IImageView;
 
 @InjectViewState
-public class ImagesLoadPresenter extends MvpPresenter<IFeedTabView> implements IOnImageRequestListener {
-    @Override
-    public void loadImage(IViewArticle article, IOnImageInsertListener insertListener) {
-        if (article.getImage() != null || article.getImageUrl() == null) {
-            return;
-        }
+public class ImagesLoadPresenter extends MvpPresenter<IImageView> {
+    private long mArticleId;
 
-        GetImageFromNetTask.execute(article, new GetImageFromNetListener(insertListener));
+    public void loadImage(final long articleId) {
+        mArticleId = articleId;
+        GetArticleImageTask.execute(mArticleId, new GetImageFromNetListener());
     }
 
     private class GetImageFromNetListener implements ITaskListener<Bitmap> {
-        IOnImageInsertListener mOnInsertListener;
-
-        GetImageFromNetListener(final IOnImageInsertListener listener) {
-            mOnInsertListener = listener;
-        }
-
         @Override
         public void onPreExecute() {
         }
@@ -38,7 +26,7 @@ public class ImagesLoadPresenter extends MvpPresenter<IFeedTabView> implements I
         @Override
         public void onPostExecute(Bitmap result) {
             if (result != null) {
-                mOnInsertListener.insert(result);
+                getViewState().insertImage(mArticleId, result);
             }
         }
     }

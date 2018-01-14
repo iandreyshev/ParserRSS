@@ -1,9 +1,6 @@
 package ru.iandreyshev.parserrss.app;
 
 import android.app.Application;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import io.objectbox.BoxStore;

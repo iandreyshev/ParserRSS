@@ -6,13 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import ru.iandreyshev.parserrss.models.repository.Article;
-import ru.iandreyshev.parserrss.models.repository.Rss;
 
 public final class Utils {
     private static final String CUT_TAB_TITLE_PATTERN = "%s...";

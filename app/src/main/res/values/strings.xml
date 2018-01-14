@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">ParserRSS</string>
+    <string name="app_name">MyRssParser</string>
 
-    <string name="feed_title">Feed</string>
     <string name="feed_list_empty">Feed is empty</string>
     <string name="feed_content_message_title">Feed is empty</string>
     <string name="feed_content_message_link"><u>Append new rss</u></string>
+
+    <string name="feed_item_default_date"></string>
 
     <string name="article_toolbar_title">Article</string>
     <string name="article_error_load">Load article error</string>

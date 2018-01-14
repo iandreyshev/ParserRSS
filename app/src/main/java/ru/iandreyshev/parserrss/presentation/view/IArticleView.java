@@ -13,5 +13,5 @@ public interface IArticleView extends IBaseView {
     void closeArticle();
 
     @StateStrategyType(AddToEndSingleStrategy.class)
-    void initArticle(@NonNull final IViewArticle article);
+    void initArticle(@NonNull final IViewArticle article, @NonNull final String rssName);
 }
