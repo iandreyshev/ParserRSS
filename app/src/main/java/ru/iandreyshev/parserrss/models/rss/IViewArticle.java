@@ -14,7 +14,7 @@ public interface IViewArticle {
     @NonNull
     String getDescription();
 
-    Long getPostDate();
+    Long getDate();
 
     byte[] getImage();
 

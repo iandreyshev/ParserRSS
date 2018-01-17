@@ -1,47 +1,52 @@
 package ru.iandreyshev.parserrss.models.repository;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
-import io.objectbox.exception.DbException;
-import ru.iandreyshev.parserrss.app.App;
 
 public class Database {
-    private final BoxStore mBoxStore = App.getBoxStore();
+    private BoxStore mBoxStore;
     private Box<Rss> mRssBox;
     private Box<Article> mArticleBox;
 
-    public Database() throws DbException {
-        if (mBoxStore == null) {
-            throw new DbException("Box-store is null in constructor");
-        }
-
+    public Database(@NonNull final BoxStore store) {
+        mBoxStore = store;
         mRssBox = mBoxStore.boxFor(Rss.class);
         mArticleBox = mBoxStore.boxFor(Article.class);
     }
 
-    public long getRssCount(final String url) {
-        return mRssBox.find(Rss_.mUrl, url).size();
+    @Nullable
+    public Rss getRssById(long id) {
+        final Rss rss = mRssBox.get(id);
+
+        if (rss == null) {
+            return null;
+        }
+
+        rss.setArticles(getArticlesByRssId(rss.getId()));
+
+        return rss;
     }
 
     @Nullable
-    public Rss getRssById(long id) throws Exception {
-        return mRssBox.get(id);
-    }
-
-    @Nullable
-    public Article getArticleById(long id) throws Exception {
+    public Article getArticleById(long id) {
         return mArticleBox.get(id);
     }
 
-    public void updateArticleImage(long id, byte[] bytes) throws Exception {
+    public boolean isRssWithUrlExist(final String url) {
+        return !mRssBox.find(Rss_.mUrl, url).isEmpty();
+    }
+
+    public void updateArticleImage(long id, byte[] image) {
         final Article article = mArticleBox.get(id);
-        article.setImage(bytes);
+        article.setImage(image);
         mArticleBox.put(article);
     }
 
@@ -51,22 +56,17 @@ public class Database {
             final ArrayList<Rss> result = new ArrayList<>();
 
             for (final Rss rss : mRssBox.getAll()) {
-                final List<Article> articles = mArticleBox.query()
-                        .equal(Article_.mRssId, rss.getId())
-                        .build()
-                        .find();
-                rss.setArticles(articles);
-                result.add(rss);
+                result.add(getRssById(rss.getId()));
             }
 
             return result;
         });
     }
 
-    public boolean putRssIfSameUrlNotExist(final Rss rss) throws Exception {
+    public boolean putRssIfSameUrlNotExist(final Rss newRss) throws Exception {
         return mBoxStore.callInTx(() -> {
-            Rss rssWithSameUrl = mRssBox.query()
-                    .equal(Rss_.mUrl, rss.getUrl())
+            final Rss rssWithSameUrl = mRssBox.query()
+                    .equal(Rss_.mUrl, newRss.getUrl())
                     .build()
                     .findFirst();
 
@@ -74,13 +74,8 @@ public class Database {
                 return false;
             }
 
-            mArticleBox.query()
-                    .equal(Article_.mRssId, rss.getId())
-                    .build()
-                    .remove();
-            mRssBox.put(rss);
-            bindArticles(rss);
-            mArticleBox.put(rss.getArticles());
+            mRssBox.put(newRss);
+            putArticles(newRss);
 
             return true;
         });
@@ -88,7 +83,7 @@ public class Database {
 
     public boolean updateRssWithSameUrl(final Rss newRss) throws Exception {
         return mBoxStore.callInTx(() -> {
-            Rss rssWithSameUrl = mRssBox.query()
+            final Rss rssWithSameUrl = mRssBox.query()
                     .equal(Rss_.mUrl, newRss.getUrl())
                     .build()
                     .findFirst();
@@ -98,32 +93,50 @@ public class Database {
             }
 
             newRss.setId(rssWithSameUrl.getId());
-            bindArticles(newRss);
             mRssBox.put(newRss);
-
-            mArticleBox.query()
-                    .equal(Article_.mRssId, newRss.getId())
-                    .build()
-                    .remove();
-            mArticleBox.put(newRss.getArticles());
+            putArticles(newRss);
 
             return true;
         });
     }
 
-    public void removeRss(long rssId) throws Exception {
+    public void removeRssById(long id) {
         mBoxStore.runInTx(() -> {
-            mRssBox.remove(rssId);
+            mRssBox.remove(id);
             mArticleBox.query()
-                    .equal(Article_.mRssId, rssId)
+                    .equal(Article_.mRssId, id)
                     .build()
                     .remove();
         });
+    }
+
+    private void putArticles(final Rss rss) {
+        bindArticles(rss);
+
+        final HashSet<Article> newArticles = new HashSet<>(rss.getArticles());
+        final List<Article> currentArticles = getArticlesByRssId(rss.getId());
+
+        for (final Article article : currentArticles) {
+            if (!newArticles.remove(article)) {
+                mArticleBox.remove(article);
+            }
+        }
+
+        mArticleBox.put(newArticles);
+        rss.setArticles(getArticlesByRssId(rss.getId()));
     }
 
     private void bindArticles(final Rss rss) {
         for (final Article article : rss.getArticles()) {
             article.setRssId(rss.getId());
         }
+    }
+
+    @NonNull
+    private List<Article> getArticlesByRssId(long id) {
+        return mArticleBox.query()
+                .equal(Article_.mRssId, id)
+                .build()
+                .find();
     }
 }

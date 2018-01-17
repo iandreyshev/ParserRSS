@@ -4,6 +4,7 @@ import android.util.Log;
 
 import javax.annotation.Nullable;
 
+import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
@@ -11,7 +12,7 @@ import ru.iandreyshev.parserrss.models.rss.IViewRss;
 public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
     private static final String TAG = DeleteRssFromDbTask.class.getName();
 
-    private final Database mDatabase = new Database();
+    private final Database mDatabase = App.getDatabase();
     private IEventListener mListener;
     private IViewRss mRssToDelete;
     private IEvent mResultEvent;
@@ -28,9 +29,9 @@ public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
     }
 
     public interface IEventListener extends ITaskListener<IViewRss> {
-        void onFail(final IViewRss rss);
-
         void onSuccess(final IViewRss rss);
+
+        void onFail(final IViewRss rss);
     }
 
     @Nullable
@@ -38,7 +39,7 @@ public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
     protected IViewRss doInBackground(final IViewRss... rssToDelete) {
         try {
 
-            mDatabase.removeRss(mRssToDelete.getId());
+            mDatabase.removeRssById(mRssToDelete.getId());
             mResultEvent = () -> mListener.onSuccess(mRssToDelete);
 
         } catch (Exception ex) {

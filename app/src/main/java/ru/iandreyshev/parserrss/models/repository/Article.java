@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 
 import java.util.Date;
 
-import javax.annotation.Nullable;
-
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
@@ -16,14 +14,11 @@ public final class Article implements IViewArticle {
     long mId;
     long mRssId;
 
-    String mTitle;
-    String mOriginUrl;
-    String mDescription;
-    @Nullable
+    String mTitle = "";
+    String mOriginUrl = "";
+    String mDescription = "";
     String mImageUrl;
-    @Nullable
     Long mPostDate;
-    @Nullable
     byte[] mImage;
 
     public Article(@NonNull String title, @NonNull String description, @NonNull String originUrl) {
@@ -59,7 +54,7 @@ public final class Article implements IViewArticle {
     }
 
     @Override
-    public Long getPostDate() {
+    public Long getDate() {
         return mPostDate;
     }
 
@@ -77,16 +72,8 @@ public final class Article implements IViewArticle {
         return mRssId;
     }
 
-    public void setTitle(final String title) {
-        mTitle = title;
-    }
-
     void setRssId(long id) {
         mRssId = id;
-    }
-
-    public void setDescription(final String text) {
-        mDescription = text;
     }
 
     @Override
@@ -100,10 +87,6 @@ public final class Article implements IViewArticle {
 
     public void setImageUrl(final String url) {
         mImageUrl = url;
-    }
-
-    public void setOrigin(final String origin) {
-        mOriginUrl = origin;
     }
 
     @Override

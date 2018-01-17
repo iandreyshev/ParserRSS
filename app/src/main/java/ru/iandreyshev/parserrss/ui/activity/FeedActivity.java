@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -49,10 +48,6 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     private MenuItem mMenuInfoButton;
     private MenuItem mMenuDeleteButton;
 
-    public static Intent getIntent(final Context context) {
-        return new Intent(context, FeedActivity.class);
-    }
-
     @Override
     public void insertRss(final IViewRss rss) {
         mTabsAdapter.insert(rss);
@@ -69,8 +64,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     @Override
     public void openArticle(long articleId) {
         final Intent intent = ArticleActivity.getIntent(this)
-                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, articleId)
-                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, articleId);
 
         startActivity(intent);
     }
@@ -159,6 +153,8 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
         mContentMessage.setVisibility(isFeedEmpty ? View.VISIBLE : View.GONE);
         mPager.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
         mTabs.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
+
+
     }
 
     @Override

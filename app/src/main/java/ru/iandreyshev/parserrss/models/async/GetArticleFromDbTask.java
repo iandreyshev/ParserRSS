@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.models.async;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.repository.Article;
 import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.repository.Rss;
@@ -13,7 +14,7 @@ public final class GetArticleFromDbTask extends Task<Long, Void, Void> {
     private static final String TAG = GetArticleFromDbTask.class.getName();
 
     private IEventListener mListener;
-    private final Database mDatabase = new Database();
+    private final Database mDatabase = App.getDatabase();
     private long mArticleId;
     private Rss mResultRss;
     private Article mResultArticle;
@@ -55,6 +56,8 @@ public final class GetArticleFromDbTask extends Task<Long, Void, Void> {
 
         if (mResultArticle != null && mResultRss != null) {
             mListener.onSuccess(mResultRss, mResultArticle);
+        } else {
+            mListener.onFail();
         }
     }
 

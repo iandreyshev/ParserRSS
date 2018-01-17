@@ -2,6 +2,7 @@ package ru.iandreyshev.parserrss.models.async;
 
 import android.util.Log;
 
+import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.repository.Rss;
@@ -9,7 +10,7 @@ import ru.iandreyshev.parserrss.models.repository.Rss;
 public final class InsertNewRssTask extends GetRssFromNetTask {
     private final static String TAG = InsertNewRssTask.class.getName();
 
-    private final Database mDatabase = new Database();
+    private final Database mDatabase = App.getDatabase();
     private IEventListener mListener;
 
     public static void execute(final IEventListener listener, final String url) {
@@ -29,7 +30,7 @@ public final class InsertNewRssTask extends GetRssFromNetTask {
 
             return false;
 
-        } else if (mDatabase.getRssCount(getUrl()) > 0) {
+        } else if (mDatabase.isRssWithUrlExist(getUrl())) {
             setResultEvent(() -> mListener.onRssAlreadyExist());
 
             return false;

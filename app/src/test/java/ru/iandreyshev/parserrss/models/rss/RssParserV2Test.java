@@ -18,12 +18,12 @@ public class RssParserV2Test {
     private RssParserV2 mParser;
 
     @Before
-    public void resetParser() {
+    public void setup() {
         mParser = new RssParserV2();
     }
 
     @Test
-    public void parse_rss_without_xml_format() {
+    public void parseRssWithoutXmlFormat() {
         final Rss rss = parseFileAndCheck("valid_without_xml_format");
 
         assertEquals(RSS_TITLE, rss.getTitle());
@@ -32,7 +32,7 @@ public class RssParserV2Test {
     }
 
     @Test
-    public void parse_rss_with_feed_title_and_description_only() {
+    public void parseRssWithFeedTitleAndDescriptionOnly() {
         final Rss rss = parseFileAndCheck("valid_minimal");
 
         assertEquals(RSS_TITLE, rss.getTitle());
@@ -40,28 +40,28 @@ public class RssParserV2Test {
     }
 
     @Test
-    public void not_parse_if_title_is_absent() {
+    public void notParseIfTitleIsAbsent() {
         final Rss rss = parseFile("invalid_without_title");
 
         assertNull(rss);
     }
 
     @Test
-    public void return_empty_articles_list_if_articles_is_absent() {
+    public void returnEmptyArticlesListIfArticlesIsAbsent() {
         final Rss rss = parseFileAndCheck("valid_minimal");
 
         assertTrue(rss.getViewArticles().isEmpty());
     }
 
     @Test
-    public void not_parse_articles_in_items_node() {
+    public void notParseArticlesInItemsNode() {
         final Rss rss = parseFileAndCheck("invalid_with_articles_in_items_node");
 
         assertTrue(rss.getViewArticles().isEmpty());
     }
 
     @Test
-    public void parse_articles_in_channel_node_if_they_have_title_link_description() {
+    public void parseArticlesInChannelNodeIfTheyHaveTitleLinkDescription() {
         final Rss rss = parseFileAndCheck("valid_with_articles");
 
         assertEquals(2, rss.getViewArticles().size());
@@ -76,7 +76,7 @@ public class RssParserV2Test {
     }
 
     @Test
-    public void parse_articles_with_image_enclosure() {
+    public void parseArticlesWithImageEnclosure() {
         final Rss rss = parseFile("valid_with_article_image");
 
         assertEquals(2, rss.getViewArticles().size());
@@ -89,28 +89,28 @@ public class RssParserV2Test {
     }
 
     @Test
-    public void return_null_if_parse_invalid_xml() {
+    public void returnNullIfParseInvalidXml() {
         final Rss rss = parseFile("invalid_with_bad_xml");
 
         assertNull(rss);
     }
 
     @Test
-    public void return_null_if_parse_null_string() {
+    public void returnNullIfParseNullString() {
         final Rss rss = mParser.parse(null);
 
         assertNull(rss);
     }
 
     @Test
-    public void return_empty_article_list_if_they_do_not_have_title_or_description_or_link() {
+    public void returnEmptyArticleListIfTheyDoNotHaveTitleOrDescriptionOrLink() {
         final Rss rss = parseFile("valid_without_one_of_required_article_element");
 
         assertTrue(rss.getViewArticles().isEmpty());
     }
 
     @Test
-    public void not_parse_articles_image_if_they_do_not_have_url_or_type() {
+    public void notParseArticlesImageIfTheyDoNotHaveUrlOrType() {
         final Rss rss = parseFile("valid_with_articles_enclosure_without_required_element");
 
         for (final IViewArticle article : rss.getViewArticles()) {
@@ -121,10 +121,10 @@ public class RssParserV2Test {
     }
 
     @Test
-    public void parse_article_date() {
+    public void parseArticleDate() {
         final Rss rss = parseFile("valid_with_pub_date");
 
-        assertNotNull(rss.getViewArticles().get(0).getPostDate());
+        assertNotNull(rss.getViewArticles().get(0).getDate());
     }
 
     private Rss parseFile(final String fileName) {
