@@ -1,26 +1,22 @@
 package ru.iandreyshev.parserrss.models.repository;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(AndroidJUnit4.class)
-public class DatabaseInstrumentedTest {
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+public class DatabaseTest {
     private static final String RSS_TITLE = "TITLE";
     private static final String RSS_ORIGIN = "ORIGIN";
+    private static final String RSS_URL = "URL";
+    private static final String NOT_USE_RSS_URL = "NOT_USE_URL";
 
     private static final int ARTICLES_COUNT = 25;
     private static final String ARTICLE_TITLE = "TITLE %s";
@@ -39,6 +35,7 @@ public class DatabaseInstrumentedTest {
         mDatabase = new Database(MyObjectBox.builder().directory(tempFile).build());
 
         mRss = new Rss(RSS_TITLE, RSS_ORIGIN);
+        mRss.setUrl(RSS_URL);
         final List<Article> articleList = new ArrayList<>();
 
         for (int i = 0; i < ARTICLES_COUNT; ++i) {
@@ -46,6 +43,48 @@ public class DatabaseInstrumentedTest {
         }
 
         mRss.setArticles(articleList);
+    }
+
+    @Test
+    public void noThrowExceptionIfTryToGetItemByInvalidId() {
+        try {
+            for (Long id : Database.INVALID_IDS) {
+                mDatabase.getArticleById(id);
+                mDatabase.getRssById(id);
+                mDatabase.updateArticleImage(id, null);
+                mDatabase.removeRssById(id);
+            }
+        } catch (Exception ex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void returnNullIfGetRssByInvalidId() {
+        assertNull(mDatabase.getRssById(-2));
+    }
+
+    @Test
+    public void returnTrueIfRssWithSameUrlExist() throws Exception {
+        mDatabase.putRssIfSameUrlNotExist(mRss);
+
+        assertTrue(mDatabase.isRssWithUrlExist(RSS_URL));
+    }
+
+    @Test
+    public void returnFalseIfRssWithSameUrlNotExist() throws Exception {
+        mDatabase.putRssIfSameUrlNotExist(mRss);
+
+        assertFalse(mDatabase.isRssWithUrlExist(NOT_USE_RSS_URL));
+    }
+
+    @Test
+    public void returnArticlesById() throws Exception {
+        mDatabase.putRssIfSameUrlNotExist(mRss);
+
+        for (final Article article : mRss.getArticles()) {
+            assertNotNull(mDatabase.getArticleById(article.getId()));
+        }
     }
 
     @Test
@@ -61,11 +100,42 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public void updateArticlesRssIdAfterPut() throws Exception {
+    public void returnFalseAfterPutRssWithSameUrl() throws Exception {
+        mDatabase.putRssIfSameUrlNotExist(mRss);
+
+        final Rss rssWithSameUrl = new Rss();
+        rssWithSameUrl.setUrl(mRss.getUrl());
+
+        assertFalse(mDatabase.putRssIfSameUrlNotExist(rssWithSameUrl));
+    }
+
+    @Test
+    public void updateRssArticlesIdAfterPut() throws Exception {
         mDatabase.putRssIfSameUrlNotExist(mRss);
 
         for (final Article article : mRss.getArticles()) {
             assertTrue(article.getRssId() == mRss.getId());
+        }
+    }
+
+    @Test
+    public void updateImageBytesIfArticleExist() throws Exception {
+        final byte[] newImage = {1};
+
+        assertNotEquals(newImage.length, IMAGE.length);
+
+        mDatabase.putRssIfSameUrlNotExist(mRss);
+
+        for (final Article article : mRss.getArticles()) {
+            article.setImage(IMAGE);
+
+            Long id = article.getId();
+            mDatabase.updateArticleImage(id, newImage);
+
+            final Article articleFromDatabase = mDatabase.getArticleById(id);
+
+            assertNotNull(articleFromDatabase);
+            assertEquals(articleFromDatabase.getImage().length, newImage.length);
         }
     }
 
@@ -84,7 +154,7 @@ public class DatabaseInstrumentedTest {
     }
 
     @Test
-    public void canSaveBitmap() throws Exception {
+    public void canSaveImageBytesArray() throws Exception {
         for (final Article article : mRss.getArticles()) {
             article.setImage(IMAGE);
         }

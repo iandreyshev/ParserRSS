@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.models.repository;
 
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -12,6 +11,13 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class Database {
+    public static final List<Long> INVALID_IDS = new ArrayList<>();
+
+    static {
+        INVALID_IDS.add(-1L);
+        INVALID_IDS.add(0L);
+    }
+
     private BoxStore mBoxStore;
     private Box<Rss> mRssBox;
     private Box<Article> mArticleBox;
@@ -24,7 +30,7 @@ public class Database {
 
     @Nullable
     public Rss getRssById(long id) {
-        final Rss rss = mRssBox.get(id);
+        final Rss rss = getRss(id);
 
         if (rss == null) {
             return null;
@@ -37,7 +43,7 @@ public class Database {
 
     @Nullable
     public Article getArticleById(long id) {
-        return mArticleBox.get(id);
+        return getArticle(id);
     }
 
     public boolean isRssWithUrlExist(final String url) {
@@ -45,7 +51,12 @@ public class Database {
     }
 
     public void updateArticleImage(long id, byte[] image) {
-        final Article article = mArticleBox.get(id);
+        final Article article = getArticle(id);
+
+        if (article == null) {
+            return;
+        }
+
         article.setImage(image);
         mArticleBox.put(article);
     }
@@ -101,6 +112,10 @@ public class Database {
     }
 
     public void removeRssById(long id) {
+        if (INVALID_IDS.contains(id)) {
+            return;
+        }
+
         mBoxStore.runInTx(() -> {
             mRssBox.remove(id);
             mArticleBox.query()
@@ -134,9 +149,29 @@ public class Database {
 
     @NonNull
     private List<Article> getArticlesByRssId(long id) {
+        if (INVALID_IDS.contains(id)) {
+            return new ArrayList<>();
+        }
+
         return mArticleBox.query()
                 .equal(Article_.mRssId, id)
                 .build()
                 .find();
+    }
+
+    private Rss getRss(long id) {
+        if (INVALID_IDS.contains(id)) {
+            return null;
+        }
+
+        return mRssBox.get(id);
+    }
+
+    private Article getArticle(long id) {
+        if (INVALID_IDS.contains(id)) {
+            return null;
+        }
+
+        return mArticleBox.get(id);
     }
 }
