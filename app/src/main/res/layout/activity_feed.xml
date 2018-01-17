@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBar"
+        android:id="@+id/feed_app_bar_layout"
         style="@style/ToolbarCardViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -68,8 +68,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/feed_content_message_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/feed_content_message_title"
@@ -80,7 +79,6 @@
             android:textAllCaps="false"
             android:textColor="@color/secondaryLightText"
             android:textSize="18sp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

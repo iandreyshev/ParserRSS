@@ -5,14 +5,19 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
 import ru.iandreyshev.parserrss.models.repository.Article;
 
 public final class Utils {
+    private static final int MAX_BYTES_COUNT = 1048576; // 1MB
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
+
     private static final String CUT_TAB_TITLE_PATTERN = "%s...";
     private static final int MAX_TAB_TITLE_LINE_LENGTH = 16;
 
@@ -38,15 +43,15 @@ public final class Utils {
     @NonNull
     public static List<Article> sortByDateDESC(@NonNull final List<Article> list) {
         Set<Article> sortedSet = new TreeSet<>((final Article right, final Article left) -> {
-            if (right.getPostDate() == null && left.getPostDate() == null) {
+            if (right.getDate() == null && left.getDate() == null) {
                 return 0;
-            } else if (right.getPostDate() == null) {
+            } else if (right.getDate() == null) {
                 return -1;
-            } else if (left.getPostDate() == null) {
+            } else if (left.getDate() == null) {
                 return 1;
             }
 
-            return left.getPostDate().compareTo(right.getPostDate());
+            return left.getDate().compareTo(right.getDate());
         });
 
         sortedSet.addAll(list);
@@ -55,11 +60,16 @@ public final class Utils {
     }
 
     @Nullable
-    public static Bitmap toBitmap(byte[] bytes) {
-        if (bytes == null) {
+    public static Bitmap toBitmap(@Nullable final byte[] bytes) {
+        if (bytes == null || bytes.length == 0 || bytes.length > MAX_BYTES_COUNT) {
             return null;
         }
 
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    @NonNull
+    public static String toDateStr(@Nullable Long date) {
+        return date == null ? "" : DATE_FORMAT.format(date);
     }
 }

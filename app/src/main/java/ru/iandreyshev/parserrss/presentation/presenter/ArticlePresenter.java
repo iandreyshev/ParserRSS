@@ -35,8 +35,8 @@ public class ArticlePresenter extends MvpPresenter<IArticleView> {
         }
 
         @Override
-        public void onSuccess(@NonNull IViewRss rss, @NonNull IViewArticle article) {
-            getViewState().initArticle(article, rss.getTitle());
+        public void onSuccess(final @NonNull IViewRss rss, final @NonNull IViewArticle article) {
+            getViewState().initArticle(rss, article);
         }
 
         @Override

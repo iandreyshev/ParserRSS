@@ -1,59 +1,71 @@
 package ru.iandreyshev.parserrss.models.async;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
+import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.repository.Article;
 import ru.iandreyshev.parserrss.models.repository.Database;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 
 public final class GetArticleImageTask extends Task<Long, Void, Bitmap> {
-    private static final String TAG = GetArticleImageTask.class.getName();
+    private final Database mDatabase = App.getDatabase();
+    private byte[] mResultBytes;
+    private Bitmap mResultBitmap;
+    private long mArticleId;
+    private IEventListener mListener;
 
-    private final Database mDatabase = new Database();
-    private Long mArticleId;
-
-    public static void execute(Long articleId, final ITaskListener<Bitmap> listener) {
+    public static void execute(long article, final IEventListener listener) {
         final GetArticleImageTask task = new GetArticleImageTask(listener);
-        task.mArticleId = articleId;
+        task.mListener = listener;
+        task.mArticleId = article;
         task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
+    }
+
+    public interface IEventListener extends ITaskListener<Bitmap> {
+        void onSuccess(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap);
     }
 
     @Nullable
     @Override
     protected Bitmap doInBackground(final Long... articles) {
-        try {
-            final Article article = mDatabase.getArticleById(mArticleId);
+        final Article article = mDatabase.getArticleById(mArticleId);
 
-            if (article == null) {
-                return null;
-            } else if (article.getImage() != null) {
-                return Utils.toBitmap(article.getImage());
-            }
-
-            final HttpRequestHandler mRequestHandler = new HttpRequestHandler(article.getImageUrl());
-            final HttpRequestHandler.State result = mRequestHandler.sendGet();
-            byte[] imageBytes = mRequestHandler.getResponseBody();
-
-            if (result != HttpRequestHandler.State.Success || imageBytes == null) {
-                return null;
-            }
-
-            mDatabase.updateArticleImage(mArticleId, imageBytes);
-
-            return Utils.toBitmap(imageBytes);
-
-        } catch (Exception ex) {
-            Log.e(TAG, Log.getStackTraceString(ex));
-
+        if (article == null) {
             return null;
+        } else if (article.getImage() != null) {
+            mResultBytes = article.getImage();
+            mResultBitmap = Utils.toBitmap(mResultBytes);
+
+            return mResultBitmap;
+        }
+
+        final HttpRequestHandler mRequestHandler = new HttpRequestHandler(article.getImageUrl());
+        final HttpRequestHandler.State result = mRequestHandler.sendGet();
+
+        mResultBytes = mRequestHandler.getResponseBody();
+        mResultBitmap = Utils.toBitmap(mResultBytes);
+
+        if (result == HttpRequestHandler.State.Success && mResultBytes != null && mResultBitmap != null) {
+            mDatabase.updateArticleImage(mArticleId, mResultBytes);
+        }
+
+        return mResultBitmap;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap result) {
+        super.onPostExecute(result);
+
+        if (mResultBytes != null && mResultBitmap != null) {
+            mListener.onSuccess(mResultBytes, mResultBitmap);
         }
     }
 
-    private GetArticleImageTask(final ITaskListener<Bitmap> listener) {
+    private GetArticleImageTask(final IEventListener listener) {
         super(listener);
     }
 }

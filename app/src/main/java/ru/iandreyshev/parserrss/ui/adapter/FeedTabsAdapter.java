@@ -9,7 +9,7 @@ import java.util.List;
 
 import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.ui.fragment.FeedTabFragment;
+import ru.iandreyshev.parserrss.ui.fragment.FeedPageFragment;
 
 public class FeedTabsAdapter extends FragmentStatePagerAdapter {
     private final List<IViewRss> mRssList = new ArrayList<>();
@@ -38,7 +38,7 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return FeedTabFragment.newInstance(getRss(position));
+        return FeedPageFragment.newInstance(getRss(position));
     }
 
     @Override

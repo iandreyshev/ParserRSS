@@ -21,7 +21,9 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".ui.activity.ArticleActivity" />
+        <activity
+            android:name=".ui.activity.ArticleActivity"
+            android:launchMode="singleTask" />
     </application>
 
 </manifest>

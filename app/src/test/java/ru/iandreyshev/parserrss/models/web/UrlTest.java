@@ -6,19 +6,22 @@ import static org.junit.Assert.*;
 
 public class UrlTest {
     private static final String VALID_URL = "http://domain.com/";
+    private static final String URL_WITHOUT_PROTOCOL = "domain.com/";
+    private static final String URL_WITH_PORT = "http://domain.com:8080/";
+    private static final String URL_WITH_SUB_DOMAIN = "http://domain.com.ru/";
 
     @Test
-    public void return_null_if_parse_null_string() {
+    public void returnNullIfParseNullString() {
         assertNull(Url.parse(null));
     }
 
     @Test
-    public void return_null_if_parse_empty_string() {
+    public void returnNullIfParseEmptyString() {
         assertNull(Url.parse(""));
     }
 
     @Test
-    public void return_url_string_in_toString_method() {
+    public void returnUrlStringInToStringMethod() {
         final Url url = Url.parse(VALID_URL);
 
         assertNotNull(url);

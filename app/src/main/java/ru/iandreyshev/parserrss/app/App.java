@@ -6,6 +6,7 @@ import android.util.Log;
 import io.objectbox.BoxStore;
 import io.objectbox.android.AndroidObjectBrowser;
 import io.objectbox.android.BuildConfig;
+import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.repository.MyObjectBox;
 
 public class App extends Application {
@@ -36,7 +37,7 @@ public class App extends Application {
         return mInstance.getString(id);
     }
 
-    public static BoxStore getBoxStore() {
-        return mBoxStore;
+    public static Database getDatabase() {
+        return new Database(mBoxStore);
     }
 }

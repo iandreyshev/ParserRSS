@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
+import io.objectbox.annotation.Transient;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 import ru.iandreyshev.parserrss.models.rss.IViewRss;
 
@@ -18,13 +19,14 @@ public final class Rss implements IViewRss {
     @Id
     long mId;
 
-    String mTitle;
+    String mTitle = "";
     @Index
-    String mUrl;
-    String mOrigin;
-    @Nullable
+    String mUrl = "";
+    String mOrigin = "";
     String mDescription;
-    List<Article> mArticles = new ArrayList<>();
+
+    @Transient
+    private List<Article> mArticles = new ArrayList<>();
 
     public Rss(@NonNull final String title, @NonNull final String origin) {
         mTitle = title;
@@ -87,10 +89,6 @@ public final class Rss implements IViewRss {
 
     public void setDescription(final String description) {
         mDescription = description;
-    }
-
-    public void setOrigin(final String origin) {
-        mOrigin = origin;
     }
 
     @Override

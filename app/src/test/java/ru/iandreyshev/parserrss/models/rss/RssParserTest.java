@@ -19,7 +19,7 @@ public class RssParserTest {
     private RssParseEngine mArticlesParseExceptionParser;
 
     @Before
-    public void reset() {
+    public void setup() {
         mFeedParseExceptionParser = new RssParseEngine() {
             @Override
             protected Rss parseRss(Element root) throws Exception {
@@ -49,14 +49,14 @@ public class RssParserTest {
     }
 
     @Test
-    public void subclasses_can_throw_exception_in_feed_parsing_method() {
+    public void subclassesCanThrowExceptionInFeedParsingMethod() {
         final Rss rss = mFeedParseExceptionParser.parse(getXml("root_only"));
 
         assertNull(rss);
     }
 
     @Test
-    public void subclasses_can_throw_exception_in_articles_parsing_method() {
+    public void subclassesCanThrowExceptionInArticlesParsingMethod() {
         final Rss rss = mArticlesParseExceptionParser.parse(getXml("root_only"));
 
         assertNull(rss);

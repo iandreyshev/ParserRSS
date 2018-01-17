@@ -6,6 +6,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.repository.Database;
@@ -15,7 +16,7 @@ import ru.iandreyshev.parserrss.models.rss.IViewRss;
 public final class GetAllRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
     private static final String TAG = GetAllRssFromDbTask.class.getName();
 
-    private final Database mDatabase = new Database();
+    private final Database mDatabase = App.getDatabase();
     private final List<IViewRss> mResult = new ArrayList<>();
     private IEventListener mListener;
     private IEvent mResultEvent;

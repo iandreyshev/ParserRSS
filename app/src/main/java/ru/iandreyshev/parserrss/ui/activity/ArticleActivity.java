@@ -18,8 +18,8 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.app.Utils;
 import ru.iandreyshev.parserrss.models.rss.IViewArticle;
+import ru.iandreyshev.parserrss.models.rss.IViewRss;
 import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
@@ -62,10 +62,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
 
     @Override
     public void closeArticle() {
-        Intent intent = FeedActivity.getIntent(this)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-
-        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -90,15 +87,16 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
     }
 
     @Override
-    public void initArticle(@NonNull final IViewArticle article, @NonNull final String rssName) {
+    public void initArticle(@NonNull final IViewRss rss, @NonNull final IViewArticle article) {
         mArticle = article;
         mTitle.setText(Html.fromHtml(article.getTitle()));
         mText.setText(Html.fromHtml(article.getDescription()));
-        loadImage(Utils.toBitmap(article.getImage()));
-        loadDate(article.getPostDate());
+        mImageLoadPresenter.loadImage(mArticle.getId());
+        loadDate(article.getDate());
 
-        mToolbar.setTitle(mArticle.getTitle());
-        mToolbar.setSubtitle(rssName);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(rss.getTitle());
+        }
     }
 
     @Override
@@ -137,23 +135,14 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
         view.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
-    private void loadImage(@Nullable final Bitmap bitmap) {
-        setViewVisible(mImage, (bitmap != null));
-
-        if (bitmap != null) {
-            mImage.setImageBitmap(bitmap);
-        } else {
-            mImageLoadPresenter.loadImage(mArticle.getId());
-        }
-    }
-
     private void loadDate(@Nullable final Long date) {
         setViewVisible(mDate, (date != null));
         mDate.setText(DATE_FORMAT.format(date));
     }
 
     @Override
-    public void insertImage(long articleId, @NonNull Bitmap imageBitmap) {
-        loadImage(imageBitmap);
+    public void insertImage(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap) {
+        mImage.setVisibility(View.VISIBLE);
+        mImage.setImageBitmap(bitmap);
     }
 }
