@@ -24,7 +24,6 @@ public class DatabaseTest {
     private static final String ARTICLE_ORIGIN = "ORIGIN %s";
 
     private static final byte[] IMAGE = {0, 1, 2, 3};
-    private static final List<Article> NOT_USED_ARTICLES = new ArrayList<>();
 
     private Database mDatabase;
     private Rss mRss;
@@ -41,10 +40,6 @@ public class DatabaseTest {
 
         for (int i = 0; i < ARTICLES_COUNT; ++i) {
             articleList.add(createArticle(i));
-        }
-
-        for (int i = ARTICLES_COUNT / 2; i < ARTICLES_COUNT * 2; ++i) {
-            NOT_USED_ARTICLES.add(createArticle(i));
         }
 
         mRss.setArticles(articleList);
