@@ -24,6 +24,7 @@ public class DatabaseTest {
     private static final String ARTICLE_ORIGIN = "ORIGIN %s";
 
     private static final byte[] IMAGE = {0, 1, 2, 3};
+    private static final List<Article> NOT_USED_ARTICLES = new ArrayList<>();
 
     private Database mDatabase;
     private Rss mRss;
@@ -40,6 +41,10 @@ public class DatabaseTest {
 
         for (int i = 0; i < ARTICLES_COUNT; ++i) {
             articleList.add(createArticle(i));
+        }
+
+        for (int i = ARTICLES_COUNT / 2; i < ARTICLES_COUNT * 2; ++i) {
+            NOT_USED_ARTICLES.add(createArticle(i));
         }
 
         mRss.setArticles(articleList);
@@ -89,7 +94,7 @@ public class DatabaseTest {
 
     @Test
     public void returnEmptyListAfterGetAllIfStoreEmpty() throws Exception {
-        assertEquals(mDatabase.getAllRss().size(), 0);
+        assertTrue(mDatabase.getAllRss().isEmpty());
     }
 
     @Test
@@ -97,6 +102,43 @@ public class DatabaseTest {
         mDatabase.putRssIfSameUrlNotExist(mRss);
 
         assertEquals(mDatabase.getRssById(mRss.getId()), mRss);
+    }
+
+    @Test
+    public void returnTrueWhenUpdatingRssExist() throws Exception {
+        final Rss newRss = new Rss("Title", "Origin");
+        newRss.setDescription("Description");
+        newRss.setUrl(mRss.getUrl());
+
+        assertNotEquals(newRss.getTitle(), mRss.getTitle());
+        assertNotEquals(newRss.getDescription(), mRss.getDescription());
+        assertNotEquals(newRss.getArticles().size(), mRss.getArticles().size());
+
+        assertEquals(newRss.getUrl(), mRss.getUrl());
+
+        assertTrue(mDatabase.putRssIfSameUrlNotExist(newRss));
+        assertTrue(mDatabase.updateRssWithSameUrl(mRss));
+
+        assertNotEquals(newRss.getTitle(), mRss.getTitle());
+        assertNotEquals(newRss.getDescription(), mRss.getDescription());
+    }
+
+    @Test
+    public void returnFalseWhenUpdatingRssNotExist() throws Exception {
+        final Rss newRss = new Rss();
+        newRss.setUrl(NOT_USE_RSS_URL);
+
+        assertTrue(mDatabase.putRssIfSameUrlNotExist(newRss));
+        assertFalse(mDatabase.updateRssWithSameUrl(mRss));
+    }
+
+    @Test
+    public void removeRss() throws Exception {
+        assertTrue(mDatabase.putRssIfSameUrlNotExist(mRss));
+
+        mDatabase.removeRssById(mRss.getId());
+
+        assertTrue(mDatabase.getAllRss().isEmpty());
     }
 
     @Test
@@ -167,6 +209,13 @@ public class DatabaseTest {
         for (final Article article : rssFromDb.getArticles()) {
             assertNotNull(article.getImage());
         }
+    }
+
+    @Test
+    public void returnAllRss() throws Exception {
+        mDatabase.putRssIfSameUrlNotExist(mRss);
+
+        assertEquals(mDatabase.getAllRss().size(), 1);
     }
 
     @NonNull

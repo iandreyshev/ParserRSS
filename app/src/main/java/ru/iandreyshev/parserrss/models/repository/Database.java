@@ -11,7 +11,7 @@ import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class Database {
-    public static final List<Long> INVALID_IDS = new ArrayList<>();
+    static final List<Long> INVALID_IDS = new ArrayList<>();
 
     static {
         INVALID_IDS.add(-1L);
@@ -159,6 +159,7 @@ public class Database {
                 .find();
     }
 
+    @Nullable
     private Rss getRss(long id) {
         if (INVALID_IDS.contains(id)) {
             return null;
@@ -167,6 +168,7 @@ public class Database {
         return mRssBox.get(id);
     }
 
+    @Nullable
     private Article getArticle(long id) {
         if (INVALID_IDS.contains(id)) {
             return null;
