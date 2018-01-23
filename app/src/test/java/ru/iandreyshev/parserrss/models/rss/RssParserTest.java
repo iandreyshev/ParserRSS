@@ -22,13 +22,13 @@ public class RssParserTest {
     public void setup() {
         mFeedParseExceptionParser = new RssParseEngine() {
             @Override
-            protected Rss parseRss(Element root) throws Exception {
+            protected Rss parseRss(Element root) {
                 throw new UnsupportedOperationException();
             }
 
             @NonNull
             @Override
-            protected ArrayList<Article> parseArticles(Element root) throws Exception {
+            protected ArrayList<Article> parseArticles(Element root) {
                 fail();
 
                 return null;
@@ -36,13 +36,13 @@ public class RssParserTest {
         };
         mArticlesParseExceptionParser = new RssParseEngine() {
             @Override
-            protected Rss parseRss(Element root) throws Exception {
+            protected Rss parseRss(Element root) {
                 return null;
             }
 
             @NonNull
             @Override
-            protected ArrayList<Article> parseArticles(Element root) throws Exception {
+            protected ArrayList<Article> parseArticles(Element root) {
                 throw new UnsupportedOperationException();
             }
         };

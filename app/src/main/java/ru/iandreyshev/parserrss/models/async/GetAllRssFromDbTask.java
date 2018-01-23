@@ -7,58 +7,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.iandreyshev.parserrss.app.App;
-import ru.iandreyshev.parserrss.app.IEvent;
-import ru.iandreyshev.parserrss.app.Utils;
-import ru.iandreyshev.parserrss.models.repository.Database;
+import ru.iandreyshev.parserrss.models.filters.IArticlesFilter;
 import ru.iandreyshev.parserrss.models.repository.Rss;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 
-public final class GetAllRssFromDbTask extends Task<Void, Void, List<IViewRss>> {
+public final class GetAllRssFromDbTask extends Task<Void, Void, List<ViewRss>> {
     private static final String TAG = GetAllRssFromDbTask.class.getName();
 
-    private final Database mDatabase = App.getDatabase();
-    private final List<IViewRss> mResult = new ArrayList<>();
-    private IEventListener mListener;
-    private IEvent mResultEvent;
+    private final IEventListener mListener;
+    private final IArticlesFilter mFilter;
 
-    public static void execute(final IEventListener listener) {
-        final GetAllRssFromDbTask task = new GetAllRssFromDbTask(listener);
-        task.mListener = listener;
-        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
+    public static void execute(final IEventListener listener, final IArticlesFilter filter) {
+        new GetAllRssFromDbTask(listener, filter)
+                .executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
-    public interface IEventListener extends ITaskListener<List<IViewRss>> {
+    public interface IEventListener extends ITaskListener<List<ViewRss>> {
         void onLoadError();
 
-        void onSuccess(final List<IViewRss> rssFromDb);
+        void onSuccess(final List<ViewRss> rssFromDb);
     }
 
     @NonNull
     @Override
-    protected List<IViewRss> doInBackground(Void... voids) {
+    protected List<ViewRss> doInBackground(Void... voids) {
+        final List<ViewRss> result = new ArrayList<>();
+
         try {
 
-            for (final Rss rss : mDatabase.getAllRss()) {
-                rss.setArticles(Utils.sortByDateDESC(rss.getArticles()));
-                mResult.add(rss);
+            for (final Rss rss : App.getDatabase().getAllRss()) {
+                rss.setArticles(mFilter.sort(rss.getArticles()));
+                result.add(new ViewRss(rss));
             }
-            mResultEvent = () -> mListener.onSuccess(mResult);
+            setResultEvent(() -> mListener.onSuccess(result));
 
         } catch (Exception ex) {
             Log.e(TAG, Log.getStackTraceString(ex));
-            mResultEvent = () -> mListener.onLoadError();
+            setResultEvent(mListener::onLoadError);
         }
 
-        return mResult;
+        return result;
     }
 
-    @Override
-    protected void onPostExecute(List<IViewRss> result) {
-        super.onPostExecute(result);
-        mResultEvent.doEvent();
-    }
-
-    private GetAllRssFromDbTask(final ITaskListener<List<IViewRss>> listener) {
+    private GetAllRssFromDbTask(final IEventListener listener, final IArticlesFilter filter) {
         super(listener);
+        mListener = listener;
+        mFilter = filter;
     }
 }

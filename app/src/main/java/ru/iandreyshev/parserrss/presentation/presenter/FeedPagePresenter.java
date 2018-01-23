@@ -6,29 +6,25 @@ import com.arellomobile.mvp.MvpPresenter;
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.async.UpdateRssFromNetTask;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.filters.FilterByDate;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
-import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
+import ru.iandreyshev.parserrss.presentation.view.IFeedPageView;
 
 @InjectViewState
-public class FeedTabPresenter extends MvpPresenter<IFeedTabView> {
-    private IViewRss mRss;
+public class FeedPagePresenter extends MvpPresenter<IFeedPageView> {
+    private final ViewRss mRss;
 
-    public void init(final IViewRss rss) {
-        if (mRss != null) {
-            return;
-        }
-
+    public FeedPagePresenter(final ViewRss rss) {
         mRss = rss;
     }
 
     public void onUpdate() {
-        UpdateRssFromNetTask.execute(new UpdateFromNetListener(), mRss.getUrl());
+        UpdateRssFromNetTask.execute(new UpdateFromNetListener(), mRss.getUrl(), FilterByDate.newInstance());
     }
 
     @Override
     protected void onFirstViewAttach() {
-        super.onFirstViewAttach();
         getViewState().setArticles(mRss.getViewArticles());
     }
 
@@ -39,7 +35,7 @@ public class FeedTabPresenter extends MvpPresenter<IFeedTabView> {
         }
 
         @Override
-        public void onPostExecute(final IViewRss result) {
+        public void onPostExecute(final ViewRss result) {
             getViewState().startUpdate(false);
         }
 
@@ -61,7 +57,6 @@ public class FeedTabPresenter extends MvpPresenter<IFeedTabView> {
         @Override
         public void onNetError(final IHttpRequestResult requestResult) {
             switch (requestResult.getState()) {
-
                 case BadConnection:
                     getViewState().showShortToast(App.getStr(R.string.toast_bad_connection));
                     break;
@@ -78,8 +73,9 @@ public class FeedTabPresenter extends MvpPresenter<IFeedTabView> {
         }
 
         @Override
-        public void onSuccess(final IViewRss result) {
+        public void onSuccess(final ViewRss result) {
             getViewState().setArticles(result.getViewArticles());
+            getViewState().updateImages(true);
         }
     }
 }

@@ -18,8 +18,8 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter;
@@ -40,7 +40,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
 
     @InjectPresenter
     ArticlePresenter mArticlePresenter;
-    @InjectPresenter(type = PresenterType.GLOBAL, tag = "ImageLoadPresenter")
+    @InjectPresenter(type = PresenterType.GLOBAL, tag = ImagesLoadPresenter.TAG)
     ImagesLoadPresenter mImageLoadPresenter;
 
     @BindView(R.id.article_title)
@@ -54,7 +54,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
     @BindView(R.id.article_toolbar)
     Toolbar mToolbar;
 
-    private IViewArticle mArticle;
+    private ViewArticle mArticle;
 
     public static Intent getIntent(final Context context) {
         return new Intent(context, ArticleActivity.class);
@@ -87,7 +87,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
     }
 
     @Override
-    public void initArticle(@NonNull final IViewRss rss, @NonNull final IViewArticle article) {
+    public void initArticle(@NonNull final ViewRss rss, @NonNull final ViewArticle article) {
         mArticle = article;
         mTitle.setText(Html.fromHtml(article.getTitle()));
         mText.setText(Html.fromHtml(article.getDescription()));
@@ -108,11 +108,6 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
         ButterKnife.bind(this);
 
         initToolbar();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         initArticle();
     }
 
@@ -141,7 +136,7 @@ public class ArticleActivity extends BaseActivity implements IArticleView, IImag
     }
 
     @Override
-    public void insertImage(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap) {
+    public void insertImage(@NonNull Bitmap bitmap) {
         mImage.setVisibility(View.VISIBLE);
         mImage.setImageBitmap(bitmap);
     }

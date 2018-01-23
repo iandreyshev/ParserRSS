@@ -72,7 +72,7 @@ public class RssTest {
 
     @Test
     public void haveEmptyListOfArticlesViewsByDefault() {
-        assertEquals(mDefaultRss.getViewArticles().size(), 0);
+        assertTrue(mDefaultRss.getArticles().isEmpty());
     }
 
     @Test

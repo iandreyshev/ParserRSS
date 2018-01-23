@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.repository;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -50,7 +51,7 @@ public class Database {
         return !mRssBox.find(Rss_.mUrl, url).isEmpty();
     }
 
-    public void updateArticleImage(long id, byte[] image) {
+    public void updateArticleImage(long id, Bitmap image) {
         final Article article = getArticle(id);
 
         if (article == null) {
@@ -62,16 +63,14 @@ public class Database {
     }
 
     @NonNull
-    public List<Rss> getAllRss() throws Exception {
-        return mBoxStore.callInTx(() -> {
-            final ArrayList<Rss> result = new ArrayList<>();
+    public List<Rss> getAllRss() {
+        final List<Rss> result = mRssBox.getAll();
 
-            for (final Rss rss : mRssBox.getAll()) {
-                result.add(getRssById(rss.getId()));
-            }
+        for (final Rss rss : result) {
+            rss.setArticles(getArticlesByRssId(rss.getId()));
+        }
 
-            return result;
-        });
+        return result;
     }
 
     public boolean putRssIfSameUrlNotExist(final Rss newRss) throws Exception {

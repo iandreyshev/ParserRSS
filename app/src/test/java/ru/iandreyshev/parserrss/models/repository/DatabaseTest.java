@@ -1,9 +1,14 @@
 package ru.iandreyshev.parserrss.models.repository;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+
+import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.junit.Assert.*;
 
@@ -12,7 +17,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class DatabaseTest {
+@RunWith(RobolectricTestRunner.class)
+public class DatabaseTest extends TestCase {
     private static final String RSS_TITLE = "TITLE";
     private static final String RSS_ORIGIN = "ORIGIN";
     private static final String RSS_URL = "URL";
@@ -23,7 +29,7 @@ public class DatabaseTest {
     private static final String ARTICLE_DESCRIPTION = "DESCRIPTION %s";
     private static final String ARTICLE_ORIGIN = "ORIGIN %s";
 
-    private static final byte[] IMAGE = {0, 1, 2, 3};
+    private static final Bitmap IMAGE = Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8);
 
     private Database mDatabase;
     private Rss mRss;
@@ -31,7 +37,9 @@ public class DatabaseTest {
     @Before
     public void setup() throws Exception {
         File tempFile = File.createTempFile("object-store-test", "");
-        tempFile.delete();
+
+        assertTrue(tempFile.delete());
+
         mDatabase = new Database(MyObjectBox.builder().directory(tempFile).build());
 
         mRss = new Rss(RSS_TITLE, RSS_ORIGIN);
@@ -156,10 +164,11 @@ public class DatabaseTest {
     }
 
     @Test
-    public void updateImageBytesIfArticleExist() throws Exception {
-        final byte[] newImage = {1};
+    public void updateImageIfArticleExist() throws Exception {
+        final Bitmap newImage = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8);
 
-        assertNotEquals(newImage.length, IMAGE.length);
+        assertNotEquals(newImage.getWidth(), IMAGE.getWidth());
+        assertNotEquals(newImage.getHeight(), IMAGE.getHeight());
 
         mDatabase.putRssIfSameUrlNotExist(mRss);
 
@@ -167,12 +176,13 @@ public class DatabaseTest {
             article.setImage(IMAGE);
 
             Long id = article.getId();
-            mDatabase.updateArticleImage(id, newImage);
+            mDatabase.updateArticleImage(id, IMAGE);
 
             final Article articleFromDatabase = mDatabase.getArticleById(id);
 
             assertNotNull(articleFromDatabase);
-            assertEquals(articleFromDatabase.getImage().length, newImage.length);
+            assertNotEquals(articleFromDatabase.getImage().getWidth(), newImage.getWidth());
+            assertNotEquals(articleFromDatabase.getImage().getHeight(), newImage.getHeight());
         }
     }
 
@@ -214,7 +224,7 @@ public class DatabaseTest {
     }
 
     @NonNull
-    private Article createArticle(int number) throws Exception {
+    private Article createArticle(int number) {
         return new Article(
                 String.format(ARTICLE_TITLE, number),
                 String.format(ARTICLE_DESCRIPTION, number),

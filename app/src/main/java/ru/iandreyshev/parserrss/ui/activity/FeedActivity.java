@@ -15,8 +15,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 
 import butterknife.ButterKnife;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.presentation.view.IFeedView;
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter;
 import ru.iandreyshev.parserrss.R;
@@ -44,19 +43,18 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     ProgressBar mProgressBar;
 
     private FeedTabsAdapter mTabsAdapter;
-    private MenuItem mMenuAddButton;
     private MenuItem mMenuInfoButton;
     private MenuItem mMenuDeleteButton;
 
     @Override
-    public void insertRss(final IViewRss rss) {
+    public void insertRss(final ViewRss rss) {
         mTabsAdapter.insert(rss);
         mPager.setCurrentItem(mTabsAdapter.getCount());
         onFeedUpdate();
     }
 
     @Override
-    public void removeRss(final IViewRss rss) {
+    public void removeRss(final ViewRss rss) {
         mTabsAdapter.remove(rss);
         onFeedUpdate();
     }
@@ -80,29 +78,13 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     }
 
     @Override
-    public void enableAddingButton(boolean isEnable) {
-        mMenuAddButton.setEnabled(isEnable);
-    }
-
-    @Override
-    public void enableDeleteButton(boolean isEnable) {
-        mMenuDeleteButton.setEnabled(isEnable);
-    }
-
-    @Override
-    public void enableInfoButton(boolean isEnable) {
-        mMenuInfoButton.setEnabled(isEnable);
-    }
-
-    @Override
-    public void openRssInfo(final IViewRss feed) {
+    public void openRssInfo(final ViewRss feed) {
         RssInfoDialog.show(getSupportFragmentManager(), feed);
     }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.feed_options_menu, menu);
-        mMenuAddButton = menu.findItem(R.id.feed_options_add);
         mMenuInfoButton = menu.findItem(R.id.feed_options_info);
         mMenuDeleteButton = menu.findItem(R.id.feed_options_delete);
 
@@ -119,7 +101,7 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        final IViewRss currentRss = mTabsAdapter.getRss(mPager.getCurrentItem());
+        final ViewRss currentRss = mTabsAdapter.getRss(mPager.getCurrentItem());
 
         switch (item.getItemId()) {
             case R.id.feed_options_add:
@@ -137,8 +119,8 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
     }
 
     @Override
-    public void onArticleClick(final IViewArticle article) {
-        mFeedPresenter.openArticle(article);
+    public void onArticleClick(long articleId) {
+        mFeedPresenter.openArticle(articleId);
     }
 
     @Override
@@ -153,8 +135,6 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
         mContentMessage.setVisibility(isFeedEmpty ? View.VISIBLE : View.GONE);
         mPager.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
         mTabs.setVisibility(isFeedEmpty ? View.GONE : View.VISIBLE);
-
-
     }
 
     @Override

@@ -18,6 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:title="@string/article_toolbar_title"
             app:titleTextAppearance="@style/ToolbarTextAppearance" />
 
     </android.support.design.widget.AppBarLayout>

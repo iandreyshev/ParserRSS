@@ -28,26 +28,25 @@ public class AddRssDialog extends MvpAppCompatDialogFragment {
     @Override
     @NonNull
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View view = inflater.inflate(R.layout.add_feed_dialog, null);
+        final View view = LayoutInflater.from(getContext()).inflate(R.layout.add_feed_dialog, null);
         mField = view.findViewById(R.id.add_feed_dialog_url_field);
 
-        return new AlertDialog.Builder(getActivity())
+        return new AlertDialog.Builder(view.getContext())
                 .setView(view)
                 .setPositiveButton(R.string.add_feed_dialog_submit_button, this::onAddButtonClick)
                 .setNegativeButton(R.string.add_feed_dialog_cancel_button, null)
                 .create();
     }
 
-    public void onAddButtonClick(DialogInterface dialog, int which) {
-        if (mOnSubmitListener != null) {
-            mOnSubmitListener.onSubmitAddRss(mField.getText().toString());
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mOnSubmitListener = (FeedActivity) context;
+    }
+
+    private void onAddButtonClick(DialogInterface dialog, int which) {
+        if (mOnSubmitListener != null) {
+            mOnSubmitListener.onSubmitAddRss(mField.getText().toString());
+        }
     }
 }

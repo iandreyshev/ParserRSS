@@ -62,7 +62,7 @@ public class HttpRequestHandler implements IHttpRequestResult {
         return mUrl.toString();
     }
 
-    public void setUrl(final String url) {
+    private void setUrl(final String url) {
         mUrl = Url.parse(url == null ? "" : url);
         mState = mUrl == null ? State.BadUrl : State.NotSend;
     }

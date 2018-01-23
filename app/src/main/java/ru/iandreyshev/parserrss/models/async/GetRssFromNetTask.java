@@ -2,58 +2,47 @@ package ru.iandreyshev.parserrss.models.async;
 
 import javax.annotation.Nullable;
 
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.models.rss.RssParser;
 import ru.iandreyshev.parserrss.models.repository.Rss;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult;
 
-abstract class GetRssFromNetTask extends Task<String, Void, IViewRss> {
-    private HttpRequestHandler mRequestHandler;
+abstract class GetRssFromNetTask extends Task<String, Void, ViewRss> {
+    private final HttpRequestHandler mRequestHandler;
+    private final IEventListener mListener;
     private Rss mNewRss;
-    private IEventListener mListener;
 
-    protected interface IEventListener extends ITaskListener<IViewRss> {
+    protected interface IEventListener extends ITaskListener<ViewRss> {
         void onInvalidUrl();
 
         void onNetError(final IHttpRequestResult requestResult);
 
         void onParserError();
 
-        void onSuccess(final IViewRss result);
+        void onSuccess(final ViewRss result);
     }
 
-    GetRssFromNetTask(final IEventListener listener, final String url) {
+    GetRssFromNetTask(final IEventListener listener, String url) {
         super(listener);
-        mRequestHandler = new HttpRequestHandler(url);
         mListener = listener;
+        mRequestHandler = new HttpRequestHandler(url);
     }
 
-    protected void onInvalidUrl() {
-        // Implement in subclasses if it need
-    }
-
-    protected void onNetError(final IHttpRequestResult requestResult) {
-        // Implement in subclasses if it need
-    }
-
-    protected void onParserError() {
-        // Implement in subclasses if it need
-    }
-
+    @Nullable
     protected abstract Rss onSuccess(final Rss rss);
 
-    protected boolean isUrlValid() {
+    boolean isUrlValid() {
         if (mRequestHandler.getState() != HttpRequestHandler.State.BadUrl) {
             return true;
         }
 
-        setResultEvent(() -> mListener.onInvalidUrl());
+        setResultEvent(mListener::onInvalidUrl);
 
         return false;
     }
 
-    protected boolean getRssFromNet() {
+    boolean getRssFromNet() {
         mRequestHandler.sendGet();
 
         if (mRequestHandler.getState() == HttpRequestHandler.State.Success) {
@@ -65,39 +54,28 @@ abstract class GetRssFromNetTask extends Task<String, Void, IViewRss> {
         return false;
     }
 
-    protected boolean parseRss() {
+    boolean parseRss() {
         if ((mNewRss = RssParser.parse(mRequestHandler.getResponseBodyAsString())) != null) {
             mNewRss.setUrl(mRequestHandler.getUrlStr());
 
             return true;
         }
 
-        setResultEvent(() -> mListener.onParserError());
+        setResultEvent(mListener::onParserError);
 
         return false;
     }
 
     @Nullable
     @Override
-    protected final IViewRss doInBackground(final String... strings) {
-        if (!isUrlValid()) {
-            onInvalidUrl();
-
+    protected final ViewRss doInBackground(final String... strings) {
+        if (!isUrlValid() || !getRssFromNet() || !parseRss()) {
             return null;
-
-        } else if (!getRssFromNet()) {
-            onNetError(mRequestHandler);
-
-            return null;
-
-        } else if (!parseRss()) {
-            onParserError();
-
-            return null;
-
         }
 
-        return onSuccess(mNewRss);
+        final Rss rss = onSuccess(mNewRss);
+
+        return rss == null ? null : new ViewRss(rss);
     }
 
     @Nullable

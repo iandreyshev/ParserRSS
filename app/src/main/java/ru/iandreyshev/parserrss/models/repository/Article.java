@@ -1,15 +1,16 @@
 package ru.iandreyshev.parserrss.models.repository;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import java.util.Date;
 
+import io.objectbox.annotation.Convert;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
 
 @Entity
-public final class Article implements IViewArticle {
+public final class Article {
     @Id
     long mId;
     long mRssId;
@@ -19,7 +20,8 @@ public final class Article implements IViewArticle {
     String mDescription = "";
     String mImageUrl;
     Long mPostDate;
-    byte[] mImage;
+    @Convert(dbType = byte[].class, converter = BitmapConverter.class)
+    Bitmap mImage;
 
     public Article(@NonNull String title, @NonNull String description, @NonNull String originUrl) {
         mTitle = title;
@@ -30,42 +32,35 @@ public final class Article implements IViewArticle {
     Article() {
     }
 
-    @Override
     public long getId() {
         return mId;
     }
 
     @NonNull
-    @Override
     public String getTitle() {
         return mTitle;
     }
 
-    @Override
     @NonNull
     public String getOriginUrl() {
         return mOriginUrl;
     }
 
-    @Override
     @NonNull
     public String getDescription() {
         return mDescription;
     }
 
-    @Override
     public Long getDate() {
         return mPostDate;
     }
 
-    @Override
-    public byte[] getImage() {
-        return mImage;
-    }
-
-    @Override
     public String getImageUrl() {
         return mImageUrl;
+    }
+
+    public Bitmap getImage() {
+        return mImage;
     }
 
     public Long getRssId() {
@@ -76,8 +71,7 @@ public final class Article implements IViewArticle {
         mRssId = id;
     }
 
-    @Override
-    public void setImage(final byte[] image) {
+    public void setImage(final Bitmap image) {
         mImage = image;
     }
 

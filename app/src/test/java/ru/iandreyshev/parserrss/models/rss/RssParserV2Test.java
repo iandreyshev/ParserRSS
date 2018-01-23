@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ru.iandreyshev.parserrss.TestUtils;
+import ru.iandreyshev.parserrss.models.repository.Article;
 import ru.iandreyshev.parserrss.models.repository.Rss;
 
 import static org.junit.Assert.*;
@@ -50,23 +51,23 @@ public class RssParserV2Test {
     public void returnEmptyArticlesListIfArticlesIsAbsent() {
         final Rss rss = parseFileAndCheck("valid_minimal");
 
-        assertTrue(rss.getViewArticles().isEmpty());
+        assertTrue(rss.getArticles().isEmpty());
     }
 
     @Test
     public void notParseArticlesInItemsNode() {
         final Rss rss = parseFileAndCheck("invalid_with_articles_in_items_node");
 
-        assertTrue(rss.getViewArticles().isEmpty());
+        assertTrue(rss.getArticles().isEmpty());
     }
 
     @Test
     public void parseArticlesInChannelNodeIfTheyHaveTitleLinkDescription() {
         final Rss rss = parseFileAndCheck("valid_with_articles");
 
-        assertEquals(2, rss.getViewArticles().size());
+        assertEquals(2, rss.getArticles().size());
 
-        for (final IViewArticle article : rss.getViewArticles()) {
+        for (final Article article : rss.getArticles()) {
 
             assertEquals(ARTICLE_TITLE, article.getTitle());
             assertEquals(ARTICLE_TEXT, article.getDescription());
@@ -79,9 +80,9 @@ public class RssParserV2Test {
     public void parseArticlesWithImageEnclosure() {
         final Rss rss = parseFile("valid_with_article_image");
 
-        assertEquals(2, rss.getViewArticles().size());
+        assertEquals(2, rss.getArticles().size());
 
-        for (final IViewArticle article : rss.getViewArticles()) {
+        for (final Article article : rss.getArticles()) {
 
             assertEquals(ARTICLE_IMG_URL, article.getImageUrl());
 
@@ -106,14 +107,14 @@ public class RssParserV2Test {
     public void returnEmptyArticleListIfTheyDoNotHaveTitleOrDescriptionOrLink() {
         final Rss rss = parseFile("valid_without_one_of_required_article_element");
 
-        assertTrue(rss.getViewArticles().isEmpty());
+        assertTrue(rss.getArticles().isEmpty());
     }
 
     @Test
     public void notParseArticlesImageIfTheyDoNotHaveUrlOrType() {
         final Rss rss = parseFile("valid_with_articles_enclosure_without_required_element");
 
-        for (final IViewArticle article : rss.getViewArticles()) {
+        for (final Article article : rss.getArticles()) {
 
             assertNull(article.getImageUrl());
 
@@ -124,7 +125,7 @@ public class RssParserV2Test {
     public void parseArticleDate() {
         final Rss rss = parseFile("valid_with_pub_date");
 
-        assertNotNull(rss.getViewArticles().get(0).getDate());
+        assertNotNull(rss.getArticles().get(0).getDate());
     }
 
     private Rss parseFile(final String fileName) {

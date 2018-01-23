@@ -1,71 +1,52 @@
 package ru.iandreyshev.parserrss.models.async;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.app.Utils;
+import ru.iandreyshev.parserrss.models.imageProps.IImageProps;
 import ru.iandreyshev.parserrss.models.repository.Article;
-import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 
 public final class GetArticleImageTask extends Task<Long, Void, Bitmap> {
-    private final Database mDatabase = App.getDatabase();
-    private byte[] mResultBytes;
-    private Bitmap mResultBitmap;
-    private long mArticleId;
-    private IEventListener mListener;
+    private final long mArticleId;
+    private final IImageProps mImageProps;
 
-    public static void execute(long article, final IEventListener listener) {
-        final GetArticleImageTask task = new GetArticleImageTask(listener);
-        task.mListener = listener;
-        task.mArticleId = article;
-        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
-    }
-
-    public interface IEventListener extends ITaskListener<Bitmap> {
-        void onSuccess(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap);
+    public static void execute(long articleId, final ITaskListener<Bitmap> listener, final IImageProps props) {
+        new GetArticleImageTask(articleId, listener, props)
+                .executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     @Nullable
     @Override
     protected Bitmap doInBackground(final Long... articles) {
-        final Article article = mDatabase.getArticleById(mArticleId);
+        Bitmap imageBitmap;
+        final Article article = App.getDatabase().getArticleById(mArticleId);
 
         if (article == null) {
             return null;
         } else if (article.getImage() != null) {
-            mResultBytes = article.getImage();
-            mResultBitmap = Utils.toBitmap(mResultBytes);
-
-            return mResultBitmap;
+            return mImageProps.configure(article.getImage());
         }
 
         final HttpRequestHandler mRequestHandler = new HttpRequestHandler(article.getImageUrl());
-        final HttpRequestHandler.State result = mRequestHandler.sendGet();
+        final HttpRequestHandler.State requestResult = mRequestHandler.sendGet();
 
-        mResultBytes = mRequestHandler.getResponseBody();
-        mResultBitmap = Utils.toBitmap(mResultBytes);
+        final byte[] imageBytes = mRequestHandler.getResponseBody();
+        imageBitmap = Utils.toBitmap(imageBytes);
 
-        if (result == HttpRequestHandler.State.Success && mResultBytes != null && mResultBitmap != null) {
-            mDatabase.updateArticleImage(mArticleId, mResultBytes);
+        if (requestResult == HttpRequestHandler.State.Success && imageBitmap != null) {
+            App.getDatabase().updateArticleImage(mArticleId, imageBitmap);
+            imageBitmap = mImageProps.configure(imageBitmap);
         }
 
-        return mResultBitmap;
+        return imageBitmap;
     }
 
-    @Override
-    protected void onPostExecute(Bitmap result) {
-        super.onPostExecute(result);
-
-        if (mResultBytes != null && mResultBitmap != null) {
-            mListener.onSuccess(mResultBytes, mResultBitmap);
-        }
-    }
-
-    private GetArticleImageTask(final IEventListener listener) {
+    private GetArticleImageTask(long articleId, final ITaskListener<Bitmap> listener, final IImageProps props) {
         super(listener);
+        mArticleId = articleId;
+        mImageProps = props;
     }
 }

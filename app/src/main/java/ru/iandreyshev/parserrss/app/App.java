@@ -1,43 +1,33 @@
 package ru.iandreyshev.parserrss.app;
 
 import android.app.Application;
-import android.util.Log;
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import java.lang.ref.WeakReference;
 
 import io.objectbox.BoxStore;
-import io.objectbox.android.AndroidObjectBrowser;
-import io.objectbox.android.BuildConfig;
 import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.repository.MyObjectBox;
 
 public class App extends Application {
-    private static final String TAG = App.class.getName();
-    private static final String START_MESSAGE_PATTERN = "Using ObjectBox %s (%s)";
-
-    private static App mInstance;
+    private static WeakReference<Context> mContext;
     private static BoxStore mBoxStore;
-
-    public App() {
-        mInstance = this;
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        mContext = new WeakReference<>(App.this);
         mBoxStore = MyObjectBox.builder().androidContext(App.this).build();
+    }
 
-        if (BuildConfig.DEBUG) {
-            new AndroidObjectBrowser(mBoxStore).start(this);
-        }
-
-        Log.d(TAG, String.format(START_MESSAGE_PATTERN, BoxStore.getVersion(), BoxStore.getVersionNative()));
+    @NonNull
+    public static Database getDatabase() {
+        return new Database(mBoxStore);
     }
 
     public static String getStr(int id) {
-        return mInstance.getString(id);
-    }
-
-    public static Database getDatabase() {
-        return new Database(mBoxStore);
+        return mContext.get().getString(id);
     }
 }
