@@ -11,10 +11,14 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class HttpRequestHandler implements IHttpRequestResult {
+    private static final int MAX_CONTENT_BYTES = 5242880; // 5MB
+
     private static final int GOOD_RESPONSE_CODE = 200;
-    private static final int READ_TIMEOUT_SEC = 1;
-    private static final int CONNECTION_TIMEOUT_SEC = 1;
-    private static final int WRITE_TIMEOUT_SEC = 1;
+    private static final String DEFAULT_PROTOCOL = "http://";
+
+    private static final int READ_TIMEOUT_SEC = 2;
+    private static final int CONNECTION_TIMEOUT_SEC = 2;
+    private static final int WRITE_TIMEOUT_SEC = 2;
 
     private final OkHttpClient mClient = new OkHttpClient.Builder()
             .readTimeout(READ_TIMEOUT_SEC, TimeUnit.SECONDS)
@@ -24,9 +28,14 @@ public class HttpRequestHandler implements IHttpRequestResult {
     private State mState = State.NotSend;
     private byte[] mBody;
     private Url mUrl;
+    private long mMaxContentBytes = MAX_CONTENT_BYTES;
 
     public HttpRequestHandler(final String urlString) {
         setUrl(urlString);
+
+        if (mState == State.BadUrl) {
+            setUrl(DEFAULT_PROTOCOL + urlString);
+        }
     }
 
     public State sendGet() {
@@ -37,6 +46,10 @@ public class HttpRequestHandler implements IHttpRequestResult {
         }
 
         return mState;
+    }
+
+    public void setMaxContentBytes(long maxBytes) {
+        mMaxContentBytes = maxBytes;
     }
 
     @NonNull
@@ -69,10 +82,8 @@ public class HttpRequestHandler implements IHttpRequestResult {
 
     private void send(Request request) {
         try (final Response response = mClient.newCall(request).execute()) {
-
             try (final ResponseBody body = response.body()) {
-
-                if (response.code() != GOOD_RESPONSE_CODE || body == null) {
+                if (response.code() != GOOD_RESPONSE_CODE || body == null || body.contentLength() > mMaxContentBytes) {
                     mState = State.BadConnection;
 
                     return;
