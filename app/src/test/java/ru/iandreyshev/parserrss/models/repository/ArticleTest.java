@@ -1,18 +1,23 @@
 package ru.iandreyshev.parserrss.models.repository;
 
+import android.graphics.Bitmap;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.Date;
 
 import static org.junit.Assert.*;
 
+@RunWith(RobolectricTestRunner.class)
 public class ArticleTest {
     private static final String TITLE = "TITLE";
     private static final String DESCRIPTION = "DESCRIPTION";
     private static final String ORIGIN = "ORIGIN";
     private static final Long RSS_ID = 1L;
-    private static final byte[] IMAGE = {};
+    private static final Bitmap IMAGE = Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8);
     private static final String IMAGE_URL = "IMAGE_URL";
     private static final Date POST_DATE = new Date();
 

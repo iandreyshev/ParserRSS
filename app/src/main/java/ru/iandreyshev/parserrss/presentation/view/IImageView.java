@@ -9,5 +9,5 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 public interface IImageView extends MvpView {
     @StateStrategyType(SkipStrategy.class)
-    void insertImage(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap);
+    void insertImage(@NonNull Bitmap bitmap);
 }

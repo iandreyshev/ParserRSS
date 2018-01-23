@@ -15,12 +15,12 @@ import android.widget.TextView;
 import com.arellomobile.mvp.MvpAppCompatDialogFragment;
 
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 
 public class RssInfoDialog extends MvpAppCompatDialogFragment {
-    private IViewRss mRss;
+    private ViewRss mRss;
 
-    public static void show(final FragmentManager fragmentManager, @NonNull final IViewRss rss) {
+    public static void show(final FragmentManager fragmentManager, @NonNull final ViewRss rss) {
         final RssInfoDialog dialog = new RssInfoDialog();
         dialog.mRss = rss;
         dialog.show(fragmentManager, RssInfoDialog.class.getName());
@@ -29,11 +29,10 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
     @Override
     @NonNull
     public Dialog onCreateDialog(final Bundle savedInstantState) {
-        final LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View view = inflater.inflate(R.layout.rss_info_dialog, null);
+        final View view = LayoutInflater.from(getContext()).inflate(R.layout.rss_info_dialog, null);
         initViewContent(view);
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+        final AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext())
                 .setView(view)
                 .setPositiveButton(R.string.rss_info_dialog_button, null)
                 .setNeutralButton(R.string.rss_info_open_original_button, this::onOpenOriginalButtonClick);
@@ -51,7 +50,7 @@ public class RssInfoDialog extends MvpAppCompatDialogFragment {
         }
     }
 
-    public void onOpenOriginalButtonClick(DialogInterface dialog, int which) {
+    private void onOpenOriginalButtonClick(DialogInterface dialog, int which) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mRss.getOrigin())));
     }
 }

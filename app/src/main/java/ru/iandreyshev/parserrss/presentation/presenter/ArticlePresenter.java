@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.async.GetArticleFromDbTask;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 import ru.iandreyshev.parserrss.presentation.view.IArticleView;
 
 import com.arellomobile.mvp.InjectViewState;
@@ -22,6 +22,14 @@ public class ArticlePresenter extends MvpPresenter<IArticleView> {
         }
 
         mArticleId = articleId;
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        if (mArticleId == null) {
+            return;
+        }
+
         GetArticleFromDbTask.execute(mArticleId, new GetArticleFromDbListener());
     }
 
@@ -35,7 +43,7 @@ public class ArticlePresenter extends MvpPresenter<IArticleView> {
         }
 
         @Override
-        public void onSuccess(final @NonNull IViewRss rss, final @NonNull IViewArticle article) {
+        public void onSuccess(final @NonNull ViewRss rss, final @NonNull ViewArticle article) {
             getViewState().initArticle(rss, article);
         }
 

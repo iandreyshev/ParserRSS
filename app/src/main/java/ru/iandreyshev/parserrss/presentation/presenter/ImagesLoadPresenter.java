@@ -1,80 +1,79 @@
 package ru.iandreyshev.parserrss.presentation.presenter;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 
 import ru.iandreyshev.parserrss.models.async.GetArticleImageTask;
+import ru.iandreyshev.parserrss.models.async.ITaskListener;
+import ru.iandreyshev.parserrss.models.imageProps.FeedListIconProps;
+import ru.iandreyshev.parserrss.models.imageProps.FullImage;
 import ru.iandreyshev.parserrss.presentation.view.IImageView;
 import ru.iandreyshev.parserrss.ui.adapter.IFeedItem;
 import ru.iandreyshev.parserrss.ui.listeners.IItemImageRequestListener;
 
 @InjectViewState
 public class ImagesLoadPresenter extends MvpPresenter<IImageView> implements IItemImageRequestListener {
-    private HashSet<Long> mItemsQueue = new HashSet<>();
+    public static final String TAG = "ImagesLoadPresenter";
+    private final HashSet<Long> mIconsQueue = new HashSet<>();
 
     public void loadImage(long articleId) {
-        GetArticleImageTask.execute(articleId, new GetImageFromNetListener());
+        GetArticleImageTask.execute(articleId, new GetImageFromNetListener(), FullImage.newInstance());
     }
 
     @Override
-    public void getImageFor(final IFeedItem item, boolean isForce) {
-        long id = item.getArticle().getId();
+    public void getIconForItem(final IFeedItem item, boolean isWithoutQueue) {
+        final Long id = item.getId();
 
-        if (item.getArticle() == null) {
+        if (mIconsQueue.contains(id) && !isWithoutQueue) {
             return;
-        } else if (mItemsQueue.contains(id) && !isForce) {
-            return;
-        } else if (item.isImageLoaded() && !isForce) {
+        } else if (item.isImageLoaded() && !isWithoutQueue) {
             return;
         }
 
-        GetArticleImageTask.execute(id, new GetImageFromNetForFeedItem(item));
+        GetImageFromNetForFeedItem listener = new GetImageFromNetForFeedItem(mIconsQueue, item, id);
+        GetArticleImageTask.execute(id, listener, FeedListIconProps.newInstance());
     }
 
-    private class GetImageFromNetListener implements GetArticleImageTask.IEventListener {
+    private class GetImageFromNetListener implements ITaskListener<Bitmap> {
         @Override
         public void onPreExecute() {
         }
 
         @Override
         public void onPostExecute(Bitmap result) {
-        }
-
-        @Override
-        public void onSuccess(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap) {
-            getViewState().insertImage(imageBytes, bitmap);
+            if (result != null) {
+                getViewState().insertImage(result);
+            }
         }
     }
 
-    private class GetImageFromNetForFeedItem implements GetArticleImageTask.IEventListener {
-        private long mIdBeforeLoad;
-        private IFeedItem mItem;
+    private static class GetImageFromNetForFeedItem implements ITaskListener<Bitmap> {
+        private final long mIdBeforeLoad;
+        private final WeakReference<IFeedItem> mItem;
+        private final HashSet<Long> mQueue;
 
-        private GetImageFromNetForFeedItem(IFeedItem item) {
-            mIdBeforeLoad = item.getArticle().getId();
-            mItem = item;
+        private GetImageFromNetForFeedItem(HashSet<Long> queue, IFeedItem item, long articleId) {
+            mIdBeforeLoad = articleId;
+            mQueue = queue;
+            mItem = new WeakReference<>(item);
         }
 
         @Override
         public void onPreExecute() {
-            mItemsQueue.add(mIdBeforeLoad);
+            mQueue.add(mIdBeforeLoad);
         }
 
         @Override
         public void onPostExecute(Bitmap result) {
-            mItemsQueue.remove(mIdBeforeLoad);
-        }
+            mQueue.remove(mIdBeforeLoad);
 
-        @Override
-        public void onSuccess(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap) {
-            if (mItem.getArticle().getId() == mIdBeforeLoad) {
-                mItem.getArticle().setImage(imageBytes);
-                mItem.updateImage(bitmap);
+            if (result != null && mItem.get() != null && mItem.get().getId() == mIdBeforeLoad) {
+                mItem.get().updateImage(result);
             }
         }
     }

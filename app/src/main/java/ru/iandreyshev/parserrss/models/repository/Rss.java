@@ -5,17 +5,13 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
 import io.objectbox.annotation.Transient;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
 
 @Entity
-public final class Rss implements IViewRss {
+public final class Rss {
     @Id
     long mId;
 
@@ -36,38 +32,27 @@ public final class Rss implements IViewRss {
     Rss() {
     }
 
-    @Override
     public long getId() {
         return mId;
     }
 
     @NonNull
-    @Override
     public String getTitle() {
         return mTitle;
     }
 
-    @Override
     public String getDescription() {
         return mDescription;
     }
 
-    @Override
     @NonNull
     public String getUrl() {
         return mUrl;
     }
 
-    @Override
     @NonNull
     public String getOrigin() {
         return mOrigin;
-    }
-
-    @NonNull
-    @Override
-    public List<IViewArticle> getViewArticles() {
-        return new ArrayList<>(mArticles);
     }
 
     @NonNull

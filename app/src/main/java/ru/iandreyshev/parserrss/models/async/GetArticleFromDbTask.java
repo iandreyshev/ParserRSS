@@ -1,37 +1,37 @@
 package ru.iandreyshev.parserrss.models.async;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import ru.iandreyshev.parserrss.app.App;
 import ru.iandreyshev.parserrss.models.repository.Article;
 import ru.iandreyshev.parserrss.models.repository.Database;
 import ru.iandreyshev.parserrss.models.repository.Rss;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 
 public final class GetArticleFromDbTask extends Task<Long, Void, Void> {
     private static final String TAG = GetArticleFromDbTask.class.getName();
 
-    private IEventListener mListener;
+    private final IEventListener mListener;
     private final Database mDatabase = App.getDatabase();
-    private long mArticleId;
+    private final long mArticleId;
     private Rss mResultRss;
     private Article mResultArticle;
 
     public static void execute(long id, final IEventListener listener) {
-        final GetArticleFromDbTask task = new GetArticleFromDbTask(listener);
-        task.mListener = listener;
-        task.mArticleId = id;
-        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
+        new GetArticleFromDbTask(id, listener)
+                .executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
     public interface IEventListener extends ITaskListener<Void> {
-        void onSuccess(@NonNull final IViewRss rss, @NonNull final IViewArticle article);
+        void onSuccess(@NonNull final ViewRss rss, @NonNull final ViewArticle article);
 
         void onFail();
     }
 
+    @Nullable
     @Override
     protected Void doInBackground(Long... longs) {
         try {
@@ -55,13 +55,15 @@ public final class GetArticleFromDbTask extends Task<Long, Void, Void> {
         super.onPostExecute(result);
 
         if (mResultArticle != null && mResultRss != null) {
-            mListener.onSuccess(mResultRss, mResultArticle);
+            mListener.onSuccess(new ViewRss(mResultRss), new ViewArticle(mResultArticle));
         } else {
             mListener.onFail();
         }
     }
 
-    private GetArticleFromDbTask(final ITaskListener<Void> listener) {
+    private GetArticleFromDbTask(long id, final IEventListener listener) {
         super(listener);
+        mListener = listener;
+        mArticleId = id;
     }
 }

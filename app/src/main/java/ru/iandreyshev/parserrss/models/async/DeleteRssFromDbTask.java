@@ -5,58 +5,43 @@ import android.util.Log;
 import javax.annotation.Nullable;
 
 import ru.iandreyshev.parserrss.app.App;
-import ru.iandreyshev.parserrss.app.IEvent;
 import ru.iandreyshev.parserrss.models.repository.Database;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
 
-public final class DeleteRssFromDbTask extends Task<IViewRss, Void, IViewRss> {
+public final class DeleteRssFromDbTask extends Task<ViewRss, Void, ViewRss> {
     private static final String TAG = DeleteRssFromDbTask.class.getName();
 
     private final Database mDatabase = App.getDatabase();
-    private IEventListener mListener;
-    private IViewRss mRssToDelete;
-    private IEvent mResultEvent;
+    private final IEventListener mListener;
+    private final ViewRss mRssToDelete;
 
-    public static void execute(final IEventListener listener, final IViewRss rssToDelete) {
-        if (rssToDelete == null) {
-            return;
-        }
-
-        final DeleteRssFromDbTask task = new DeleteRssFromDbTask(listener);
-        task.mListener = listener;
-        task.mRssToDelete = rssToDelete;
-        task.executeOnExecutor(TaskExecutor.getMultiThreadPool());
+    public static void execute(final IEventListener listener, final ViewRss rssToDelete) {
+        new DeleteRssFromDbTask(listener, rssToDelete).
+                executeOnExecutor(TaskExecutor.getMultiThreadPool());
     }
 
-    public interface IEventListener extends ITaskListener<IViewRss> {
-        void onSuccess(final IViewRss rss);
-
-        void onFail(final IViewRss rss);
+    public interface IEventListener extends ITaskListener<ViewRss> {
+        void onFail(final ViewRss rss);
     }
 
     @Nullable
     @Override
-    protected IViewRss doInBackground(final IViewRss... rssToDelete) {
+    protected ViewRss doInBackground(final ViewRss... rssToDelete) {
         try {
 
             mDatabase.removeRssById(mRssToDelete.getId());
-            mResultEvent = () -> mListener.onSuccess(mRssToDelete);
 
         } catch (Exception ex) {
             Log.e(TAG, Log.getStackTraceString(ex));
-            mResultEvent = () -> mListener.onFail(mRssToDelete);
+            setResultEvent(() -> mListener.onFail(mRssToDelete));
         }
 
         return mRssToDelete;
     }
 
-    @Override
-    protected void onPostExecute(final IViewRss result) {
-        super.onPostExecute(mRssToDelete);
-        mResultEvent.doEvent();
-    }
-
-    private DeleteRssFromDbTask(final ITaskListener<IViewRss> listener) {
+    private DeleteRssFromDbTask(final IEventListener listener, final ViewRss rssToDelete) {
         super(listener);
+        mListener = listener;
+        mRssToDelete = rssToDelete;
     }
 }

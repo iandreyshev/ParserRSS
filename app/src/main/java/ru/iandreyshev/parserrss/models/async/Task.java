@@ -6,7 +6,7 @@ import android.support.annotation.CallSuper;
 import ru.iandreyshev.parserrss.app.IEvent;
 
 abstract class Task<T, U, V> extends AsyncTask<T, U, V> {
-    private ITaskListener<V> mListener;
+    private final ITaskListener<V> mListener;
     private IEvent mResultEvent;
 
     Task(final ITaskListener<V> listener) {

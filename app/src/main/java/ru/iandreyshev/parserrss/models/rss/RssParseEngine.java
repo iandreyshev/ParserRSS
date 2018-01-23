@@ -51,10 +51,10 @@ abstract class RssParseEngine {
     }
 
     @Nullable
-    protected abstract Rss parseRss(final Element root) throws Exception;
+    protected abstract Rss parseRss(final Element root);
 
     @NonNull
-    protected abstract ArrayList<Article> parseArticles(final Element root) throws Exception;
+    protected abstract ArrayList<Article> parseArticles(final Element root);
 
     @Nullable
     private static Document toDocument(final String xmlText) {

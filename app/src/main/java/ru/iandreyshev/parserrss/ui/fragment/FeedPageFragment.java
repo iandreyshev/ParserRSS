@@ -13,53 +13,63 @@ import android.view.ViewGroup;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.PresenterType;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ru.iandreyshev.parserrss.R;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.models.rss.IViewRss;
-import ru.iandreyshev.parserrss.presentation.presenter.FeedTabPresenter;
+import ru.iandreyshev.parserrss.models.rss.ViewArticle;
+import ru.iandreyshev.parserrss.models.rss.ViewRss;
+import ru.iandreyshev.parserrss.presentation.presenter.FeedPagePresenter;
 import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter;
-import ru.iandreyshev.parserrss.presentation.view.IFeedTabView;
+import ru.iandreyshev.parserrss.presentation.view.IFeedPageView;
 import ru.iandreyshev.parserrss.presentation.view.IImageView;
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 
-public class FeedPageFragment extends BaseFragment implements IFeedTabView, IImageView {
-    @InjectPresenter(type = PresenterType.GLOBAL, tag = "ImageLoadPresenter")
+public class FeedPageFragment extends BaseFragment implements IFeedPageView, IImageView {
+    private static final int MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15;
+
+    @InjectPresenter(type = PresenterType.GLOBAL, tag = ImagesLoadPresenter.TAG)
     ImagesLoadPresenter mImageLoadPresenter;
     @InjectPresenter
-    FeedTabPresenter mPresenter;
+    FeedPagePresenter mPresenter;
 
-    private IViewRss mRss;
+    @BindView(R.id.feed_refresh_layout)
+    SwipeRefreshLayout mRefreshLayout;
+    @BindView(R.id.feed_items_list)
+    RecyclerView mListView;
+
+    private ViewRss mRss;
     private FeedListAdapter mListAdapter;
-    private SwipeRefreshLayout mRefreshLayout;
 
-    public static FeedPageFragment newInstance(final IViewRss rss) {
+    public static FeedPageFragment newInstance(final ViewRss rss) {
         final FeedPageFragment fragment = new FeedPageFragment();
         fragment.mRss = rss;
 
         return fragment;
     }
 
-    public IViewRss getRss() {
+    @ProvidePresenter
+    public FeedPagePresenter provideFeedPagePresenter() {
+        return new FeedPagePresenter(mRss);
+    }
+
+    public ViewRss getRss() {
         return mRss;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPresenter.init(mRss);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstantState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstantState) {
         final View view = inflater.inflate(R.layout.feed_list, viewGroup, false);
 
-        initListAdapter(view);
-        initRefreshLayout(view);
-        initRecyclerView(view);
+        ButterKnife.bind(this, view);
+
+        initListView();
+        mRefreshLayout.setOnRefreshListener(mPresenter::onUpdate);
 
         return view;
     }
@@ -67,7 +77,7 @@ public class FeedPageFragment extends BaseFragment implements IFeedTabView, IIma
     @Override
     public void onResume() {
         super.onResume();
-        mListAdapter.updateImages(true);
+        updateImages(true);
     }
 
     @Override
@@ -76,29 +86,55 @@ public class FeedPageFragment extends BaseFragment implements IFeedTabView, IIma
     }
 
     @Override
-    public void setArticles(final List<IViewArticle> newArticles) {
+    public void setArticles(final List<ViewArticle> newArticles) {
         mListAdapter.setArticles(newArticles);
-    }
-
-    private void initListAdapter(final View fragmentView) {
-        mListAdapter = new FeedListAdapter(getContext(), fragmentView.findViewById(R.id.feed_items_list));
-        mListAdapter.setArticleClickListener((IOnArticleClickListener) getContext());
-        mListAdapter.setImageRequestListener(mImageLoadPresenter);
-    }
-
-    private void initRefreshLayout(final View fragmentView) {
-        mRefreshLayout = fragmentView.findViewById(R.id.feed_refresh_layout);
-        mRefreshLayout.setOnRefreshListener(() -> mPresenter.onUpdate());
-    }
-
-    private void initRecyclerView(final View fragmentView) {
-        final RecyclerView listView = fragmentView.findViewById(R.id.feed_items_list);
-        listView.setAdapter(mListAdapter);
-        listView.setLayoutManager(new LinearLayoutManager(getContext()));
-        listView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+        updateImages(true);
     }
 
     @Override
-    public void insertImage(@NonNull byte[] imageBytes, @NonNull Bitmap bitmap) {
+    public void updateImages(boolean isWithoutQueue) {
+        for (final FeedListAdapter.ListItem item : mListAdapter.getItemsOnWindow()) {
+            mImageLoadPresenter.getIconForItem(item, isWithoutQueue);
+        }
+    }
+
+    private void initListView() {
+        mListAdapter = new FeedListAdapter();
+        mListAdapter.setArticleClickListener((IOnArticleClickListener) getContext());
+
+        mListView.setAdapter(mListAdapter);
+        mListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mListView.addOnScrollListener(new ScrollListener(this));
+
+        if (getContext() != null) {
+            mListView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        }
+    }
+
+    @Override
+    public void insertImage(@NonNull Bitmap bitmap) {
+        // Needs declare to inject ImagesLoadPresenter presenter
+    }
+
+    static class ScrollListener extends RecyclerView.OnScrollListener {
+        final WeakReference<FeedPageFragment> mFragment;
+
+        ScrollListener(final FeedPageFragment fragment) {
+            mFragment = new WeakReference<>(fragment);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (Math.abs(dy) <= MAX_SCROLL_SPEED_TO_UPDATE_IMAGES && mFragment.get() != null) {
+                mFragment.get().updateImages(false);
+            }
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (mFragment.get() != null) {
+                mFragment.get().updateImages(false);
+            }
+        }
     }
 }

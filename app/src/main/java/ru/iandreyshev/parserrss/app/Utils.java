@@ -6,13 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
-
-import ru.iandreyshev.parserrss.models.repository.Article;
 
 public final class Utils {
     private static final int MAX_BYTES_COUNT = 1048576; // 1MB
@@ -38,25 +32,6 @@ public final class Utils {
         }
 
         return title;
-    }
-
-    @NonNull
-    public static List<Article> sortByDateDESC(@NonNull final List<Article> list) {
-        Set<Article> sortedSet = new TreeSet<>((final Article right, final Article left) -> {
-            if (right.getDate() == null && left.getDate() == null) {
-                return 0;
-            } else if (right.getDate() == null) {
-                return -1;
-            } else if (left.getDate() == null) {
-                return 1;
-            }
-
-            return left.getDate().compareTo(right.getDate());
-        });
-
-        sortedSet.addAll(list);
-
-        return new ArrayList<>(sortedSet);
     }
 
     @Nullable

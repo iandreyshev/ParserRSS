@@ -1,7 +1,7 @@
 package ru.iandreyshev.parserrss.ui.adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,49 +13,40 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import ru.iandreyshev.parserrss.R;
 import ru.iandreyshev.parserrss.app.Utils;
-import ru.iandreyshev.parserrss.models.rss.IViewArticle;
-import ru.iandreyshev.parserrss.ui.listeners.IItemImageRequestListener;
+import ru.iandreyshev.parserrss.models.rss.ViewArticle;
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener;
 
 public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ListItem> {
-    private static final int MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15;
+    private static final String DEFAULT_DATE_TEXT = "";
 
-    private final LayoutInflater mInflater;
-    private final List<IViewArticle> mArticles = new ArrayList<>();
-    private final RecyclerView mListView;
-    private IOnArticleClickListener mArticleClickListener;
-    private IItemImageRequestListener mItemImageRequestListener;
+    private final List<ViewArticle> mArticles = new ArrayList<>();
+    private final HashSet<ListItem> mItemsOnWindow = new HashSet<>();
+    private WeakReference<IOnArticleClickListener> mArticleClickListener;
 
-    public FeedListAdapter(Context context, final RecyclerView listView) {
-        mInflater = LayoutInflater.from(context);
-        mListView = listView;
-        mListView.setHasFixedSize(true);
-        mListView.addOnScrollListener(new ScrollListener());
-    }
-
-    public void setArticleClickListener(@Nullable final IOnArticleClickListener listener) {
-        mArticleClickListener = listener;
-    }
-
-    public void setImageRequestListener(@Nullable final IItemImageRequestListener listener) {
-        mItemImageRequestListener = listener;
-    }
-
-    public void setArticles(final List<IViewArticle> newItems) {
+    public void setArticles(final List<ViewArticle> newItems) {
         mArticles.clear();
         mArticles.addAll(newItems);
         notifyDataSetChanged();
-        updateImages(true);
+    }
+
+    public void setArticleClickListener(@Nullable final IOnArticleClickListener listener) {
+        mArticleClickListener = new WeakReference<>(listener);
     }
 
     @Override
     public ListItem onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = mInflater.inflate(R.layout.feed_item, parent, false);
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final View view = inflater.inflate(R.layout.feed_item, parent, false);
 
         return new ListItem(view);
     }
@@ -63,6 +54,21 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ListIt
     @Override
     public void onBindViewHolder(ListItem item, int position) {
         item.setContent(mArticles.get(position));
+        item.setClickListener(mArticleClickListener);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(ListItem item) {
+        mItemsOnWindow.add(item);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(ListItem item) {
+        mItemsOnWindow.remove(item);
+    }
+
+    public Collection<ListItem> getItemsOnWindow() {
+        return mItemsOnWindow;
     }
 
     @Override
@@ -70,35 +76,28 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ListIt
         return mArticles.size();
     }
 
-    public void updateImages(boolean isForce) {
-        for (int i = 0; i < mListView.getChildCount(); ++i) {
-            final ListItem item = (ListItem) mListView.getChildViewHolder(mListView.getChildAt(i));
-
-            if (mItemImageRequestListener != null) {
-                mItemImageRequestListener.getImageFor(item, isForce);
-            }
-        }
-    }
-
-    class ListItem extends RecyclerView.ViewHolder implements IFeedItem, View.OnClickListener {
-        private IViewArticle mContent;
-        private final TextView mTitle;
-        private final TextView mDescription;
-        private TextView mDate;
-        private ImageView mImage;
+    public static class ListItem extends RecyclerView.ViewHolder implements IFeedItem, View.OnClickListener {
+        private long mId;
         private boolean mIsImageLoaded;
+        private WeakReference<IOnArticleClickListener> mClickListener;
+
+        @BindView(R.id.item_title)
+        TextView mTitle;
+        @BindView(R.id.item_text)
+        TextView mDescription;
+        @BindView(R.id.item_image)
+        ImageView mImage;
+        @BindView(R.id.item_date)
+        TextView mDate;
 
         @Override
-        public IViewArticle getArticle() {
-            return mContent;
+        public long getId() {
+            return mId;
         }
 
         @Override
         public void updateImage(@NonNull Bitmap image) {
-            if (mImage.getDrawable() instanceof BitmapDrawable) {
-                ((BitmapDrawable) mImage.getDrawable()).getBitmap().recycle();
-            }
-
+            recycleImage();
             mIsImageLoaded = true;
             mImage.setImageBitmap(image);
         }
@@ -108,43 +107,42 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ListIt
             return mIsImageLoaded;
         }
 
-        private ListItem(View view) {
-            super(view);
-            mTitle = view.findViewById(R.id.item_title);
-            mDescription = view.findViewById(R.id.item_text);
-            mImage = view.findViewById(R.id.item_image);
-            mDate = view.findViewById(R.id.item_date);
+        public void recycleImage() {
+            if (mImage.getDrawable() instanceof BitmapDrawable) {
+                final Bitmap bitmap = ((BitmapDrawable) mImage.getDrawable()).getBitmap();
+
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+            }
         }
 
-        private void setContent(IViewArticle content) {
-            mContent = content;
-            mImage.setImageResource(R.drawable.ic_image_black_24dp);
-            mTitle.setText(Html.fromHtml(mContent.getTitle()));
-            mDescription.setText(Html.fromHtml(mContent.getDescription()));
-            mDate.setText(mContent.getDate() == null ? "" : Utils.toDateStr(mContent.getDate()));
+        private ListItem(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+
+        private void setContent(ViewArticle content) {
+            mId = content.getId();
+            mTitle.setText(Html.fromHtml(content.getTitle()));
+            mDescription.setText(Html.fromHtml(content.getDescription()));
+
+            updateImage(BitmapFactory.decodeResource(itemView.getContext().getResources(), R.drawable.ic_image_black_24dp));
+            mDate.setText(content.getDate() == null ? DEFAULT_DATE_TEXT : Utils.toDateStr(content.getDate()));
+
             itemView.setOnClickListener(this);
             mIsImageLoaded = false;
         }
 
+        private void setClickListener(WeakReference<IOnArticleClickListener> listener) {
+            mClickListener = listener;
+        }
+
         @Override
         public void onClick(View view) {
-            if (mArticleClickListener != null) {
-                mArticleClickListener.onArticleClick(mContent);
+            if (mClickListener != null && mClickListener.get() != null) {
+                mClickListener.get().onArticleClick(mId);
             }
-        }
-    }
-
-    class ScrollListener extends RecyclerView.OnScrollListener {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (Math.abs(dy) <= MAX_SCROLL_SPEED_TO_UPDATE_IMAGES) {
-                updateImages(false);
-            }
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            updateImages(false);
         }
     }
 }
