@@ -54,7 +54,7 @@ public class FeedTabsAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(@NonNull final Object item) {
-        int position = mRssList.indexOf((ViewRss) item);
+        int position = mRssList.indexOf(item);
 
         if (position < 0) {
             return POSITION_NONE;

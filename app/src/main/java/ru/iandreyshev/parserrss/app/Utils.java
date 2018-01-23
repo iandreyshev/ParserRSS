@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public final class Utils {
-    private static final int MAX_BYTES_COUNT = 1048576; // 1MB
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     private static final String CUT_TAB_TITLE_PATTERN = "%s...";
@@ -36,7 +35,7 @@ public final class Utils {
 
     @Nullable
     public static Bitmap toBitmap(@Nullable final byte[] bytes) {
-        if (bytes == null || bytes.length == 0 || bytes.length > MAX_BYTES_COUNT) {
+        if (bytes == null || bytes.length == 0) {
             return null;
         }
 

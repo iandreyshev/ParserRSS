@@ -10,6 +10,8 @@ import ru.iandreyshev.parserrss.models.repository.Article;
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler;
 
 public final class GetArticleImageTask extends Task<Long, Void, Bitmap> {
+    private static final int MAX_BYTES_COUNT = 1048576; // 1MB
+
     private final long mArticleId;
     private final IImageProps mImageProps;
 
@@ -31,6 +33,8 @@ public final class GetArticleImageTask extends Task<Long, Void, Bitmap> {
         }
 
         final HttpRequestHandler mRequestHandler = new HttpRequestHandler(article.getImageUrl());
+        mRequestHandler.setMaxContentBytes(MAX_BYTES_COUNT);
+
         final HttpRequestHandler.State requestResult = mRequestHandler.sendGet();
 
         final byte[] imageBytes = mRequestHandler.getResponseBody();
