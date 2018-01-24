@@ -99,7 +99,7 @@ internal class RssParserV2 : RssParseEngine() {
         val url = resource.getAttributeValue(ARTICLE_IMG_URL)
         val type = resource.getAttributeValue(ARTICLE_IMG_TYPE)
 
-        if (url == null || type == null || IMAGE_TYPES.contains(type)) {
+        if (url == null || !IMAGE_TYPES.contains(type)) {
             return
         }
 

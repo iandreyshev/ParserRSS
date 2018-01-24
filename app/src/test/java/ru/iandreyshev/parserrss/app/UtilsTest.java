@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.app;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static ru.iandreyshev.parserrss.app.Utils.toTabTitle;
 
 public class UtilsTest {
     private static final String ONE_WORD_TITLE = "TITLE";
@@ -10,7 +11,7 @@ public class UtilsTest {
 
     @Test
     public void truncateTrimString() {
-        final String result = Utils.truncateTabsTitle(NON_TRIMMED_STRING);
+        final String result = toTabTitle(NON_TRIMMED_STRING);
 
         assertEquals(result, ONE_WORD_TITLE);
     }

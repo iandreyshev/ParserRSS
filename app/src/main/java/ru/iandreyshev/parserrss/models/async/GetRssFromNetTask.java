@@ -55,8 +55,10 @@ abstract class GetRssFromNetTask extends Task<String, Void, ViewRss> {
     }
 
     boolean parseRss() {
-        if ((mNewRss = RssParser.parse(mRequestHandler.getResponseBodyAsString())) != null) {
-            mNewRss.setUrl(mRequestHandler.getUrlStr());
+        final String responseBody = mRequestHandler.getBody().toString();
+
+        if ((mNewRss = RssParser.parse(responseBody)) != null) {
+            mNewRss.setUrl(mRequestHandler.getUrlString());
 
             return true;
         }
@@ -78,8 +80,7 @@ abstract class GetRssFromNetTask extends Task<String, Void, ViewRss> {
         return rss == null ? null : new ViewRss(rss);
     }
 
-    @Nullable
     protected final String getUrl() {
-        return mRequestHandler.getUrlStr();
+        return mRequestHandler.getUrlString();
     }
 }

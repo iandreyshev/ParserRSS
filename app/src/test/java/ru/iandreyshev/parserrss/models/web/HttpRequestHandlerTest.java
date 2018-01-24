@@ -28,10 +28,10 @@ public class HttpRequestHandlerTest {
     }
 
     @Test
-    public void returnBadUrlAfterInitWithUrlWithoutProtocol() {
+    public void returnNotSendAfterInitWithUrlWithoutProtocol() {
         mHandler = new HttpRequestHandler(URL_WITHOUT_PROTOCOL);
 
-        assertEquals(mHandler.getState(), HttpRequestHandler.State.BadUrl);
+        assertEquals(mHandler.getState(), HttpRequestHandler.State.NotSend);
     }
 
     @Test

@@ -61,8 +61,8 @@ public class FeedActivity extends BaseActivity implements IFeedView, IOnArticleC
 
     @Override
     public void openArticle(long articleId) {
-        final Intent intent = ArticleActivity.getIntent(this)
-                .putExtra(ArticleActivity.ARTICLE_BOUND_KEY, articleId);
+        final Intent intent = ArticleActivity.Companion.getIntent(this)
+                .putExtra(ArticleActivity.Companion.getARTICLE_BOUND_KEY(), articleId);
 
         startActivity(intent);
     }

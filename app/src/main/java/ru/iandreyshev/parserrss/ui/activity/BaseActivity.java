@@ -6,7 +6,7 @@ import com.arellomobile.mvp.MvpAppCompatActivity;
 
 import ru.iandreyshev.parserrss.presentation.view.IBaseView;
 
-abstract class BaseActivity extends MvpAppCompatActivity implements IBaseView {
+public abstract class BaseActivity extends MvpAppCompatActivity implements IBaseView {
     @Override
     public final void showShortToast(final String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();

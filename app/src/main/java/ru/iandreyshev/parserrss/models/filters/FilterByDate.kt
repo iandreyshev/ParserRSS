@@ -18,15 +18,12 @@ class FilterByDate : IArticlesFilter {
 
     override fun sort(articles: List<Article>): List<Article> {
         val sortedSet = TreeSet { right: Article, left: Article ->
-            if (right.date == null && left.date == null) {
-                return@TreeSet EQUALS
-            } else if (right.date == null) {
-                return@TreeSet LESS
-            } else if (left.date == null) {
-                return@TreeSet GREATER
+            when {
+                (right.date == null && left.date == null) -> EQUALS
+                (right.date == null) -> LESS
+                (left.date == null) -> GREATER
+                else -> left.date.compareTo(right.date)
             }
-
-            left.date!!.compareTo(right.date)
         }
 
         sortedSet.addAll(articles)

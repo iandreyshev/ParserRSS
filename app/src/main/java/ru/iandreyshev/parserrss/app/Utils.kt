@@ -1,39 +1,41 @@
-package ru.iandreyshev.parserrss.app;
+package ru.iandreyshev.parserrss.app
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class Utils {
     companion object {
         private val DATE_FORMAT: SimpleDateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH)
+        private const val DEFAULT_TAB_TITLE = "News"
         private const val CUT_TAB_TITLE_PATTERN = "%s..."
         private const val MAX_TAB_TITLE_LINE_LENGTH = 16
 
         @JvmStatic
-        fun truncateTabsTitle(title: String): String {
-            var result = title.trim()
-            val firstSpacePos = title.indexOf(" ")
+        fun toTabTitle(title: String?): String {
+            var result = (title ?: DEFAULT_TAB_TITLE).trim()
+
+            val firstSpacePos = result.indexOf(" ")
             var maxLength = MAX_TAB_TITLE_LINE_LENGTH
 
-            if (firstSpacePos in 1..MAX_TAB_TITLE_LINE_LENGTH) {
-                result = title.replaceFirst(" ", "\n")
+            if (firstSpacePos in 1 until MAX_TAB_TITLE_LINE_LENGTH) {
+                result = result.replaceFirst(" ", "\n")
                 maxLength += firstSpacePos
             }
 
             if (result.length > maxLength) {
-                result = title.substring(0, maxLength - 1)
+                result = result.substring(0, maxLength - 1)
                 result = String.format(CUT_TAB_TITLE_PATTERN, result)
             }
 
-            return result;
+            return result
         }
 
         @JvmStatic
         fun toBitmap(byteArray: ByteArray?): Bitmap? {
-            if (byteArray?.size == null) {
+            if (byteArray == null || byteArray.isEmpty()) {
                 return null
             }
 

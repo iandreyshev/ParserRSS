@@ -32,12 +32,12 @@ public final class GetArticleImageTask extends Task<Long, Void, Bitmap> {
             return mImageProps.configure(article.getImage());
         }
 
-        final HttpRequestHandler mRequestHandler = new HttpRequestHandler(article.getImageUrl());
+        final HttpRequestHandler mRequestHandler = new HttpRequestHandler(article.getImageUrl() == null ? "" : article.getImageUrl());
         mRequestHandler.setMaxContentBytes(MAX_BYTES_COUNT);
 
         final HttpRequestHandler.State requestResult = mRequestHandler.sendGet();
 
-        final byte[] imageBytes = mRequestHandler.getResponseBody();
+        final byte[] imageBytes = mRequestHandler.getBody();
         imageBitmap = Utils.toBitmap(imageBytes);
 
         if (requestResult == HttpRequestHandler.State.Success && imageBitmap != null) {

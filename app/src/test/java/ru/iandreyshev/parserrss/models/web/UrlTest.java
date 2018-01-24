@@ -12,17 +12,17 @@ public class UrlTest {
 
     @Test
     public void returnNullIfParseNullString() {
-        assertNull(Url.parse(null));
+        assertNull(Url.Companion.parse(null));
     }
 
     @Test
     public void returnNullIfParseEmptyString() {
-        assertNull(Url.parse(""));
+        assertNull(Url.Companion.parse(""));
     }
 
     @Test
     public void returnUrlStringInToStringMethod() {
-        final Url url = Url.parse(VALID_URL);
+        final Url url = Url.Companion.parse(VALID_URL);
 
         assertNotNull(url);
         assertEquals(VALID_URL, url.toString());

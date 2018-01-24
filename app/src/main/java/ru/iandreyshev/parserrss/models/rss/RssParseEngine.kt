@@ -23,7 +23,7 @@ internal abstract class RssParseEngine {
             DOC_BUILDERS.add(SAXBuilder())
         }
 
-        private fun toDocument(xmlText: String): Document? {
+        private fun toDocument(xmlText: String?): Document? {
             for (builder in DOC_BUILDERS) {
                 try {
 
@@ -38,7 +38,7 @@ internal abstract class RssParseEngine {
         }
     }
 
-    fun parse(rssText: String): Rss? {
+    fun parse(rssText: String?): Rss? {
         try {
             val doc = toDocument(rssText) ?: return null
 
