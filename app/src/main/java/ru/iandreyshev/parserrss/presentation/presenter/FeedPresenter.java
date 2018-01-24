@@ -22,7 +22,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     private long mProgressBarUserCount;
 
     public void onInsertRss(final String url) {
-        InsertNewRssTask.execute(new InsertRssFromNetListener(), url, FilterByDate.newInstance());
+        InsertNewRssTask.execute(new InsertRssFromNetListener(), url, FilterByDate.Companion.newInstance());
     }
 
     public void onDeleteRss(final ViewRss rss) {
@@ -41,7 +41,7 @@ public final class FeedPresenter extends MvpPresenter<IFeedView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        GetAllRssFromDbTask.execute(new LoadFromDatabaseListener(), FilterByDate.newInstance());
+        GetAllRssFromDbTask.execute(new LoadFromDatabaseListener(), FilterByDate.Companion.newInstance());
     }
 
     private void startProgressBar(boolean isStart) {

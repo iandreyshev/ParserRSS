@@ -128,7 +128,7 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ListIt
             mDescription.setText(Html.fromHtml(content.getDescription()));
 
             updateImage(BitmapFactory.decodeResource(itemView.getContext().getResources(), R.drawable.ic_image_black_24dp));
-            mDate.setText(content.getDate() == null ? DEFAULT_DATE_TEXT : Utils.toDateStr(content.getDate()));
+            mDate.setText(Utils.toDateString(content.getDate()));
 
             itemView.setOnClickListener(this);
             mIsImageLoaded = false;

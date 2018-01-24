@@ -20,7 +20,7 @@ public class FeedPagePresenter extends MvpPresenter<IFeedPageView> {
     }
 
     public void onUpdate() {
-        UpdateRssFromNetTask.execute(new UpdateFromNetListener(), mRss.getUrl(), FilterByDate.newInstance());
+        UpdateRssFromNetTask.execute(new UpdateFromNetListener(), mRss.getUrl(), FilterByDate.Companion.newInstance());
     }
 
     @Override
