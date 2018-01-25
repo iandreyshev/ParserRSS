@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
-apply plugin: 'kotlin-android'
-apply plugin: "me.tatarka.retrolambda"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
 apply plugin: "io.objectbox"
 
 android {
@@ -53,11 +53,17 @@ dependencies {
     compile "io.objectbox:objectbox-java:$objectboxVersion"
     compile "io.objectbox:objectbox-android:$objectboxVersion"
     compile "io.objectbox:objectbox-windows:$objectboxVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    compile "com.jakewharton:kotterknife:0.1.0-SNAPSHOT"
+    compile "io.objectbox:objectbox-kotlin:$objectboxVersion"
+    compile "org.jetbrains.anko:anko-commons:$ankoVersion"
+
+    kapt "com.arello-mobile:moxy-compiler:1.5.3"
+    kapt "com.jakewharton:butterknife-compiler:8.4.0"
 
     annotationProcessor "io.objectbox:objectbox-processor:$objectboxVersion"
     annotationProcessor "com.arello-mobile:moxy-compiler:1.5.3"
     annotationProcessor "com.jakewharton:butterknife-compiler:8.4.0"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 task copyResDirectoryToClasses(type: Copy) {

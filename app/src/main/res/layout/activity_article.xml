@@ -13,7 +13,7 @@
         app:contentInsetEnd="2dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/article_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
@@ -40,7 +40,7 @@
             android:paddingTop="15dp">
 
             <TextView
-                android:id="@+id/article_title"
+                android:id="@+id/articleTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
@@ -55,7 +55,7 @@
                 tools:text="Title" />
 
             <TextView
-                android:id="@+id/article_date"
+                android:id="@+id/date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"
@@ -72,7 +72,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/article_title" />
 
             <ImageView
-                android:id="@+id/article_image"
+                android:id="@+id/image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -87,7 +87,7 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/article_text"
+                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15dp"

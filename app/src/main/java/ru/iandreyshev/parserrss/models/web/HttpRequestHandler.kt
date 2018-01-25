@@ -26,13 +26,15 @@ class HttpRequestHandler(override val urlString: String) : IHttpRequestResult {
         PermissionDenied
     }
 
+    var maxContentBytes = MAX_CONTENT_BYTES
     override var state: State = State.NotSend
         private set
     override var body: ByteArray? = null
         private set
     override val bodyAsString: String?
-        get() = body?.toString()
-    var maxContentBytes = MAX_CONTENT_BYTES
+        get() {
+            return String(body ?: return null)
+        }
 
     private val client = OkHttpClient.Builder()
             .readTimeout(READ_TIMEOUT_SEC.toLong(), TimeUnit.SECONDS)
@@ -65,7 +67,10 @@ class HttpRequestHandler(override val urlString: String) : IHttpRequestResult {
                     state = when {
                         (response.code() != GOOD_RESPONSE_CODE || body == null || body.contentLength() > maxContentBytes) ->
                             State.BadConnection
-                        else -> State.Success
+                        else -> {
+                            this.body = body.bytes()
+                            State.Success
+                        }
                     }
                 }
             }

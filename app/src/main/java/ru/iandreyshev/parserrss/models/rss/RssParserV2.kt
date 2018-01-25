@@ -1,5 +1,7 @@
 package ru.iandreyshev.parserrss.models.rss
 
+import android.os.Build
+import android.text.Html
 import org.jdom2.Element
 
 import java.text.SimpleDateFormat
@@ -42,8 +44,10 @@ internal class RssParserV2 : RssParseEngine() {
             return null
         }
 
-        val rss = Rss(title, origin)
+        val rss = Rss(clearHtml(title), origin)
+
         rss.description = channel.getChildText(FEED_DESCRIPTION)
+        rss.description = clearHtml(rss.description)
 
         return rss
     }
@@ -73,7 +77,7 @@ internal class RssParserV2 : RssParseEngine() {
             return null
         }
 
-        val article = Article(title, description, origin)
+        val article = Article(clearHtml(title), clearHtml(description), origin)
         parseArticleDate(item, article)
         parseArticleImage(item, article)
 
@@ -104,5 +108,13 @@ internal class RssParserV2 : RssParseEngine() {
         }
 
         article.imageUrl = url
+    }
+
+    private fun clearHtml(html: String): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString()
+        } else {
+            Html.fromHtml(html).toString()
+        }
     }
 }

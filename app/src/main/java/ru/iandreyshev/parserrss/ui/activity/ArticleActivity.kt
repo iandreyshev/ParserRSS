@@ -3,19 +3,11 @@ package ru.iandreyshev.parserrss.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
-import android.text.Html
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.Window
-import android.widget.ImageView
-import android.widget.TextView
-import android.support.v7.widget.Toolbar
 
-import butterknife.BindView
-import butterknife.ButterKnife
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter
@@ -32,29 +24,30 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+import kotlinx.android.synthetic.main.activity_article.*
+
 class ArticleActivity : BaseActivity(), IArticleView, IImageView {
+    companion object {
+        const val ARTICLE_BOUND_KEY = "Article_to_open"
+        private const val DEFAULT_ARTICLE_ID: Long = 0
+        private const val BACK_BUTTON = android.R.id.home
+        private const val OPEN_IN_BROWSER_BUTTON = R.id.article_option_open_in_browser
+        private val DATE_FORMAT = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH)
+
+        fun getIntent(context: Context): Intent {
+            return Intent(context, ArticleActivity::class.java)
+        }
+    }
 
     @InjectPresenter
-    internal var mArticlePresenter: ArticlePresenter? = null
+    lateinit var presenter: ArticlePresenter
     @InjectPresenter(type = PresenterType.GLOBAL, tag = ImagesLoadPresenter.TAG)
-    internal var mImageLoadPresenter: ImagesLoadPresenter? = null
-
-    @BindView(R.id.article_title)
-    internal var mTitle: TextView? = null
-    @BindView(R.id.article_text)
-    internal var mText: TextView? = null
-    @BindView(R.id.article_date)
-    internal var mDate: TextView? = null
-    @BindView(R.id.article_image)
-    internal var mImage: ImageView? = null
-    @BindView(R.id.article_toolbar)
-    internal var mToolbar: Toolbar? = null
-
-    private val mArticleId: Long
-    private var mArticle: ViewArticle? = null
+    lateinit var imageLoadPresenter: ImagesLoadPresenter
 
     @ProvidePresenter
-    fun provideArticlePresenter() = ArticlePresenter(mArticleId!!)
+    fun provideArticlePresenter(): ArticlePresenter {
+        return ArticlePresenter(intent.getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID))
+    }
 
     override fun closeArticle() {
         finish()
@@ -68,72 +61,47 @@ class ArticleActivity : BaseActivity(), IArticleView, IImageView {
 
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
-            android.R.id.home -> closeArticle()
-            R.id.article_option_open_in_browser -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mArticle!!.originUrl)))
+            BACK_BUTTON -> closeArticle()
+            OPEN_IN_BROWSER_BUTTON -> presenter.onOpenOriginal()
         }
 
         return super.onOptionsItemSelected(menuItem)
     }
 
     override fun initArticle(rss: ViewRss, article: ViewArticle) {
-        mArticle = article
-        mTitle!!.text = article.title
-        mText!!.text = article.description
-        mImageLoadPresenter!!.loadImage(mArticle!!.id)
+        articleTitle.text = article.title
+        description.text = article.description
+        imageLoadPresenter.loadImage(article.id)
         loadDate(article.date)
 
-        if (supportActionBar != null) {
-            supportActionBar!!.title = rss.title
-        }
+        supportActionBar?.title = rss.title
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS)
         setContentView(R.layout.activity_article)
 
-        ButterKnife.bind(this)
-
         initToolbar()
-        initArticle()
     }
 
     private fun initToolbar() {
-        setSupportActionBar(mToolbar)
+        setSupportActionBar(toolbar)
 
         if (supportActionBar == null) {
             return
         }
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setDisplayShowHomeEnabled(true)
-    }
-
-    private fun initArticle() {
-        mArticleId = intent.getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID)
-    }
-
-    private fun setViewVisible(view: View?, isVisible: Boolean) {
-        view!!.visibility = if (isVisible) View.VISIBLE else View.GONE
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
     }
 
     private fun loadDate(date: Long?) {
-        setViewVisible(mDate, date != null)
-        mDate!!.text = DATE_FORMAT.format(date)
+        this.date.visibility = if (date == null) View.GONE else View.VISIBLE
+        this.date.text = DATE_FORMAT.format(date)
     }
 
     override fun insertImage(bitmap: Bitmap) {
-        mImage!!.visibility = View.VISIBLE
-        mImage!!.setImageBitmap(bitmap)
-    }
-
-    companion object {
-        val ARTICLE_BOUND_KEY = "Article_to_open"
-        private val DEFAULT_ARTICLE_ID: Long = 0
-        private val DATE_FORMAT = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH)
-
-        fun getIntent(context: Context): Intent {
-            return Intent(context, ArticleActivity::class.java)
-        }
+        image.visibility = View.VISIBLE
+        image.setImageBitmap(bitmap)
     }
 }

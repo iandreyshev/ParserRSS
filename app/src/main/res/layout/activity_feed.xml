@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/feed_common_layout"
+    android:id="@+id/commonLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
@@ -9,13 +9,13 @@
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/feed_app_bar_layout"
+        android:id="@+id/appBarLayout"
         style="@style/ToolbarCardViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/feed_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
@@ -28,7 +28,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/feed_toolbar_title"
+                    android:id="@+id/toolbarTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
@@ -36,12 +36,12 @@
                     android:text="@string/app_name"
                     android:textAppearance="@style/ToolbarTextAppearance"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/feed_progress_bar"
+                    app:layout_constraintEnd_toStartOf="@+id/progressBar"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ProgressBar
-                    android:id="@+id/feed_progress_bar"
+                    android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginBottom="15dp"
@@ -56,7 +56,7 @@
         </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
-            android:id="@+id/feed_tabs_layout"
+            android:id="@+id/tabsLayout"
             style="@style/FeedTabsTheme"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -66,7 +66,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
-        android:id="@+id/feed_view_pager"
+        android:id="@+id/pagerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -74,12 +74,12 @@
     </android.support.v4.view.ViewPager>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/feed_content_message_layout"
+        android:id="@+id/contentMessageLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/feed_content_message_title"
+            android:id="@+id/contentMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/feed_content_message_title"

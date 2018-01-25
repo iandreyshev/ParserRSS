@@ -1,8 +1,8 @@
 buildscript {
-    ext.kotlin_version = '1.2.20'
-    ext {
-        objectboxVersion = "1.4.0"
-    }
+    ext.kotlinVersion = '1.2.21'
+    ext.objectboxVersion = "1.4.0"
+    ext.ankoVersion = "0.10.4"
+
     repositories {
         google()
         jcenter()
@@ -11,9 +11,8 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:3.0.1"
-        classpath "gradle.plugin.me.tatarka:gradle-retrolambda:3.7.0"
         classpath "io.objectbox:objectbox-gradle-plugin:$objectboxVersion"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
@@ -22,6 +21,7 @@ allprojects {
         google()
         jcenter()
         maven { url "http://objectbox.net/beta-repo/" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 

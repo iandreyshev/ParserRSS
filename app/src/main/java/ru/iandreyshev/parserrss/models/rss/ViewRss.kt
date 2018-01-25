@@ -2,22 +2,24 @@ package ru.iandreyshev.parserrss.models.rss
 
 import java.util.ArrayList
 
-import ru.iandreyshev.parserrss.models.repository.Article
 import ru.iandreyshev.parserrss.models.repository.Rss
 
-class ViewRss(rss: Rss) {
-    val id: Long = rss.id
-    val title: String = rss.title
-    val description: String = rss.description
-    val url: String = rss.url
-    val origin: String = rss.origin
+class ViewRss(
+        var id: Long = 0,
+        var title: String? = null,
+        var url: String? = null,
+        var description: String? = null,
+        var origin: String? = null) {
 
-    private val mArticles: MutableList<ViewArticle> = ArrayList()
+    constructor(rss: Rss) : this() {
+        id = rss.id
+        title = rss.title
+        url = rss.url
+        description = rss.description
+        origin = rss.origin
 
-    val viewArticles: List<ViewArticle>
-        get() = mArticles
-
-    init {
-        rss.articles.forEach { article -> mArticles.add(ViewArticle(article)) }
+        rss.articles.forEach { article -> articles.add(ViewArticle(article)) }
     }
+
+    var articles: MutableList<ViewArticle> = ArrayList()
 }

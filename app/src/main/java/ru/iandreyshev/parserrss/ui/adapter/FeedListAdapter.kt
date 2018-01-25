@@ -18,16 +18,16 @@ import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
-    private var mArticles = ArrayList<ViewArticle>()
-    private var mItemsOnWindow = HashSet<ListItem>()
+    private var articles = ArrayList<ViewArticle>()
+    private var itemsOnWindow1 = HashSet<ListItem>()
     private var mArticleClickListener: WeakReference<IOnArticleClickListener>? = null
 
     val itemsOnWindow: Collection<ListItem>
-        get() = mItemsOnWindow
+        get() = itemsOnWindow1
 
     fun setArticles(newItems: List<ViewArticle>) {
-        mArticles.clear()
-        mArticles.addAll(newItems)
+        articles.clear()
+        articles.addAll(newItems)
         notifyDataSetChanged()
     }
 
@@ -43,20 +43,20 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
     }
 
     override fun onBindViewHolder(item: ListItem, position: Int) {
-        item.setContent(mArticles[position])
+        item.setContent(articles[position])
         item.setClickListener(mArticleClickListener)
     }
 
     override fun onViewAttachedToWindow(item: ListItem) {
-        mItemsOnWindow.add(item)
+        itemsOnWindow1.add(item)
     }
 
     override fun onViewDetachedFromWindow(item: ListItem) {
-        mItemsOnWindow.remove(item)
+        itemsOnWindow1.remove(item)
     }
 
     override fun getItemCount(): Int {
-        return mArticles.size
+        return articles.size
     }
 
     class ListItem constructor(view: View) : RecyclerView.ViewHolder(view), IFeedItem, View.OnClickListener {

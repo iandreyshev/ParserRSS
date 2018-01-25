@@ -11,7 +11,6 @@ import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.repository.Article
 
 internal abstract class RssParseEngine {
-
     companion object {
         private const val DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonValidating/load-external-dtd"
         private val DOC_BUILDERS = ArrayList<SAXBuilder>()

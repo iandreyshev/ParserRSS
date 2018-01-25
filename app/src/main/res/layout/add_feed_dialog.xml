@@ -18,7 +18,7 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/add_feed_dialog_url_field"
+        android:id="@+id/urlField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/add_feed_dialog_link_placeholder"

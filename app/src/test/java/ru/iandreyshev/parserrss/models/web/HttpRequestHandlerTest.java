@@ -12,15 +12,6 @@ public class HttpRequestHandlerTest {
     private HttpRequestHandler mHandler;
 
     @Test
-    public void returnInvalidUrlStateAfterSendWithNullUrl() {
-        final String nullUrl = null;
-        mHandler = new HttpRequestHandler(nullUrl);
-        mHandler.sendGet();
-
-        assertEquals(HttpRequestHandler.State.BadUrl, mHandler.getState());
-    }
-
-    @Test
     public void returnNotSendStateAfterCreate() {
         mHandler = new HttpRequestHandler(VALID_URL);
 

@@ -28,4 +28,10 @@ interface IFeedView : IBaseView {
 
     @StateStrategyType(SkipStrategy::class)
     fun onFeedUpdate()
+
+    @StateStrategyType(SkipStrategy::class)
+    fun openPage(position: Int)
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun setToolbarScrollable(isScrollable: Boolean)
 }

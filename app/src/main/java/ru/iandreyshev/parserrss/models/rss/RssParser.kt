@@ -13,7 +13,7 @@ class RssParser {
         }
 
         @JvmStatic
-        fun parse(rssText: String): Rss? {
+        fun parse(rssText: String?): Rss? {
             PARSERS.forEach { parser ->
                 val rss = parser.parse(rssText)
 

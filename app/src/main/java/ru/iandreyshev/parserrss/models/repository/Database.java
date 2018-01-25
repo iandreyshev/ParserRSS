@@ -47,6 +47,13 @@ public class Database {
         return getArticle(id);
     }
 
+    public long[] getRssIdList() throws Exception {
+        return mBoxStore.callInTx(() -> mRssBox.query()
+                .notNull(Rss_.mId)
+                .build()
+                .findIds());
+    }
+
     public boolean isRssWithUrlExist(final String url) {
         return !mRssBox.find(Rss_.mUrl, url).isEmpty();
     }
@@ -108,6 +115,10 @@ public class Database {
 
             return true;
         });
+    }
+
+    public String getRssTitle(long id) {
+        return mRssBox.get(id).mTitle;
     }
 
     public void removeRssById(long id) {
