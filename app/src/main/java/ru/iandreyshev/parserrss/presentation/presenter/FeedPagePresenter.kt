@@ -4,7 +4,6 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.models.async.UpdateRssFromNetTask
 import ru.iandreyshev.parserrss.models.filters.FilterByDate
 import ru.iandreyshev.parserrss.models.repository.Rss
@@ -26,9 +25,7 @@ class FeedPagePresenter(private val rss: ViewRss) : MvpPresenter<IFeedPageView>(
         }
     }
 
-    override fun onFirstViewAttach() {
-        viewState.setArticles(rss.articles)
-    }
+    override fun onFirstViewAttach() = viewState.setArticles(rss.articles)
 
     private inner class UpdateFromNetListener : UpdateRssFromNetTask.IEventListener {
         override fun onPreExecute() = viewState.startUpdate(true)
@@ -44,12 +41,10 @@ class FeedPagePresenter(private val rss: ViewRss) : MvpPresenter<IFeedPageView>(
         override fun onParserError() = toast(R.string.toast_invalid_rss_format)
 
         override fun onNetError(requestResult: IHttpRequestResult) {
-            when (requestResult.state) {
-                HttpRequestHandler.State.BadConnection -> viewState.showShortToast(App.getStr(R.string.toast_bad_connection))
-                HttpRequestHandler.State.PermissionDenied -> viewState.showShortToast(App.getStr(R.string.toast_internet_permission_denied))
-                else -> {
-                }
-            }
+            toast(when (requestResult.state) {
+                HttpRequestHandler.State.PermissionDenied -> R.string.toast_internet_permission_denied
+                else -> R.string.toast_bad_connection
+            })
         }
 
         override fun onSuccess(articles: List<ViewArticle>) {

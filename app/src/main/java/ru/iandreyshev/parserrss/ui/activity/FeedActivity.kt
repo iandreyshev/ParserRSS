@@ -24,12 +24,14 @@ class FeedActivity : BaseActivity(),
         IFeedView,
         IOnArticleClickListener,
         IOnSubmitAddRssListener {
+
     companion object {
         private const val ADD_BUTTON = R.id.feed_options_add
         private const val INFO_BUTTON = R.id.feed_options_info
         private const val DELETE_BUTTON = R.id.feed_options_delete
 
-        private const val TOOLBAR_SCROLL_ON = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+        private const val TOOLBAR_SCROLL_ON =
+                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                 AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
         private const val TOOLBAR_SCROLL_OFF = 0

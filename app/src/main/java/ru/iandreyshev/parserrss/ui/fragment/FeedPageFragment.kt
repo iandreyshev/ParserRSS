@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.feed_list.*
 class FeedPageFragment : BaseFragment(),
         IFeedPageView,
         IImageView {
+
     companion object {
         private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15
 
@@ -44,7 +45,7 @@ class FeedPageFragment : BaseFragment(),
     @InjectPresenter(type = PresenterType.GLOBAL, tag = ImagesLoadPresenter.TAG)
     lateinit var imageLoader: ImagesLoadPresenter
 
-    private var listAdapter: FeedListAdapter = FeedListAdapter()
+    private val listAdapter: FeedListAdapter = FeedListAdapter()
 
     @ProvidePresenter
     fun provideFeedPagePresenter() = presenter
@@ -81,19 +82,19 @@ class FeedPageFragment : BaseFragment(),
 
         itemsList.adapter = listAdapter
         itemsList.layoutManager = LinearLayoutManager(context)
-        itemsList.addOnScrollListener(ScrollListener(this))
+        itemsList.addOnScrollListener(ScrollListener())
         itemsList.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
     }
 
-    class ScrollListener(private val fragment: FeedPageFragment) : RecyclerView.OnScrollListener() {
+    inner class ScrollListener : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
             if (Math.abs(dy) <= MAX_SCROLL_SPEED_TO_UPDATE_IMAGES) {
-                fragment.updateImages(false)
+                updateImages(false)
             }
         }
 
         override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-            fragment.updateImages(false)
+            updateImages(false)
         }
     }
 }

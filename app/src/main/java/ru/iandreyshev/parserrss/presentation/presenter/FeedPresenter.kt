@@ -94,13 +94,11 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
         override fun onParserError() = toast(R.string.toast_invalid_rss_format)
 
         override fun onNetError(requestResult: IHttpRequestResult) {
-            val message = when (requestResult.state) {
-                HttpRequestHandler.State.BadConnection -> App.getStr(R.string.toast_bad_connection)
-                HttpRequestHandler.State.PermissionDenied -> App.getStr(R.string.toast_internet_permission_denied)
-                else -> null
-            }
-
-            viewState.showShortToast(message ?: return)
+            toast(when (requestResult.state) {
+                HttpRequestHandler.State.BadConnection -> R.string.toast_bad_connection
+                HttpRequestHandler.State.PermissionDenied -> R.string.toast_internet_permission_denied
+                else -> return
+            })
         }
 
         override fun onRssAlreadyExist() = toast(R.string.toast_rss_already_exist)
