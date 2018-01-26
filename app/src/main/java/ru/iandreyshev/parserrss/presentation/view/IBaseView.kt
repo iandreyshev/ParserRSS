@@ -7,11 +7,11 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
 interface IBaseView : MvpView {
     @StateStrategyType(SkipStrategy::class)
-    fun showShortToast(message: String) {}
+    fun showShortToast(message: String)
 
     @StateStrategyType(SkipStrategy::class)
-    fun showLongToast(message: String) {}
+    fun showLongToast(message: String)
 
     @StateStrategyType(SkipStrategy::class)
-    fun openInBrowser(url: Uri) {}
+    fun openInBrowser(url: Uri)
 }

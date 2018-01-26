@@ -26,7 +26,9 @@ import java.util.Locale
 
 import kotlinx.android.synthetic.main.activity_article.*
 
-class ArticleActivity : BaseActivity(), IArticleView, IImageView {
+class ArticleActivity : BaseActivity(),
+        IArticleView,
+        IImageView {
     companion object {
         const val ARTICLE_BOUND_KEY = "Article_to_open"
         private const val DEFAULT_ARTICLE_ID: Long = 0

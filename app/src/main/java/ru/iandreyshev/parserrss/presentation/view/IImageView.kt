@@ -8,5 +8,5 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
 interface IImageView : MvpView {
     @StateStrategyType(SkipStrategy::class)
-    fun insertImage(bitmap: Bitmap) {}
+    fun insertImage(bitmap: Bitmap)
 }

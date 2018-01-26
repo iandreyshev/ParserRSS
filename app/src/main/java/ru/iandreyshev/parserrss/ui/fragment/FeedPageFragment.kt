@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.ui.fragment
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -24,7 +25,9 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.feed_list.*
 
-class FeedPageFragment : BaseFragment(), IFeedPageView, IImageView {
+class FeedPageFragment : BaseFragment(),
+        IFeedPageView,
+        IImageView {
     companion object {
         private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15
 
@@ -68,10 +71,10 @@ class FeedPageFragment : BaseFragment(), IFeedPageView, IImageView {
     }
 
     override fun updateImages(isWithoutQueue: Boolean) {
-        for (item in listAdapter.itemsOnWindow) {
-            imageLoader.getIconForItem(item, isWithoutQueue)
-        }
+        listAdapter.forEach { imageLoader.getIconForItem(it, isWithoutQueue) }
     }
+
+    override fun insertImage(bitmap: Bitmap) {}
 
     private fun initListView() {
         listAdapter.setArticleClickListener(context as IOnArticleClickListener)

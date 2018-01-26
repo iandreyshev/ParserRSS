@@ -5,6 +5,7 @@
     <string name="feed_content_message_title">Feed is empty</string>
     <string name="feed_content_message_link"><u>Append new rss</u></string>
     <string name="feed_is_full">Feed is full</string>
+    <string name="feed_tab_title">News</string>
 
     <string name="article_toolbar_title">Article</string>
     <string name="article_error_load">Load article error</string>
@@ -31,5 +32,4 @@
     <string name="toast_error_saving_to_db">Saving error</string>
     <string name="toast_rss_already_exist">Rss already exist</string>
     <string name="toast_rss_not_exist">Rss not exist</string>
-    <string name="title_activity_test">TestActivity</string>
 </resources>

@@ -20,7 +20,10 @@ import kotlinx.android.synthetic.main.activity_feed.*
 
 import com.arellomobile.mvp.presenter.InjectPresenter
 
-class FeedActivity : BaseActivity(), IFeedView, IOnArticleClickListener, IOnSubmitAddRssListener {
+class FeedActivity : BaseActivity(),
+        IFeedView,
+        IOnArticleClickListener,
+        IOnSubmitAddRssListener {
     companion object {
         private const val ADD_BUTTON = R.id.feed_options_add
         private const val INFO_BUTTON = R.id.feed_options_info

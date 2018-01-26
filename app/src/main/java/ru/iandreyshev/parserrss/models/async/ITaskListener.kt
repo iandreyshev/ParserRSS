@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.models.async
 
-interface ITaskListener<T, U, V> {
+interface ITaskListener<T, in U, in V> {
     fun onPreExecute() {}
 
     fun onProgressUpdate(vararg progress: U) {}

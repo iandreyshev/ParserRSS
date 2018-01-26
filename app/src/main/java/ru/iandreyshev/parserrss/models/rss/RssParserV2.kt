@@ -44,10 +44,15 @@ internal class RssParserV2 : RssParseEngine() {
             return null
         }
 
-        val rss = Rss(clearHtml(title), origin)
+        val rss = Rss(
+                title = clearHtml(title),
+                origin = origin)
 
-        rss.description = channel.getChildText(FEED_DESCRIPTION)
-        rss.description = clearHtml(rss.description)
+        val description = channel.getChildText(FEED_DESCRIPTION)
+
+        if (description != null) {
+            rss.description = clearHtml(description)
+        }
 
         return rss
     }
@@ -77,7 +82,11 @@ internal class RssParserV2 : RssParseEngine() {
             return null
         }
 
-        val article = Article(clearHtml(title), clearHtml(description), origin)
+        val article = Article(
+                title = clearHtml(title),
+                description = clearHtml(description),
+                originUrl = origin)
+
         parseArticleDate(item, article)
         parseArticleImage(item, article)
 
@@ -94,7 +103,7 @@ internal class RssParserV2 : RssParseEngine() {
             return
         }
 
-        article.setDate(date)
+        article.date = date.time
     }
 
     private fun parseArticleImage(item: Element, article: Article) {

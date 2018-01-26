@@ -8,8 +8,10 @@ import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
-class UpdateRssFromNetTask private constructor(override val listener: IEventListener, url: String, private val filter: IArticlesFilter)
-    : GetRssFromNetTask(listener, url) {
+class UpdateRssFromNetTask private constructor(
+        override val listener: IEventListener,
+        url: String,
+        private val filter: IArticlesFilter) : GetRssFromNetTask(listener, url) {
 
     companion object {
         private val TAG = UpdateRssFromNetTask::class.java.name
@@ -25,7 +27,7 @@ class UpdateRssFromNetTask private constructor(override val listener: IEventList
 
             return false
 
-        } else if (!App.getDatabase().isRssWithUrlExist(url)) {
+        } else if (!App.database.isRssWithUrlExist(url)) {
             setResultEvent { listener.onRssNotExist() }
 
             return false
@@ -34,17 +36,9 @@ class UpdateRssFromNetTask private constructor(override val listener: IEventList
         return true
     }
 
-    interface IEventListener : GetRssFromNetTask.IEventListener {
-        fun onRssNotExist()
-
-        fun onDatabaseError()
-
-        fun onSuccess(articles: List<ViewArticle>)
-    }
-
     override fun onSuccess(rss: Rss) {
         try {
-            if (App.getDatabase().updateRssWithSameUrl(rss)) {
+            if (App.database.updateRssWithSameUrl(rss)) {
                 rss.articles = filter.sort(rss.articles)
                 setResultEvent { listener.onSuccess(ViewRss(rss).articles) }
             } else {
@@ -54,5 +48,13 @@ class UpdateRssFromNetTask private constructor(override val listener: IEventList
             Log.e(TAG, Log.getStackTraceString(ex))
             setResultEvent { listener.onDatabaseError() }
         }
+    }
+
+    interface IEventListener : GetRssFromNetTask.IEventListener {
+        fun onRssNotExist()
+
+        fun onDatabaseError()
+
+        fun onSuccess(articles: List<ViewArticle>)
     }
 }

@@ -51,4 +51,8 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
     override fun openInBrowser(url: Uri) {
         startActivity(Intent(Intent.ACTION_VIEW, url))
     }
+
+    override fun showShortToast(message: String) {}
+
+    override fun showLongToast(message: String) {}
 }

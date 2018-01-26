@@ -13,17 +13,14 @@ import java.util.ArrayList
 import java.util.HashSet
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.app.Utils
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import ru.iandreyshev.parserrss.ui.extention.dateString
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
-    private var articles = ArrayList<ViewArticle>()
-    private var itemsOnWindow1 = HashSet<ListItem>()
-    private var mArticleClickListener: WeakReference<IOnArticleClickListener>? = null
-
-    val itemsOnWindow: Collection<ListItem>
-        get() = itemsOnWindow1
+    private val itemsOnWindow: HashSet<ListItem> = HashSet()
+    private val articles = ArrayList<ViewArticle>()
+    private var articleClickListener: WeakReference<IOnArticleClickListener>? = null
 
     fun setArticles(newItems: List<ViewArticle>) {
         articles.clear()
@@ -32,7 +29,7 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
     }
 
     fun setArticleClickListener(listener: IOnArticleClickListener) {
-        mArticleClickListener = WeakReference(listener)
+        articleClickListener = WeakReference(listener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItem {
@@ -44,22 +41,28 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
 
     override fun onBindViewHolder(item: ListItem, position: Int) {
         item.setContent(articles[position])
-        item.setClickListener(mArticleClickListener)
+        item.setClickListener(articleClickListener)
     }
 
     override fun onViewAttachedToWindow(item: ListItem) {
-        itemsOnWindow1.add(item)
+        itemsOnWindow.add(item)
     }
 
     override fun onViewDetachedFromWindow(item: ListItem) {
-        itemsOnWindow1.remove(item)
+        itemsOnWindow.remove(item)
     }
 
     override fun getItemCount(): Int {
         return articles.size
     }
 
-    class ListItem constructor(view: View) : RecyclerView.ViewHolder(view), IFeedItem, View.OnClickListener {
+    fun forEach(action: (ListItem) -> Unit) {
+        itemsOnWindow.forEach { it -> action(it) }
+    }
+
+    class ListItem constructor(view: View) : RecyclerView.ViewHolder(view),
+            IFeedItem,
+            View.OnClickListener {
         override var id: Long = 0
         override var isImageLoaded: Boolean = false
 
@@ -81,7 +84,7 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
             mDescription.text = content.description
 
             mImage.setImageResource(R.drawable.ic_image_black_24dp)
-            mDate.text = Utils.toDateString(content.date)
+            mDate.text = content.date?.dateString
 
             itemView.setOnClickListener(this)
             isImageLoaded = false

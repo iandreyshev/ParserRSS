@@ -3,11 +3,13 @@ package ru.iandreyshev.parserrss.ui.adapter
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import ru.iandreyshev.parserrss.app.Utils
+import ru.iandreyshev.parserrss.R
+import ru.iandreyshev.parserrss.app.App
 
 import java.util.ArrayList
 
 import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.ui.extention.tabTitle
 import ru.iandreyshev.parserrss.ui.fragment.FeedPageFragment
 
 class FeedTabsAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager) {
@@ -43,7 +45,7 @@ class FeedTabsAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(mana
     }
 
     override fun getPageTitle(position: Int): CharSequence {
-        return Utils.toTabTitle(getRss(position)?.title)
+        return getRss(position)?.title?.tabTitle ?: App.getStr(R.string.feed_tab_title)
     }
 
     override fun getItemPosition(item: Any): Int {

@@ -1,25 +1,18 @@
 package ru.iandreyshev.parserrss.models.async
 
-import ru.iandreyshev.parserrss.models.rss.RssParser
 import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.rss.RssParseEngine
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
-abstract class GetRssFromNetTask(open val listener: IEventListener, url: String)
-    : Task<String, Void, Rss>(listener) {
+abstract class GetRssFromNetTask(
+        protected open val listener: IEventListener,
+        url: String) : Task<String, Void, Rss>(listener) {
 
     private val requestHandler: HttpRequestHandler = HttpRequestHandler(url)
     private var resultRss: Rss? = null
 
     protected val url = requestHandler.urlString
-
-    interface IEventListener : ITaskListener<String, Void, Rss> {
-        fun onInvalidUrl()
-
-        fun onNetError(requestResult: IHttpRequestResult)
-
-        fun onParserError()
-    }
 
     open fun isUrlValid(): Boolean {
         return when (requestHandler.state != HttpRequestHandler.State.BadUrl) {
@@ -44,7 +37,7 @@ abstract class GetRssFromNetTask(open val listener: IEventListener, url: String)
     }
 
     open fun parseRss(): Boolean {
-        val rss = RssParser.parse(requestHandler.bodyAsString)
+        val rss = RssParseEngine.parse(requestHandler.bodyAsString)
 
         return when (rss) {
             null -> {
@@ -59,8 +52,6 @@ abstract class GetRssFromNetTask(open val listener: IEventListener, url: String)
         }
     }
 
-    protected abstract fun onSuccess(rss: Rss)
-
     override fun doInBackground(vararg args: String): Rss? {
         if (!isUrlValid() || !getRssFromNet() || !parseRss()) {
             return null
@@ -69,5 +60,15 @@ abstract class GetRssFromNetTask(open val listener: IEventListener, url: String)
         onSuccess(resultRss ?: return null)
 
         return resultRss
+    }
+
+    protected abstract fun onSuccess(rss: Rss)
+
+    interface IEventListener : ITaskListener<String, Void, Rss> {
+        fun onInvalidUrl()
+
+        fun onNetError(requestResult: IHttpRequestResult)
+
+        fun onParserError()
     }
 }

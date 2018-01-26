@@ -7,8 +7,10 @@ import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
-class InsertNewRssTask private constructor(override val listener: IEventListener, url: String, private val filter: IArticlesFilter)
-    : GetRssFromNetTask(listener, url) {
+class InsertNewRssTask private constructor(
+        override val listener: IEventListener,
+        url: String,
+        private val filter: IArticlesFilter) : GetRssFromNetTask(listener, url) {
 
     companion object {
         private val TAG = InsertNewRssTask::class.java.name
@@ -18,7 +20,7 @@ class InsertNewRssTask private constructor(override val listener: IEventListener
         }
     }
 
-    private val mDatabase = App.getDatabase()
+    private val mDatabase = App.database
 
     override fun isUrlValid(): Boolean {
         if (!super.isUrlValid()) {
@@ -35,14 +37,6 @@ class InsertNewRssTask private constructor(override val listener: IEventListener
         return true
     }
 
-    interface IEventListener : GetRssFromNetTask.IEventListener {
-        fun onRssAlreadyExist()
-
-        fun onDatabaseError()
-
-        fun onSuccess(rss: ViewRss)
-    }
-
     override fun onSuccess(rss: Rss) {
         try {
             if (mDatabase.putRssIfSameUrlNotExist(rss)) {
@@ -55,5 +49,13 @@ class InsertNewRssTask private constructor(override val listener: IEventListener
             Log.e(TAG, Log.getStackTraceString(ex))
             setResultEvent { listener.onDatabaseError() }
         }
+    }
+
+    interface IEventListener : GetRssFromNetTask.IEventListener {
+        fun onRssAlreadyExist()
+
+        fun onDatabaseError()
+
+        fun onSuccess(rss: ViewRss)
     }
 }
