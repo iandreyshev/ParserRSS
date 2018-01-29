@@ -8,18 +8,13 @@ import io.objectbox.annotation.Index
 import io.objectbox.annotation.Transient
 
 @Entity
-data class Rss (
+data class Rss(
         @Id var id: Long = 0,
         var title: String = "",
         @Index var url: String = "",
         var origin: String = "",
-        var description: String? = null) {
-
-    @Transient
-    var articles: List<Article> = ArrayList()
-        set(newArticles) {
-            field = ArrayList(newArticles)
-        }
+        var description: String? = null,
+        @Transient var articles: MutableList<Article> = ArrayList()) {
 
     override fun equals(other: Any?): Boolean {
         return other is Rss && url == other.url

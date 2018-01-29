@@ -13,12 +13,12 @@ import ru.iandreyshev.parserrss.models.repository.Article
 import org.junit.Assert.*
 
 class RssParserTest {
-    private lateinit var feedParseExceptionParser: RssParseEngine
-    private lateinit var articlesParseExceptionParser: RssParseEngine
+    private lateinit var feedParseExceptionParser: ParserEngine
+    private lateinit var articlesParseExceptionParser: ParserEngine
 
     @Before
     fun setup() {
-        feedParseExceptionParser = object : RssParseEngine() {
+        feedParseExceptionParser = object : ParserEngine() {
             override fun parseRss(root: Element): Rss? {
                 throw UnsupportedOperationException()
             }
@@ -29,7 +29,7 @@ class RssParserTest {
                 return ArrayList()
             }
         }
-        articlesParseExceptionParser = object : RssParseEngine() {
+        articlesParseExceptionParser = object : ParserEngine() {
             override fun parseRss(root: Element): Rss? {
                 return null
             }

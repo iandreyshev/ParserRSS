@@ -132,7 +132,7 @@ class Database(private val boxStore: BoxStore) {
         rss.articles.forEach { it.rssId = rss.id }
     }
 
-    private fun getArticlesByRssId(id: Long): List<Article> {
+    private fun getArticlesByRssId(id: Long): MutableList<Article> {
         return if (INVALID_IDS.contains(id)) {
             ArrayList()
         } else {

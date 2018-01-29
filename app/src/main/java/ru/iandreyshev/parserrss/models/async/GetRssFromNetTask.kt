@@ -1,18 +1,20 @@
 package ru.iandreyshev.parserrss.models.async
 
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.rss.RssParseEngine
+import ru.iandreyshev.parserrss.models.rss.ParserEngine
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 abstract class GetRssFromNetTask(
         protected open val listener: IEventListener,
-        url: String) : Task<String, Void, Rss>(listener) {
+        protected val url: String) : Task<String, Void, Rss>(listener) {
 
-    private val requestHandler: HttpRequestHandler = HttpRequestHandler(url)
+    companion object {
+        private const val MAX_ARTICLES_COUNT = 64
+    }
+
+    private var requestHandler: HttpRequestHandler = HttpRequestHandler(url)
     private var resultRss: Rss? = null
-
-    protected val url = requestHandler.urlString
 
     open fun isUrlValid(): Boolean {
         return when (requestHandler.state != HttpRequestHandler.State.BadUrl) {
@@ -37,7 +39,7 @@ abstract class GetRssFromNetTask(
     }
 
     open fun parseRss(): Boolean {
-        val rss = RssParseEngine.parse(requestHandler.bodyAsString)
+        val rss = ParserEngine.parse(requestHandler.bodyAsString, MAX_ARTICLES_COUNT)
 
         return when (rss) {
             null -> {

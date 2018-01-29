@@ -23,7 +23,6 @@ class UpdateRssFromNetTask private constructor(
 
     override fun isUrlValid(): Boolean {
         if (!super.isUrlValid()) {
-            setResultEvent { listener.onInvalidUrl() }
 
             return false
 

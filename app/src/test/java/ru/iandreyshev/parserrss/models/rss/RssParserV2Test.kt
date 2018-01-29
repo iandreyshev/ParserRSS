@@ -20,11 +20,11 @@ class RssParserV2Test {
         private const val ARTICLE_IMG_URL = "Article_image_url"
     }
 
-    private lateinit var parser: RssParserV2
+    private lateinit var parser: ParserV2
 
     @Before
     fun setup() {
-        parser = RssParserV2()
+        parser = ParserV2()
     }
 
     @Test

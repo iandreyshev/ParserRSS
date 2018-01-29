@@ -9,7 +9,7 @@ class FilterByDate : IArticlesFilter {
         }
     }
 
-    override fun sort(articles: List<Article>): List<Article> {
-        return articles.sortedByDescending { it -> it.date }
+    override fun sort(articles: MutableList<Article>): ArrayList<Article> {
+        return ArrayList(articles.sortedByDescending { it -> it.date })
     }
 }

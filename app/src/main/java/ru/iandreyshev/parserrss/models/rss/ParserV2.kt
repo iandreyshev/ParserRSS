@@ -5,15 +5,13 @@ import android.text.Html
 import org.jdom2.Element
 
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Date
 import java.util.Locale
 
 import ru.iandreyshev.parserrss.models.repository.Article
 import ru.iandreyshev.parserrss.models.repository.Rss
 
-internal class RssParserV2 : RssParseEngine() {
-
+internal class ParserV2 : ParserEngine() {
     companion object {
         private const val FEED_NAME = "channel"
         private const val FEED_TITLE = "title"
@@ -57,26 +55,14 @@ internal class RssParserV2 : RssParseEngine() {
         return rss
     }
 
-    override fun parseArticles(root: Element): ArrayList<Article> {
-        val channel = root.getChild(FEED_NAME)
-        val items = channel.getChildren(ARTICLE_NAME)
-        val result = ArrayList<Article>()
-
-        items.forEach { item ->
-            val article = parseArticle(item)
-
-            if (article != null) {
-                result.add(article)
-            }
-        }
-
-        return result
+    override fun getArticlesNodes(root: Element): List<Element>? {
+        return root.getChild(FEED_NAME).getChildren(ARTICLE_NAME)
     }
 
-    private fun parseArticle(item: Element): Article? {
-        val title = item.getChildText(ARTICLE_TITLE)
-        val origin = item.getChildText(ARTICLE_ORIGIN)
-        val description = item.getChildText(ARTICLE_DESCRIPTION)
+    override fun parseArticle(node: Element): Article? {
+        val title = node.getChildText(ARTICLE_TITLE)
+        val origin = node.getChildText(ARTICLE_ORIGIN)
+        val description = node.getChildText(ARTICLE_DESCRIPTION)
 
         if (title == null || origin == null || description == null) {
             return null
@@ -87,8 +73,8 @@ internal class RssParserV2 : RssParseEngine() {
                 description = clearHtml(description),
                 originUrl = origin)
 
-        parseArticleDate(item, article)
-        parseArticleImage(item, article)
+        parseArticleDate(node, article)
+        parseArticleImage(node, article)
 
         return article
     }
