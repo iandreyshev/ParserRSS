@@ -8,7 +8,7 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar"
-        style="@style/AppBarCardViewStyle"
+        style="@style/CardView.Light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -18,7 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
-            app:title="Article" />
+            app:titleTextAppearance="@style/ToolbarStyle.TitleTextAppearance">
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 

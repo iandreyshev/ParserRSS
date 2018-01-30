@@ -12,7 +12,7 @@ import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.ui.extention.tabTitle
 import ru.iandreyshev.parserrss.ui.fragment.FeedPageFragment
 
-class FeedTabsAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager) {
+class FeedPagesAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager) {
     private val rssList = ArrayList<ViewRss>()
     val isEmpty
         get() = rssList.isEmpty()

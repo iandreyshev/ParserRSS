@@ -71,12 +71,11 @@ class ArticleActivity : BaseActivity(),
     }
 
     override fun initArticle(rss: ViewRss, article: ViewArticle) {
+        supportActionBar?.title = rss.title
         titleView.text = article.title
         descriptionView.text = article.description
         imageLoadPresenter.loadImage(article.id)
         loadDate(article.date)
-
-        supportActionBar?.title = rss.title
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

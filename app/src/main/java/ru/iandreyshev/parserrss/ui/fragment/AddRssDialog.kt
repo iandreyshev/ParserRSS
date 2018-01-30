@@ -27,8 +27,9 @@ class AddRssDialog : MvpAppCompatDialogFragment() {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_add_feed, null)
 
         return AlertDialog.Builder(view.context)
+                .setTitle(R.string.add_feed_dialog_title)
                 .setView(view)
-                .setPositiveButton(R.string.add_feed_dialog_submit_button) { _, _ -> this.onAddButtonClick() }
+                .setPositiveButton(R.string.add_feed_dialog_submit_button, { _, _ -> this.onAddButtonClick() })
                 .setNegativeButton(R.string.add_feed_dialog_cancel_button, null)
                 .create()
     }
