@@ -2,7 +2,8 @@ package ru.iandreyshev.parserrss.ui.adapter
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.v4.view.PagerAdapter
+import eu.inloop.pager.UpdatableFragmentPagerAdapter
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.app.App
 
@@ -12,7 +13,7 @@ import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.ui.extention.tabTitle
 import ru.iandreyshev.parserrss.ui.fragment.FeedPageFragment
 
-class FeedPagesAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager) {
+class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter(manager) {
     private val rssList = ArrayList<ViewRss>()
     val isEmpty
         get() = rssList.isEmpty()
@@ -40,6 +41,10 @@ class FeedPagesAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(man
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        return rssList.getOrNull(position)?.id ?: 0
+    }
+
     override fun getCount(): Int {
         return rssList.size
     }
@@ -51,6 +56,6 @@ class FeedPagesAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(man
     override fun getItemPosition(item: Any): Int {
         val position = rssList.indexOf(item)
 
-        return if (position < 0) POSITION_NONE else position
+        return if (position < 0) PagerAdapter.POSITION_NONE else position
     }
 }
