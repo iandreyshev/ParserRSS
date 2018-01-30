@@ -5,17 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="25dp">
-
-    <TextView
-        android:id="@+id/add_feed_dialog_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:text="@string/add_feed_dialog_title"
-        android:textColor="@color/primaryDarkText"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+    android:padding="?attr/dialogPreferredPadding">
 
     <EditText
         android:id="@+id/urlField"
@@ -23,5 +13,8 @@
         android:layout_height="wrap_content"
         android:hint="@string/add_feed_dialog_link_placeholder"
         android:inputType="textUri"
-        android:theme="@style/AppTheme.AddRssDialog" />
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:theme="@style/AddRssDialog" />
+
 </LinearLayout>

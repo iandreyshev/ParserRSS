@@ -10,7 +10,7 @@ import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.ui.adapter.FeedTabsAdapter
+import ru.iandreyshev.parserrss.ui.adapter.FeedPagesAdapter
 import ru.iandreyshev.parserrss.ui.fragment.AddRssDialog
 import ru.iandreyshev.parserrss.ui.fragment.RssInfoDialog
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
@@ -40,22 +40,22 @@ class FeedActivity : BaseActivity(),
     @InjectPresenter
     lateinit var presenter: FeedPresenter
 
-    private lateinit var tabsAdapter: FeedTabsAdapter
+    private lateinit var pagesAdapter: FeedPagesAdapter
     private lateinit var menuInfoButton: MenuItem
     private lateinit var menuDeleteButton: MenuItem
 
     override fun insertRss(rss: ViewRss) {
-        tabsAdapter.insert(rss)
+        pagesAdapter.insert(rss)
         onFeedUpdate()
     }
 
     override fun removeRss(rss: ViewRss) {
-        tabsAdapter.remove(rss)
+        pagesAdapter.remove(rss)
         onFeedUpdate()
     }
 
     override fun openPage(position: Int) {
-        if (!tabsAdapter.isEmpty || position in 0 until tabsAdapter.count) {
+        if (!pagesAdapter.isEmpty || position in 0 until pagesAdapter.count) {
             pagerLayout.currentItem = position
         }
     }
@@ -80,7 +80,7 @@ class FeedActivity : BaseActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.feed_options_menu, menu)
+        menuInflater.inflate(R.menu.menu_feed_options, menu)
         menuInfoButton = menu.findItem(INFO_BUTTON)
         menuDeleteButton = menu.findItem(DELETE_BUTTON)
 
@@ -88,8 +88,8 @@ class FeedActivity : BaseActivity(),
     }
 
     override fun onMenuOpened(featureId: Int, menu: Menu?): Boolean {
-        menuInfoButton.isEnabled = !tabsAdapter.isEmpty
-        menuDeleteButton.isEnabled = !tabsAdapter.isEmpty
+        menuInfoButton.isEnabled = !pagesAdapter.isEmpty
+        menuDeleteButton.isEnabled = !pagesAdapter.isEmpty
 
         return super.onMenuOpened(featureId, menu)
     }
@@ -97,8 +97,8 @@ class FeedActivity : BaseActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             ADD_BUTTON -> openAddingRssDialog()
-            INFO_BUTTON -> presenter.openRssInfo(tabsAdapter.getRss(pagerLayout.currentItem))
-            DELETE_BUTTON -> presenter.onDeleteRss(tabsAdapter.getRss(pagerLayout.currentItem))
+            INFO_BUTTON -> presenter.openRssInfo(pagesAdapter.getRss(pagerLayout.currentItem))
+            DELETE_BUTTON -> presenter.onDeleteRss(pagesAdapter.getRss(pagerLayout.currentItem))
         }
 
         return super.onOptionsItemSelected(item)
@@ -108,14 +108,14 @@ class FeedActivity : BaseActivity(),
         presenter.openArticle(articleId)
     }
 
-    override fun onSubmitAddRss(url: String) {
+    override fun addRss(url: String) {
         presenter.onInsertRss(url)
     }
 
     override fun onFeedUpdate() {
-        contentMessage.visibility = if (tabsAdapter.isEmpty) View.VISIBLE else View.GONE
-        pagerLayout.visibility = if (tabsAdapter.isEmpty) View.GONE else View.VISIBLE
-        tabsLayout.visibility = if (tabsAdapter.isEmpty) View.GONE else View.VISIBLE
+        contentMessageView.visibility = if (pagesAdapter.isEmpty) View.VISIBLE else View.GONE
+        pagerLayout.visibility = if (pagesAdapter.isEmpty) View.GONE else View.VISIBLE
+        tabsLayout.visibility = if (pagesAdapter.isEmpty) View.GONE else View.VISIBLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,8 +138,8 @@ class FeedActivity : BaseActivity(),
     }
 
     private fun initTabsView() {
-        tabsAdapter = FeedTabsAdapter(supportFragmentManager)
-        pagerLayout.adapter = tabsAdapter
+        pagesAdapter = FeedPagesAdapter(supportFragmentManager)
+        pagerLayout.adapter = pagesAdapter
         tabsLayout.setupWithViewPager(pagerLayout)
     }
 }

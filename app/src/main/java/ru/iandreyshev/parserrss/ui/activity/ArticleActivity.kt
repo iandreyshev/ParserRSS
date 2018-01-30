@@ -56,7 +56,7 @@ class ArticleActivity : BaseActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.article_options_menu, menu)
+        menuInflater.inflate(R.menu.menu_article_options, menu)
 
         return true
     }
@@ -71,12 +71,11 @@ class ArticleActivity : BaseActivity(),
     }
 
     override fun initArticle(rss: ViewRss, article: ViewArticle) {
-        articleTitle.text = article.title
-        description.text = article.description
+        supportActionBar?.title = rss.title
+        titleView.text = article.title
+        descriptionView.text = article.description
         imageLoadPresenter.loadImage(article.id)
         loadDate(article.date)
-
-        supportActionBar?.title = rss.title
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,12 +97,12 @@ class ArticleActivity : BaseActivity(),
     }
 
     private fun loadDate(date: Long?) {
-        this.date.visibility = if (date == null) View.GONE else View.VISIBLE
-        this.date.text = DATE_FORMAT.format(date)
+        dateView.visibility = if (date == null) View.GONE else View.VISIBLE
+        dateView.text = DATE_FORMAT.format(date)
     }
 
     override fun insertImage(bitmap: Bitmap) {
-        image.visibility = View.VISIBLE
-        image.setImageBitmap(bitmap)
+        imageView.visibility = View.VISIBLE
+        imageView.setImageBitmap(bitmap)
     }
 }

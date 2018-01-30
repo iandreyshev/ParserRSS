@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ActivityFeed.ProgressBar">
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:layout_marginBottom">15dp</item>
+    </style>
+
+    <style name="ActivityFeed.ContentMessage">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+</resources>

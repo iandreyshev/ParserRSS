@@ -1,5 +1,6 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
@@ -7,99 +8,86 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar"
-        style="@style/ToolbarCardViewStyle"
+        style="@style/CardView.Light"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:contentInsetEnd="2dp">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            style="@style/ToolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            app:title="@string/article_toolbar_title"
-            app:titleTextAppearance="@style/ToolbarTextAppearance" />
+            app:titleTextAppearance="@style/ToolbarStyle.TitleTextAppearance">
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:scrollbars="vertical">
 
         <LinearLayout
+            style="@style/ActivityArticle.ContentLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/articleTitle"
+                android:id="@+id/titleView"
+                style="@style/ActivityArticle.TitleView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
                 android:textAllCaps="true"
                 android:textColor="@color/primaryDarkText"
-                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Title" />
+                tools:text="Lorem ipsum dolor sit omet" />
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/dateView"
+                style="@style/ActivityArticle.DateView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="5dp"
-                android:minHeight="0dp"
                 android:textColor="@color/secondaryDarkText"
-                android:textSize="15sp"
                 android:textStyle="italic"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/article_title" />
+                tools:text="10 SEP. 2018" />
 
             <ImageView
-                android:id="@+id/image"
+                android:id="@+id/imageView"
+                style="@style/ActivityArticle.ImageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:adjustViewBounds="true"
                 android:cropToPadding="true"
-                android:maxLines="1"
                 android:scaleType="centerCrop"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/article_title_layout"
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/descriptionView"
+                style="@style/ActivityArticle.DescriptionView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="10dp"
+                android:textAlignment="viewStart"
+                android:textAllCaps="false"
                 android:textColor="@color/primaryDarkText"
-                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/article_image" />
+                tools:text="Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet Lorem ipsum dolor sit omet " />
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </ScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

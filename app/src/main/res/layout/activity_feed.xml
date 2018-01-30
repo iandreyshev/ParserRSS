@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/commonLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,56 +11,39 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
-        style="@style/ToolbarCardViewStyle"
+        style="@style/CardView.Light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            style="@style/ToolbarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
             app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            app:title="@string/app_name"
+            app:titleTextAppearance="@style/ToolbarStyle.TitleTextAppearance">
 
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/toolbarTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/app_name"
-                    android:textAppearance="@style/ToolbarTextAppearance"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/progressBar"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginTop="15dp"
-                    android:theme="@style/FeedProgressBarTheme"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/ActivityFeed.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:theme="@style/ToolbarStyle.ProgressBar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabsLayout"
-            style="@style/FeedTabsTheme"
+            style="@style/FeedTabsStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             app:tabGravity="fill"
             app:tabMode="scrollable" />
 
@@ -68,30 +52,19 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/pagerLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v4.view.ViewPager>
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/contentMessageLayout"
+    <TextView
+        android:id="@+id/contentMessageView"
+        style="@style/ActivityFeed.ContentMessage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/contentMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/feed_content_message_title"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="@color/secondaryLightText"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/feed_content_message_title"
+        android:textAlignment="center" />
 
 </android.support.design.widget.CoordinatorLayout>
