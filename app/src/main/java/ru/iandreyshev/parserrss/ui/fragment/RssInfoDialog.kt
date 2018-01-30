@@ -38,14 +38,13 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
 
         return AlertDialog.Builder(view.context)
                 .setView(view)
-                .setPositiveButton(R.string.rss_info_dialog_button, null)
-                .setNeutralButton(R.string.rss_info_open_original_button) { _, _ -> presenter.onOpenOriginal() }
+                .setNeutralButton(R.string.rss_info_open_original_button, { _, _ -> presenter.onOpenOriginal() })
                 .create()
     }
 
     override fun setInfo(rss: ViewRss) {
-        dialog.rssTitle?.text = rss.title
-        dialog.rssDescription?.text = rss.description
+        dialog.titleView.text = rss.title
+        dialog.descriptionView.text = rss.description
     }
 
     override fun openInBrowser(url: Uri) {

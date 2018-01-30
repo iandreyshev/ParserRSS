@@ -14,29 +14,33 @@
         <item name="colorAccent">@color/secondaryLightText</item>
     </style>
     
-    <style name="ToolbarStyle.TitleTextAppearance" parent="ToolbarStyle.TitleTextAppearance.Size">
+    <style name="ToolbarStyle.TitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textColor">@color/primaryLightText</item>
-    </style>
-    
-    <style name="ToolbarStyle.TitleTextAppearance.Size">
-        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="AddRssDialog" parent="AppTheme">
         <item name="colorAccent">@color/secondaryDarkText</item>
     </style>
 
-    <style name="FeedTabsTheme" parent="Widget.Design.TabLayout">
+    <style name="FeedTabsStyle">
         <item name="android:background">@color/toolBarBackground</item>
         <item name="tabIndicatorColor">@color/tabsIndicator</item>
         <item name="tabSelectedTextColor">@color/primaryLightText</item>
         <item name="tabTextAppearance">@style/FeedTabTextAppearance</item>
     </style>
 
-    <style name="FeedTabTextAppearance" parent="TextAppearance.Design.Tab">
+    <style name="FeedTabTextAppearance">
         <item name="android:textColor">@color/secondaryLightText</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="ActivityArticle"></style>
+
+    <style name="ActivityFeed"></style>
+
+    <style name="DialogRssInfo"></style>
+
+    <style name="ViewFeedItem"></style>
 
 </resources>

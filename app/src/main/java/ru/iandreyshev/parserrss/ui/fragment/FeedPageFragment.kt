@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,12 +55,15 @@ class FeedPageFragment : BaseFragment(),
         return inflater.inflate(R.layout.view_feed_list, viewGroup, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
+        updateImages(true)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initListView()
         refreshLayout.setOnRefreshListener({ presenter.onUpdate() })
-        updateImages(true)
     }
 
     override fun startUpdate(isStart: Boolean) {
@@ -68,7 +72,6 @@ class FeedPageFragment : BaseFragment(),
 
     override fun setArticles(newArticles: List<ViewArticle>) {
         listAdapter.setArticles(newArticles)
-        updateImages(true)
     }
 
     override fun updateImages(isWithoutQueue: Boolean) {
@@ -78,12 +81,12 @@ class FeedPageFragment : BaseFragment(),
     override fun insertImage(bitmap: Bitmap) {}
 
     private fun initListView() {
-        listAdapter.setArticleClickListener(context as IOnArticleClickListener)
-
         itemsList.adapter = listAdapter
         itemsList.layoutManager = LinearLayoutManager(context)
         itemsList.addOnScrollListener(ScrollListener())
         itemsList.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+
+        listAdapter.setArticleClickListener(context as IOnArticleClickListener)
     }
 
     inner class ScrollListener : RecyclerView.OnScrollListener() {

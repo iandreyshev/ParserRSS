@@ -20,6 +20,7 @@
     <string name="add_feed_dialog_submit_button">OK</string>
     <string name="add_feed_dialog_cancel_button">Cancel</string>
 
+    <string name="rss_info_dialog_default_title">News RSS</string>
     <string name="rss_info_dialog_button">OK</string>
     <string name="rss_info_open_original_button">OPEN ORIGINAL</string>
 

@@ -9,7 +9,7 @@
     <color name="primaryLightText">#FFF</color>
     <color name="secondaryLightText">#aaaaaa</color>
 
-    <color name="primaryDarkText">#000</color>
+    <color name="primaryDarkText">#000000</color>
     <color name="secondaryDarkText">#555555</color>
     <color name="accentDark">#2980b9</color>
 </resources>

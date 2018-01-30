@@ -51,7 +51,6 @@ class FeedActivity : BaseActivity(),
 
     override fun removeRss(rss: ViewRss) {
         pagesAdapter.remove(rss)
-        pagerLayout.adapter = pagesAdapter
         onFeedUpdate()
     }
 
@@ -109,12 +108,12 @@ class FeedActivity : BaseActivity(),
         presenter.openArticle(articleId)
     }
 
-    override fun onSubmitAddRss(url: String) {
+    override fun addRss(url: String) {
         presenter.onInsertRss(url)
     }
 
     override fun onFeedUpdate() {
-        contentMessage.visibility = if (pagesAdapter.isEmpty) View.VISIBLE else View.GONE
+        contentMessageView.visibility = if (pagesAdapter.isEmpty) View.VISIBLE else View.GONE
         pagerLayout.visibility = if (pagesAdapter.isEmpty) View.GONE else View.VISIBLE
         tabsLayout.visibility = if (pagesAdapter.isEmpty) View.GONE else View.VISIBLE
     }

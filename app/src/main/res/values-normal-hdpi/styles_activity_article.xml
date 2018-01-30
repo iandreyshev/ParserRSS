@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ActivityArticle.ToolbarTitle">
-        <item name="android:textSize">20sp</item>
-    </style>
-
     <style name="ActivityArticle.ContentLayout">
-        <item name="android:paddingBottom">15dp</item>
         <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingBottom">15dp</item>
     </style>
 
     <style name="ActivityArticle.TitleView">
-        <item name="android:layout_marginLeft">15dp</item>
-        <item name="android:layout_marginRight">15dp</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:paddingLeft">13dp</item>
+        <item name="android:paddingRight">13dp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="ActivityArticle.DateView">
-        <item name="android:layout_marginLeft">15dp</item>
-        <item name="android:layout_marginRight">15dp</item>
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:paddingLeft">13dp</item>
+        <item name="android:paddingRight">13dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="ActivityArticle.ImageView">
-        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginTop">6dp</item>
     </style>
 
     <style name="ActivityArticle.DescriptionView">
-        <item name="android:layout_marginLeft">15dp</item>
-        <item name="android:layout_marginRight">15dp</item>
-        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:paddingLeft">13dp</item>
+        <item name="android:paddingRight">13dp</item>
         <item name="android:textSize">16sp</item>
     </style>
 
