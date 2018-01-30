@@ -12,7 +12,7 @@ import com.arellomobile.mvp.MvpAppCompatDialogFragment
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener
 
-import kotlinx.android.synthetic.main.add_feed_dialog.*
+import kotlinx.android.synthetic.main.dialog_add_feed.*
 import java.lang.ref.WeakReference
 
 class AddRssDialog : MvpAppCompatDialogFragment() {
@@ -24,7 +24,7 @@ class AddRssDialog : MvpAppCompatDialogFragment() {
     private var onSubmitListener: WeakReference<IOnSubmitAddRssListener>? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = LayoutInflater.from(context).inflate(R.layout.add_feed_dialog, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_add_feed, null)
 
         return AlertDialog.Builder(view.context)
                 .setView(view)

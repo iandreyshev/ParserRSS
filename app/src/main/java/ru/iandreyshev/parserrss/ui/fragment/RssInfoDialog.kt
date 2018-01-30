@@ -11,7 +11,7 @@ import android.view.LayoutInflater
 import com.arellomobile.mvp.MvpAppCompatDialogFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
-import kotlinx.android.synthetic.main.rss_info_dialog.*
+import kotlinx.android.synthetic.main.dialog_rss_info.*
 
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.models.rss.ViewRss
@@ -34,7 +34,7 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
     fun provideRssInfoPresenter() = presenter
 
     override fun onCreateDialog(savedInstantState: Bundle?): Dialog {
-        val view = LayoutInflater.from(context).inflate(R.layout.rss_info_dialog, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_rss_info, null)
 
         return AlertDialog.Builder(view.context)
                 .setView(view)

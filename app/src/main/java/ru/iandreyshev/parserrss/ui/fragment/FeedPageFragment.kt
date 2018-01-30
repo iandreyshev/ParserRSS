@@ -23,7 +23,7 @@ import ru.iandreyshev.parserrss.presentation.view.IImageView
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
-import kotlinx.android.synthetic.main.feed_list.*
+import kotlinx.android.synthetic.main.view_feed_list.*
 
 class FeedPageFragment : BaseFragment(),
         IFeedPageView,
@@ -51,7 +51,7 @@ class FeedPageFragment : BaseFragment(),
     fun provideFeedPagePresenter() = presenter
 
     override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?, savedInstantState: Bundle?): View? {
-        return inflater.inflate(R.layout.feed_list, viewGroup, false)
+        return inflater.inflate(R.layout.view_feed_list, viewGroup, false)
     }
 
     override fun onStart() {

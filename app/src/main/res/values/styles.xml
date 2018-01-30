@@ -5,18 +5,25 @@
         <item name="colorAccent">@color/accentDark</item>
     </style>
 
-    <style name="AppTheme.AddRssDialog" parent="AppTheme">
-        <item name="colorAccent">@color/secondaryDarkText</item>
-    </style>
-
-    <style name="ToolbarCardViewStyle" parent="Theme.AppCompat.Light">
-        <item name="cardCornerRadius">0dp</item>
-        <item name="cardElevation">5dp</item>
+    <style name="ToolbarStyle">
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark</item>
+        <item name="titleTextAppearance">@style/ToolbarTextAppearance</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
     <style name="ToolbarTextAppearance">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/primaryLightText</item>
+    </style>
+
+    <style name="AppBarCardViewStyle" parent="Theme.AppCompat.Light">
+        <item name="cardCornerRadius">0dp</item>
+        <item name="cardElevation">5dp</item>
+        <item name="contentInsetEnd">2dp</item>
+    </style>
+
+    <style name="AddRssDialog" parent="AppTheme">
+        <item name="colorAccent">@color/secondaryDarkText</item>
     </style>
 
     <style name="FeedTabsTheme" parent="Widget.Design.TabLayout">
@@ -34,8 +41,6 @@
         <item name="colorAccent">@color/secondaryLightText</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="ActivityArticle"></style>
 
 </resources>

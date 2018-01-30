@@ -80,7 +80,7 @@ class FeedActivity : BaseActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.feed_options_menu, menu)
+        menuInflater.inflate(R.menu.menu_feed_options, menu)
         menuInfoButton = menu.findItem(INFO_BUTTON)
         menuDeleteButton = menu.findItem(DELETE_BUTTON)
 

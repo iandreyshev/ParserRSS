@@ -34,7 +34,7 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItem {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.feed_item, parent, false)
+        val view = inflater.inflate(R.layout.view_feed_item, parent, false)
 
         return ListItem(view)
     }
@@ -83,7 +83,7 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
             mTitle.text = content.title
             mDescription.text = content.description
 
-            mImage.setImageResource(R.drawable.ic_image_black_24dp)
+            mImage.setImageResource(R.drawable.ic_feed_item)
             mDate.text = content.date?.dateString
 
             itemView.setOnClickListener(this)

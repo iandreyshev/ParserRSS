@@ -23,5 +23,5 @@
         android:layout_height="wrap_content"
         android:hint="@string/add_feed_dialog_link_placeholder"
         android:inputType="textUri"
-        android:theme="@style/AppTheme.AddRssDialog" />
+        android:theme="@style/AddRssDialog" />
 </LinearLayout>
