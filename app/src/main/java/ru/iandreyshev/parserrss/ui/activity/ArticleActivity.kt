@@ -83,6 +83,7 @@ class ArticleActivity : BaseActivity(),
         setContentView(R.layout.activity_article)
 
         initToolbar()
+        initImageView()
     }
 
     private fun initToolbar() {
@@ -94,6 +95,10 @@ class ArticleActivity : BaseActivity(),
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+    }
+
+    private fun initImageView() {
+        imageView.visibility = View.GONE
     }
 
     private fun loadDate(date: Long?) {

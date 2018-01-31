@@ -58,6 +58,7 @@ dependencies {
     compile "com.jakewharton:kotterknife:0.1.0-SNAPSHOT"
     compile "io.objectbox:objectbox-kotlin:$objectboxVersion"
     compile "org.jetbrains.anko:anko-commons:$ankoVersion"
+    compile 'eu.inloop:pageradapter:0.1.0'
 
     kapt "com.arello-mobile:moxy-compiler:1.5.3"
     kapt "com.jakewharton:butterknife-compiler:8.4.0"

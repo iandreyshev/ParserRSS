@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +24,7 @@ import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.view_feed_list.*
+import java.lang.ref.WeakReference
 
 class FeedPageFragment : BaseFragment(),
         IFeedPageView,
@@ -83,21 +83,23 @@ class FeedPageFragment : BaseFragment(),
     private fun initListView() {
         itemsList.adapter = listAdapter
         itemsList.layoutManager = LinearLayoutManager(context)
-        itemsList.addOnScrollListener(ScrollListener())
+        itemsList.addOnScrollListener(ScrollListener(this))
         itemsList.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
 
         listAdapter.setArticleClickListener(context as IOnArticleClickListener)
     }
 
-    inner class ScrollListener : RecyclerView.OnScrollListener() {
+    class ScrollListener(fragment: FeedPageFragment) : RecyclerView.OnScrollListener() {
+        val fragment = WeakReference(fragment)
+
         override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
             if (Math.abs(dy) <= MAX_SCROLL_SPEED_TO_UPDATE_IMAGES) {
-                updateImages(false)
+                fragment.get()?.updateImages(false)
             }
         }
 
         override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-            updateImages(false)
+            fragment.get()?.updateImages(false)
         }
     }
 }
