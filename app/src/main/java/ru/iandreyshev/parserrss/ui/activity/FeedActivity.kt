@@ -44,15 +44,9 @@ class FeedActivity : BaseActivity(),
     private lateinit var menuInfoButton: MenuItem
     private lateinit var menuDeleteButton: MenuItem
 
-    override fun insertRss(rss: ViewRss) {
-        pagesAdapter.insert(rss)
-        onFeedUpdate()
-    }
+    override fun insertRss(rss: ViewRss) = pagesAdapter.insert(rss)
 
-    override fun removeRss(rss: ViewRss) {
-        pagesAdapter.remove(rss)
-        onFeedUpdate()
-    }
+    override fun removeRss(rss: ViewRss) = pagesAdapter.remove(rss)
 
     override fun openPage(position: Int) {
         if (!pagesAdapter.isEmpty || position in 0 until pagesAdapter.count) {
@@ -67,16 +61,12 @@ class FeedActivity : BaseActivity(),
         startActivity(intent)
     }
 
-    override fun openAddingRssDialog() {
-        AddRssDialog.show(supportFragmentManager)
-    }
+    override fun openAddingRssDialog() = AddRssDialog.show(supportFragmentManager)
+
+    override fun openRssInfo(rss: ViewRss) = RssInfoDialog.show(supportFragmentManager, rss)
 
     override fun startProgressBar(isStart: Boolean) {
         progressBar.visibility = if (isStart) View.VISIBLE else View.GONE
-    }
-
-    override fun openRssInfo(rss: ViewRss) {
-        RssInfoDialog.show(supportFragmentManager, rss)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -97,25 +87,22 @@ class FeedActivity : BaseActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             ADD_BUTTON -> openAddingRssDialog()
-            INFO_BUTTON -> presenter.openRssInfo(pagesAdapter.getRss(pagerLayout.currentItem))
+            INFO_BUTTON -> presenter.onOpenRssInfo(pagesAdapter.getRss(pagerLayout.currentItem))
             DELETE_BUTTON -> presenter.onDeleteRss(pagesAdapter.getRss(pagerLayout.currentItem))
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onArticleClick(articleId: Long) {
-        presenter.openArticle(articleId)
-    }
+    override fun onArticleClick(articleId: Long) = presenter.onOpenArticle(articleId)
 
-    override fun addRss(url: String) {
-        presenter.onInsertRss(url)
-    }
+    override fun addRss(url: String) = presenter.onInsertRss(url)
 
-    override fun onFeedUpdate() {
-        contentMessageView.visibility = if (pagesAdapter.isEmpty) View.VISIBLE else View.GONE
-        pagerLayout.visibility = if (pagesAdapter.isEmpty) View.GONE else View.VISIBLE
-        tabsLayout.visibility = if (pagesAdapter.isEmpty) View.GONE else View.VISIBLE
+    override fun openContentMessage(isOpen: Boolean, message: String) {
+        contentMessageView.visibility = if (isOpen) View.VISIBLE else View.GONE
+        contentMessageView.text = message
+        pagerLayout.visibility = if (isOpen) View.GONE else View.VISIBLE
+        tabsLayout.visibility = if (isOpen) View.GONE else View.VISIBLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,7 +111,6 @@ class FeedActivity : BaseActivity(),
 
         initToolbar()
         initTabsView()
-        onFeedUpdate()
     }
 
     override fun setToolbarScrollable(isScrollable: Boolean) {

@@ -1,35 +1,42 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
 import android.net.Uri
-import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.async.GetArticleFromDbTask
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IArticleView
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
+import ru.iandreyshev.parserrss.R
+import ru.iandreyshev.parserrss.interactor.ArticleInteractor
+import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 
 @InjectViewState
-class ArticlePresenter (private val articleId: Long) : MvpPresenter<IArticleView>() {
-    var articleUrl: String? = null
+class ArticlePresenter(private val articleId: Long) : MvpPresenter<IArticleView>() {
 
-    override fun onFirstViewAttach() {
-        GetArticleFromDbTask.execute(articleId, GetArticleFromDbListener())
-    }
+    private val interactor = ArticleInteractor(ArticleInteractorOutput())
 
-    fun onOpenOriginal() = viewState.openInBrowser(Uri.parse(articleUrl))
+    fun onOpenOriginal() = interactor.openOriginal()
 
-    private inner class GetArticleFromDbListener : GetArticleFromDbTask.IEventListener {
-        override fun onSuccess(rss: ViewRss, article: ViewArticle) {
-            this@ArticlePresenter.articleUrl = article.originUrl
-            viewState.initArticle(rss, article)
+    override fun onFirstViewAttach() = interactor.initArticle(articleId)
+
+    private inner class ArticleInteractorOutput : ArticleInteractor.IOutput {
+        override fun initArticle(rss: ViewRss, article: ViewArticle) = viewState.initArticle(rss, article)
+
+        override fun openOriginal(url: String?) {
+            try {
+                Uri.parse(url)?.let {
+                    viewState.openInBrowser(it)
+                    return
+                }
+                toast(R.string.toast_invalid_url)
+            } catch (ex: Exception) {
+                toast(R.string.toast_invalid_url)
+            }
         }
 
-        override fun onFail() {
-            toast(R.string.article_error_load)
-            viewState.closeArticle()
-        }
+        override fun showMessage(messageId: Int) = toast(messageId)
+
+        override fun close() = viewState.closeArticle()
     }
 }

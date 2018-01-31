@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DialogRssInfo.Title">
+        <item name="android:textSize">@dimen/FontSize.Large</item>
+    </style>
+
+    <style name="DialogRssInfo.Description">
+        <item name="android:textSize">@dimen/FontSize.Normal</item>
+    </style>
+
+</resources>

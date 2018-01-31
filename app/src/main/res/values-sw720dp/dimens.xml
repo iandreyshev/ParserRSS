@@ -7,7 +7,7 @@
     <dimen name="ActivityArticle.ImageTopMargin">15dp</dimen>
     <dimen name="ActivityArticle.ImageBottomMargin">22dp</dimen>
 
-    <dimen name="ActivityFeed.ProgressBarMargin">22dp</dimen>
+    <dimen name="ActivityFeed.ProgressBarMargin">16dp</dimen>
 
     <dimen name="FeedItem.Margin">18dp</dimen>
     <dimen name="FeedItem.TextSpacing">9dp</dimen>

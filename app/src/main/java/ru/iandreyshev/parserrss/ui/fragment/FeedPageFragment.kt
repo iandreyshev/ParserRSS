@@ -66,6 +66,12 @@ class FeedPageFragment : BaseFragment(),
         refreshLayout.setOnRefreshListener({ presenter.onUpdate() })
     }
 
+    override fun openMessage(isOpen: Boolean, message: String) {
+        itemsList.visibility = if (isOpen) View.GONE else View.VISIBLE
+        contentMessageView.visibility = if (isOpen) View.VISIBLE else View.GONE
+        contentMessageView.text = message
+    }
+
     override fun startUpdate(isStart: Boolean) {
         refreshLayout.isRefreshing = isStart
     }

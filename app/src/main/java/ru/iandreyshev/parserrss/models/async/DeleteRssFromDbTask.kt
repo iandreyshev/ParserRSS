@@ -6,29 +6,24 @@ import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
 class DeleteRssFromDbTask private constructor(
-        private val listener: IEventListener,
+        listener: ITaskListener<ViewRss, Any, ViewRss>,
         private val rssToDelete: ViewRss) : Task<ViewRss, Any, ViewRss>(listener) {
 
     companion object {
         private val TAG = DeleteRssFromDbTask::class.java.name
 
-        fun execute(listener: IEventListener, rssToDelete: ViewRss) {
+        fun execute(listener: ITaskListener<ViewRss, Any, ViewRss>, rssToDelete: ViewRss) {
             DeleteRssFromDbTask(listener, rssToDelete).executeOnExecutor(Task.EXECUTOR)
         }
     }
 
     override fun doInBackground(vararg rssToDelete: ViewRss): ViewRss? {
-        try {
+        return try {
             App.database.removeRssById(this.rssToDelete.id)
+            this.rssToDelete
         } catch (ex: Exception) {
             Log.e(TAG, Log.getStackTraceString(ex))
-            setResultEvent({ listener.onFail(this.rssToDelete) })
+            null
         }
-
-        return this.rssToDelete
-    }
-
-    interface IEventListener : ITaskListener<ViewRss, Any, ViewRss> {
-        fun onFail(rss: ViewRss)
     }
 }
