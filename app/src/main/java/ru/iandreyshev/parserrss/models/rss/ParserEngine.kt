@@ -18,6 +18,7 @@ internal abstract class ParserEngine {
 
         fun parse(rssText: String?, maxArticlesCount: Int): Rss? {
             PARSERS.forEach { it.parse(rssText, maxArticlesCount)?.let { return it } }
+
             return null
         }
     }

@@ -26,8 +26,8 @@ interface IFeedView : IBaseView {
     @StateStrategyType(SkipStrategy::class)
     fun openRssInfo(rss: ViewRss)
 
-    @StateStrategyType(SkipStrategy::class)
-    fun onFeedUpdate()
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun openEmptyContentMessage(isOpen: Boolean)
 
     @StateStrategyType(SkipStrategy::class)
     fun openPage(position: Int)

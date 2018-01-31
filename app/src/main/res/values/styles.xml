@@ -13,7 +13,7 @@
     <style name="ToolbarStyle.ProgressBar" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@color/secondaryLightText</item>
     </style>
-    
+
     <style name="ToolbarStyle.TitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textColor">@color/primaryLightText</item>
     </style>
@@ -42,5 +42,7 @@
     <style name="DialogRssInfo"></style>
 
     <style name="ViewFeedItem"></style>
+
+    <style name="ViewFeedList"></style>
 
 </resources>

@@ -107,8 +107,19 @@ class Database(private val boxStore: BoxStore) {
                 .findFirst()
     }
 
-    fun putArticleImage(image: ArticleImage) {
-        articleImageBox.put(image)
+    fun putArticleImage(image: ArticleImage): Boolean {
+        return boxStore.callInTx {
+            val isArticleExist = articleBox.query()
+                    .equal(Article_.id, image.articleId)
+                    .build()
+                    .findFirst()
+
+            if (isArticleExist != null) {
+                articleImageBox.put(image)
+            }
+
+            isArticleExist != null
+        }
     }
 
     private fun putArticles(rss: Rss) {
