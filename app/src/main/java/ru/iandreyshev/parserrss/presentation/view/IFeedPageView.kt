@@ -17,5 +17,5 @@ interface IFeedPageView : IBaseView {
     fun updateImages(isWithoutQueue: Boolean)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun openMessage(isOpen: Boolean, message: String = "")
+    fun openEmptyContentMessage(isOpen: Boolean)
 }

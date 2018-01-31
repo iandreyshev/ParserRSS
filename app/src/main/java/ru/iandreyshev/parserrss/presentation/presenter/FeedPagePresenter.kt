@@ -27,6 +27,7 @@ class FeedPagePresenter(private val rss: ViewRss) : MvpPresenter<IFeedPageView>(
 
         override fun setArticles(articles: List<ViewArticle>) {
             viewState.setArticles(articles)
+            viewState.openEmptyContentMessage(articles.isEmpty())
             viewState.updateImages(true)
         }
     }

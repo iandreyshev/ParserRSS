@@ -1,11 +1,11 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
+import android.util.Log
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.interactor.FeedInteractor
 
@@ -29,7 +29,8 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
 
         override fun onChangeRssCount(newCount: Int) {
             viewState.setToolbarScrollable(newCount > 0)
-            viewState.openContentMessage(newCount <= 0, App.getStr(R.string.feed_list_empty))
+            viewState.openEmptyContentMessage(newCount <= 0)
+            Log.e("Tag", newCount.toString())
         }
 
         override fun onChangeProcessCount(newCount: Int) {

@@ -27,7 +27,7 @@ interface IFeedView : IBaseView {
     fun openRssInfo(rss: ViewRss)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun openContentMessage(isOpen: Boolean, message: String = "")
+    fun openEmptyContentMessage(isOpen: Boolean)
 
     @StateStrategyType(SkipStrategy::class)
     fun openPage(position: Int)

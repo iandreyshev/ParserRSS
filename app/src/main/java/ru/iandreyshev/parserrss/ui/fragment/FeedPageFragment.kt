@@ -47,7 +47,7 @@ class FeedPageFragment : BaseFragment(),
 
     private val interactor
         get() = presenter.interactor
-    private val itemsIconsInteractor
+    private val itemsIconLoadInteractor
         get() = iconsLoadPresenter.interactor
     private val listAdapter: FeedListAdapter = FeedListAdapter()
 
@@ -69,10 +69,9 @@ class FeedPageFragment : BaseFragment(),
         refreshLayout.setOnRefreshListener({ interactor.onUpdate() })
     }
 
-    override fun openMessage(isOpen: Boolean, message: String) {
+    override fun openEmptyContentMessage(isOpen: Boolean) {
         itemsList.visibility = if (isOpen) View.GONE else View.VISIBLE
-        contentMessageView.visibility = if (isOpen) View.VISIBLE else View.GONE
-        contentMessageView.text = message
+        contentMessageLayout.visibility = if (isOpen) View.VISIBLE else View.GONE
     }
 
     override fun startUpdate(isStart: Boolean) {
@@ -81,10 +80,11 @@ class FeedPageFragment : BaseFragment(),
 
     override fun setArticles(newArticles: List<ViewArticle>) {
         listAdapter.setArticles(newArticles)
+        itemsIconLoadInteractor.clearQueue()
     }
 
     override fun updateImages(isWithoutQueue: Boolean) {
-        listAdapter.forEach { itemsIconsInteractor.getIconForItem(it, isWithoutQueue) }
+        listAdapter.forEach { itemsIconLoadInteractor.getIconForItem(it, isWithoutQueue) }
     }
 
     private fun initListView() {

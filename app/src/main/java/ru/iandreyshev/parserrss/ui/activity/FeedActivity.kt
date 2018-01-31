@@ -19,7 +19,6 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener
 import kotlinx.android.synthetic.main.activity_feed.*
 
 import com.arellomobile.mvp.presenter.InjectPresenter
-import ru.iandreyshev.parserrss.interactor.FeedInteractor
 
 class FeedActivity : BaseActivity(),
         IFeedView,
@@ -101,11 +100,11 @@ class FeedActivity : BaseActivity(),
 
     override fun addRss(url: String) = interactor.onInsertRss(url)
 
-    override fun openContentMessage(isOpen: Boolean, message: String) {
-        contentMessageView.visibility = if (isOpen) View.VISIBLE else View.GONE
-        contentMessageView.text = message
+    override fun openEmptyContentMessage(isOpen: Boolean) {
         pagerLayout.visibility = if (isOpen) View.GONE else View.VISIBLE
         tabsLayout.visibility = if (isOpen) View.GONE else View.VISIBLE
+        val res = if (isOpen) View.VISIBLE else View.GONE
+        contentMessageLayout.visibility = res
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

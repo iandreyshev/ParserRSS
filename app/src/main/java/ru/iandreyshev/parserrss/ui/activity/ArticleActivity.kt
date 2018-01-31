@@ -18,7 +18,6 @@ import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.presentation.view.IImageView
 
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.PresenterType
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import java.text.SimpleDateFormat
