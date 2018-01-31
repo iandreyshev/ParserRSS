@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.interactor
 
-open class BaseInteractor(private val output: IInteractorOutput) {
+open class BaseInteractor(private val output: IInteractorOutputPort) {
 
     private var processCount: Int = 0
 
@@ -8,7 +8,7 @@ open class BaseInteractor(private val output: IInteractorOutput) {
         output.onChangeProcessCount(processCount)
     }
 
-    interface IInteractorOutput {
+    interface IInteractorOutputPort {
         fun showMessage(messageId: Int) {}
 
         fun onChangeProcessCount(newCount: Int) {}

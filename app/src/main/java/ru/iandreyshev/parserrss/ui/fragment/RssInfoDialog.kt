@@ -29,6 +29,8 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
 
     @InjectPresenter
     lateinit var presenter: RssInfoPresenter
+    private val interactor
+        get() = presenter.interactor
 
     @ProvidePresenter
     fun provideRssInfoPresenter() = presenter
@@ -38,18 +40,20 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
 
         return AlertDialog.Builder(view.context)
                 .setView(view)
-                .setNeutralButton(R.string.rss_info_open_original_button, { _, _ -> presenter.onOpenOriginal() })
+                .setNeutralButton(R.string.rss_info_open_original_button, { _, _ -> interactor.onOpenOriginal() })
                 .create()
     }
 
-    override fun setInfo(rss: ViewRss) {
-        dialog.titleView.text = rss.title
-        dialog.descriptionView.text = rss.description
+    override fun setInfo(title: String?, description: String?) {
+        dialog.titleView.text = title ?: getString(R.string.rss_info_dialog_default_title)
+        dialog.descriptionView.text = description ?: getString(R.string.rss_info_dialog_default_description)
     }
 
     override fun openInBrowser(url: Uri) {
         startActivity(Intent(Intent.ACTION_VIEW, url))
     }
+
+    override fun close() = dialog.cancel()
 
     override fun showShortToast(message: String) {}
 

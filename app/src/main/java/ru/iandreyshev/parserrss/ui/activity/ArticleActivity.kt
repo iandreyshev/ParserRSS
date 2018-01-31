@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_article.*
 class ArticleActivity : BaseActivity(),
         IArticleView,
         IImageView {
+
     companion object {
         const val ARTICLE_BOUND_KEY = "Article_to_open"
         private const val DEFAULT_ARTICLE_ID: Long = 0
@@ -43,8 +44,13 @@ class ArticleActivity : BaseActivity(),
 
     @InjectPresenter
     lateinit var presenter: ArticlePresenter
-    @InjectPresenter(type = PresenterType.GLOBAL, tag = ImagesLoadPresenter.TAG)
+    @InjectPresenter
     lateinit var imageLoadPresenter: ImagesLoadPresenter
+
+    private val articleInteractor
+        get() = presenter.interactor
+    private val imageInteractor
+        get() = imageLoadPresenter.interactor
 
     @ProvidePresenter
     fun provideArticlePresenter(): ArticlePresenter {
@@ -64,7 +70,7 @@ class ArticleActivity : BaseActivity(),
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             BACK_BUTTON -> closeArticle()
-            OPEN_IN_BROWSER_BUTTON -> presenter.onOpenOriginal()
+            OPEN_IN_BROWSER_BUTTON -> articleInteractor.onOpenOriginal()
         }
 
         return super.onOptionsItemSelected(menuItem)
@@ -74,7 +80,7 @@ class ArticleActivity : BaseActivity(),
         supportActionBar?.title = rss.title
         titleView.text = article.title
         descriptionView.text = article.description
-        imageLoadPresenter.loadImage(article.id)
+        imageInteractor.loadImage(article.id)
         loadDate(article.date)
     }
 

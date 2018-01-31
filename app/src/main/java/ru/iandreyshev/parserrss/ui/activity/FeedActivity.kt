@@ -19,6 +19,7 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener
 import kotlinx.android.synthetic.main.activity_feed.*
 
 import com.arellomobile.mvp.presenter.InjectPresenter
+import ru.iandreyshev.parserrss.interactor.FeedInteractor
 
 class FeedActivity : BaseActivity(),
         IFeedView,
@@ -32,14 +33,16 @@ class FeedActivity : BaseActivity(),
 
         private const val TOOLBAR_SCROLL_ON =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
-                AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
         private const val TOOLBAR_SCROLL_OFF = 0
     }
 
     @InjectPresenter
     lateinit var presenter: FeedPresenter
 
+    private val interactor
+        get() = presenter.interactor
     private lateinit var pagesAdapter: FeedPagesAdapter
     private lateinit var menuInfoButton: MenuItem
     private lateinit var menuDeleteButton: MenuItem
@@ -87,16 +90,16 @@ class FeedActivity : BaseActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             ADD_BUTTON -> openAddingRssDialog()
-            INFO_BUTTON -> presenter.onOpenRssInfo(pagesAdapter.getRss(pagerLayout.currentItem))
-            DELETE_BUTTON -> presenter.onDeleteRss(pagesAdapter.getRss(pagerLayout.currentItem))
+            INFO_BUTTON -> interactor.onOpenRssInfo(pagesAdapter.getRss(pagerLayout.currentItem))
+            DELETE_BUTTON -> interactor.onDeleteRss(pagesAdapter.getRss(pagerLayout.currentItem))
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onArticleClick(articleId: Long) = presenter.onOpenArticle(articleId)
+    override fun onArticleClick(articleId: Long) = interactor.onOpenArticle(articleId)
 
-    override fun addRss(url: String) = presenter.onInsertRss(url)
+    override fun addRss(url: String) = interactor.onInsertRss(url)
 
     override fun openContentMessage(isOpen: Boolean, message: String) {
         contentMessageView.visibility = if (isOpen) View.VISIBLE else View.GONE
@@ -121,6 +124,7 @@ class FeedActivity : BaseActivity(),
     private fun initToolbar() {
         setSupportActionBar(toolbar)
         startProgressBar(false)
+        setToolbarScrollable(false)
     }
 
     private fun initTabsView() {

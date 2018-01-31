@@ -1,13 +1,12 @@
 package ru.iandreyshev.parserrss.presentation.view
 
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
+import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
-interface IRssInfoView : IBaseView {
-    @StateStrategyType(SkipStrategy::class)
-    fun close()
+import ru.iandreyshev.parserrss.models.rss.ViewRss
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
-    fun setInfo(title: String?, description: String?)
+interface IItemsListView : IBaseView {
+
 }

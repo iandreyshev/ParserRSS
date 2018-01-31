@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.ui.fragment
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -17,18 +16,18 @@ import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPagePresenter
-import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter
 import ru.iandreyshev.parserrss.presentation.view.IFeedPageView
-import ru.iandreyshev.parserrss.presentation.view.IImageView
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.view_feed_list.*
+import ru.iandreyshev.parserrss.presentation.presenter.ItemsIconLoadPresenter
+import ru.iandreyshev.parserrss.presentation.view.IItemsListView
 import java.lang.ref.WeakReference
 
 class FeedPageFragment : BaseFragment(),
         IFeedPageView,
-        IImageView {
+        IItemsListView {
 
     companion object {
         private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15
@@ -43,9 +42,13 @@ class FeedPageFragment : BaseFragment(),
 
     @InjectPresenter
     lateinit var presenter: FeedPagePresenter
-    @InjectPresenter(type = PresenterType.GLOBAL, tag = ImagesLoadPresenter.TAG)
-    lateinit var imageLoader: ImagesLoadPresenter
+    @InjectPresenter(type = PresenterType.GLOBAL, tag = ItemsIconLoadPresenter.TAG)
+    lateinit var iconsLoadPresenter: ItemsIconLoadPresenter
 
+    private val interactor
+        get() = presenter.interactor
+    private val itemsIconsInteractor
+        get() = iconsLoadPresenter.interactor
     private val listAdapter: FeedListAdapter = FeedListAdapter()
 
     @ProvidePresenter
@@ -63,7 +66,7 @@ class FeedPageFragment : BaseFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListView()
-        refreshLayout.setOnRefreshListener({ presenter.onUpdate() })
+        refreshLayout.setOnRefreshListener({ interactor.onUpdate() })
     }
 
     override fun openMessage(isOpen: Boolean, message: String) {
@@ -81,10 +84,8 @@ class FeedPageFragment : BaseFragment(),
     }
 
     override fun updateImages(isWithoutQueue: Boolean) {
-        listAdapter.forEach { imageLoader.getIconForItem(it, isWithoutQueue) }
+        listAdapter.forEach { itemsIconsInteractor.getIconForItem(it, isWithoutQueue) }
     }
-
-    override fun insertImage(bitmap: Bitmap) {}
 
     private fun initListView() {
         itemsList.adapter = listAdapter
@@ -96,7 +97,7 @@ class FeedPageFragment : BaseFragment(),
     }
 
     class ScrollListener(fragment: FeedPageFragment) : RecyclerView.OnScrollListener() {
-        val fragment = WeakReference(fragment)
+        private val fragment = WeakReference(fragment)
 
         override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
             if (Math.abs(dy) <= MAX_SCROLL_SPEED_TO_UPDATE_IMAGES) {

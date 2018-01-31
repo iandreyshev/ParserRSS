@@ -12,24 +12,13 @@ import ru.iandreyshev.parserrss.interactor.FeedInteractor
 @InjectViewState
 class FeedPresenter : MvpPresenter<IFeedView>() {
 
-    private val interactor = FeedInteractor(FeedInteractorOutput())
+    val interactor = FeedInteractor(FeedInteractorOutput())
 
-    fun onInsertRss(url: String) = interactor.insertRss(url)
+    override fun onFirstViewAttach() = interactor.onLoadFromDatabase()
 
-    fun onDeleteRss(rss: ViewRss?) = interactor.deleteRss(rss)
+    private inner class FeedInteractorOutput : FeedInteractor.IOutputPort {
+        override fun openArticle(articleId: Long) = viewState.openArticle(articleId)
 
-    fun onOpenArticle(articleId: Long) = viewState.openArticle(articleId)
-
-    fun onOpenRssInfo(rss: ViewRss?) = interactor.openRssInfo(rss)
-
-    override fun onFirstViewAttach() {
-        super.onFirstViewAttach()
-        viewState.setToolbarScrollable(false)
-        viewState.startProgressBar(false)
-        interactor.loadFromDatabase()
-    }
-
-    private inner class FeedInteractorOutput : FeedInteractor.IOutput {
         override fun insertRss(rss: ViewRss) = viewState.insertRss(rss)
 
         override fun removeRss(rss: ViewRss) = viewState.removeRss(rss)
@@ -43,6 +32,8 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
             viewState.openContentMessage(newCount <= 0, App.getStr(R.string.feed_list_empty))
         }
 
-        override fun onChangeProcessCount(newCount: Int) = viewState.startProgressBar(newCount > 0)
+        override fun onChangeProcessCount(newCount: Int) {
+            viewState.startProgressBar(newCount > 0)
+        }
     }
 }
