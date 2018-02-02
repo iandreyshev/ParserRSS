@@ -9,8 +9,8 @@ import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
 class GetAllRssFromDbTask private constructor(
-        private val listener: IEventListener,
-        private val filter: IArticlesFilter) : Task<Any, ViewRss, Any?>(listener) {
+        private val _listener: IEventListener,
+        private val _filter: IArticlesFilter) : Task<Any, ViewRss, Any?>(_listener) {
 
     companion object {
         private val TAG = GetAllRssFromDbTask::class.java.name
@@ -24,13 +24,11 @@ class GetAllRssFromDbTask private constructor(
         val result = ArrayList<ViewRss>()
 
         try {
-            val idList = App.database.rssIdList
-
-            idList.forEach { id ->
+            App.database.getRssIdList().forEach { id ->
                 val rss = App.database.getRssById(id)
 
                 if (rss != null) {
-                    rss.articles = filter.sort(rss.articles)
+                    rss.articles = _filter.sort(rss.articles)
                     publishProgress(ViewRss(rss))
                 }
             }
@@ -43,7 +41,7 @@ class GetAllRssFromDbTask private constructor(
 
     override fun onProgressUpdate(vararg values: ViewRss) {
         super.onProgressUpdate(*values)
-        listener.onLoad(values[0])
+        _listener.onLoad(values[0])
     }
 
     interface IEventListener : ITaskListener<Any, ViewRss, Any?> {

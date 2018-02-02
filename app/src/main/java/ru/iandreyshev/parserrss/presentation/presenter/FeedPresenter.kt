@@ -1,13 +1,14 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
-import android.util.Log
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
+import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.interactor.FeedInteractor
+import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 
 @InjectViewState
 class FeedPresenter : MvpPresenter<IFeedView>() {
@@ -23,18 +24,28 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
 
         override fun removeRss(rss: ViewRss) = viewState.removeRss(rss)
 
-        override fun showMessage(messageId: Int) = viewState.showShortToast(App.getStr(messageId))
+        override fun showMessage(messageId: Int) = viewState.showToast(App.getStr(messageId))
 
         override fun openRssInfo(rss: ViewRss) = viewState.openRssInfo(rss)
 
-        override fun onChangeRssCount(newCount: Int) {
+        override fun onChangeRssCount(newCount: Int, isFull: Boolean) {
             viewState.setToolbarScrollable(newCount > 0)
             viewState.openEmptyContentMessage(newCount <= 0)
-            Log.e("Tag", newCount.toString())
+            viewState.openToolbarTitle(newCount <= 0)
+
+            viewState.enableAddButton(!isFull)
+            viewState.enableDeleteButton(newCount > 0)
+            viewState.enableInfoButton(newCount > 0)
+
+            if (isFull) {
+                toast(R.string.feed_is_full)
+            }
         }
 
         override fun onChangeProcessCount(newCount: Int) {
             viewState.startProgressBar(newCount > 0)
         }
+
+        override fun openInternetPermissionDialog() = viewState.openInternetPermissionDialog()
     }
 }

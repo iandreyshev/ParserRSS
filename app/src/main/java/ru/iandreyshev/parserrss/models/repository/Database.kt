@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.repository
 
+import android.graphics.Bitmap
 import java.util.ArrayList
 import java.util.HashSet
 
@@ -15,45 +16,37 @@ class Database(private val boxStore: BoxStore) {
         }
     }
 
-    private val rssBox = boxStore.boxFor(Rss::class.java)
-    private val articleBox = boxStore.boxFor(Article::class.java)
-    private val articleImageBox = boxStore.boxFor(ArticleImage::class.java)
+    private val _rssBox = boxStore.boxFor(Rss::class.java)
+    private val _articleBox = boxStore.boxFor(Article::class.java)
+    private val _articleImageBox = boxStore.boxFor(ArticleImage::class.java)
 
-    val rssIdList: LongArray
-        @Throws(Exception::class)
-        get() = boxStore.callInTx {
-            rssBox.query()
-                    .notNull(Rss_.id)
-                    .build()
-                    .findIds()
-        }
+    fun getRssIdList(): LongArray = boxStore.callInTx {
+        _rssBox.query()
+                .notNull(Rss_.id)
+                .build()
+                .findIds()
+    }
 
     fun getRssById(id: Long): Rss? {
         val rss = getRss(id) ?: return null
-
         rss.articles = getArticlesByRssId(rss.id)
 
         return rss
     }
 
-    fun getArticleById(id: Long): Article? {
-        return getArticle(id)
-    }
+    fun getArticleById(id: Long): Article? = getArticle(id)
 
-    fun isRssWithUrlExist(url: String): Boolean {
-        return !rssBox.find(Rss_.url, url).isEmpty()
-    }
+    fun isRssWithUrlExist(url: String): Boolean = !_rssBox.find(Rss_.url, url).isEmpty()
 
-    @Throws(Exception::class)
     fun putRssIfSameUrlNotExist(newRss: Rss): Boolean {
         return boxStore.callInTx {
-            val rssWithSameUrl = rssBox.query()
+            val rssWithSameUrl = _rssBox.query()
                     .equal(Rss_.url, newRss.url)
                     .build()
                     .findFirst()
 
             if (rssWithSameUrl == null) {
-                rssBox.put(newRss)
+                _rssBox.put(newRss)
                 putArticles(newRss)
                 true
             } else {
@@ -62,10 +55,9 @@ class Database(private val boxStore: BoxStore) {
         }
     }
 
-    @Throws(Exception::class)
     fun updateRssWithSameUrl(newRss: Rss): Boolean {
         return boxStore.callInTx {
-            val rssWithSameUrl = rssBox.query()
+            val rssWithSameUrl = _rssBox.query()
                     .equal(Rss_.url, newRss.url)
                     .build()
                     .findFirst()
@@ -74,25 +66,23 @@ class Database(private val boxStore: BoxStore) {
                 false
             } else {
                 newRss.id = rssWithSameUrl.id
-                rssBox.put(newRss)
+                _rssBox.put(newRss)
                 putArticles(newRss)
                 true
             }
         }
     }
 
-    fun getRssTitle(id: Long): String {
-        return rssBox.get(id).title
-    }
+    fun getRssTitle(id: Long): String = _rssBox.get(id).title
 
     fun removeRssById(id: Long) {
-        if (INVALID_IDS.contains(id)) {
+        if (id in INVALID_IDS) {
             return
         }
 
         boxStore.runInTx {
-            rssBox.remove(id)
-            articleBox.query()
+            _rssBox.remove(id)
+            _articleBox.query()
                     .equal(Article_.rssId, id)
                     .build()
                     .findIds()
@@ -101,21 +91,22 @@ class Database(private val boxStore: BoxStore) {
     }
 
     fun getArticleImageByArticle(articleId: Long): ArticleImage? {
-        return articleImageBox.query()
+        return _articleImageBox.query()
                 .equal(ArticleImage_.articleId, articleId)
                 .build()
                 .findFirst()
     }
 
-    fun putArticleImage(image: ArticleImage): Boolean {
+    fun putArticleImage(articleId: Long, imageBitmap: Bitmap): Boolean {
         return boxStore.callInTx {
-            val isArticleExist = articleBox.query()
-                    .equal(Article_.id, image.articleId)
+            val record = ArticleImage(articleId = articleId, bitmap = imageBitmap)
+            val isArticleExist = _articleBox.query()
+                    .equal(Article_.id, articleId)
                     .build()
                     .findFirst()
 
             if (isArticleExist != null) {
-                articleImageBox.put(image)
+                _articleImageBox.put(record)
             }
 
             isArticleExist != null
@@ -130,24 +121,22 @@ class Database(private val boxStore: BoxStore) {
 
         currentArticles.forEach {
             if (!newArticles.remove(it)) {
-                articleBox.remove(it.id)
-                articleImageBox.remove(it.id)
+                _articleBox.remove(it.id)
+                _articleImageBox.remove(it.id)
             }
         }
 
-        articleBox.put(newArticles)
+        _articleBox.put(newArticles)
         rss.articles = getArticlesByRssId(rss.id)
     }
 
-    private fun bindArticles(rss: Rss) {
-        rss.articles.forEach { it.rssId = rss.id }
-    }
+    private fun bindArticles(rss: Rss) = rss.articles.forEach { it.rssId = rss.id }
 
     private fun getArticlesByRssId(id: Long): MutableList<Article> {
-        return if (INVALID_IDS.contains(id)) {
+        return if (id in INVALID_IDS) {
             ArrayList()
         } else {
-            articleBox.query()
+            _articleBox.query()
                     .equal(Article_.rssId, id)
                     .build()
                     .find()
@@ -155,17 +144,17 @@ class Database(private val boxStore: BoxStore) {
     }
 
     private fun getRss(id: Long): Rss? {
-        return if (INVALID_IDS.contains(id)) null else rssBox.get(id)
+        return if (id in INVALID_IDS) null else _rssBox.get(id)
     }
 
     private fun getArticle(id: Long): Article? {
-        return if (INVALID_IDS.contains(id)) null else articleBox.get(id)
+        return if (id in INVALID_IDS) null else _articleBox.get(id)
     }
 
     private fun removeArticle(id: Long) {
         boxStore.runInTx {
-            articleBox.remove(id)
-            articleImageBox.query()
+            _articleBox.remove(id)
+            _articleImageBox.query()
                     .equal(ArticleImage_.articleId, id)
                     .build()
                     .remove()

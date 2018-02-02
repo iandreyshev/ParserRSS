@@ -6,8 +6,8 @@ import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 abstract class GetRssFromNetTask(
-        protected open val listener: IEventListener,
-        protected val url: String) : Task<String, Void, Rss>(listener) {
+        private val _listener: IEventListener,
+        url: String) : Task<String, Void, Rss>(_listener) {
 
     companion object {
         private const val MAX_ARTICLES_COUNT = 64
@@ -20,7 +20,7 @@ abstract class GetRssFromNetTask(
         return when (requestHandler.state != HttpRequestHandler.State.BadUrl) {
             true -> true
             false -> {
-                setResultEvent { listener.onInvalidUrl() }
+                setResultEvent { _listener.onInvalidUrl() }
                 false
             }
         }
@@ -32,7 +32,7 @@ abstract class GetRssFromNetTask(
         return when (requestHandler.state == HttpRequestHandler.State.Success) {
             true -> true
             false -> {
-                setResultEvent { listener.onNetError(requestHandler) }
+                setResultEvent { _listener.onNetError(requestHandler) }
                 false
             }
         }
@@ -43,7 +43,7 @@ abstract class GetRssFromNetTask(
 
         return when (rss) {
             null -> {
-                setResultEvent { listener.onParserError() }
+                setResultEvent { _listener.onParserError() }
                 false
             }
             else -> {

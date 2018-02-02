@@ -34,4 +34,19 @@ interface IFeedView : IBaseView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun setToolbarScrollable(isScrollable: Boolean)
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun enableAddButton(isEnabled: Boolean)
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun enableInfoButton(isEnabled: Boolean)
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun enableDeleteButton(isEnabled: Boolean)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun openInternetPermissionDialog()
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun openToolbarTitle(isOpen: Boolean)
 }

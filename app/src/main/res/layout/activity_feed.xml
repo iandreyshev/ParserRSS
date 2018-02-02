@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/commonLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,29 +22,58 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/toolBarBackground"
             app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetEnd="0dp"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/ToolbarStyle.TitleTextAppearance">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="@style/ActivityFeed.ProgressBar"
-                android:layout_width="wrap_content"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:theme="@style/ToolbarStyle.ProgressBar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/titleView"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:gravity="center_vertical"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Title" />
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tabsLayout"
+                    style="@style/FeedTabsStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/progressBar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tabGravity="fill"
+                    app:tabMode="scrollable" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@style/ActivityFeed.ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:theme="@style/ToolbarStyle.ProgressBar"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.v7.widget.Toolbar>
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabsLayout"
-            style="@style/FeedTabsStyle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:tabGravity="fill"
-            app:tabMode="scrollable" />
 
     </android.support.design.widget.AppBarLayout>
 

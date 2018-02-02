@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.PresenterType
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import ru.iandreyshev.parserrss.R
@@ -21,8 +20,8 @@ import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.view_feed_list.*
-import ru.iandreyshev.parserrss.presentation.presenter.ItemsIconLoadPresenter
 import ru.iandreyshev.parserrss.presentation.view.IItemsListView
+import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import java.lang.ref.WeakReference
 
 class FeedPageFragment : BaseFragment(),
@@ -42,14 +41,10 @@ class FeedPageFragment : BaseFragment(),
 
     @InjectPresenter
     lateinit var presenter: FeedPagePresenter
-    @InjectPresenter(type = PresenterType.GLOBAL, tag = ItemsIconLoadPresenter.TAG)
-    lateinit var iconsLoadPresenter: ItemsIconLoadPresenter
 
-    private val interactor
+    private val _interactor
         get() = presenter.interactor
-    private val itemsIconLoadInteractor
-        get() = iconsLoadPresenter.interactor
-    private val listAdapter: FeedListAdapter = FeedListAdapter()
+    private val _listAdapter: FeedListAdapter = FeedListAdapter()
 
     @ProvidePresenter
     fun provideFeedPagePresenter() = presenter
@@ -58,20 +53,17 @@ class FeedPageFragment : BaseFragment(),
         return inflater.inflate(R.layout.view_feed_list, viewGroup, false)
     }
 
-    override fun onResume() {
-        super.onResume()
-        updateImages(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListView()
-        refreshLayout.setOnRefreshListener({ interactor.onUpdate() })
+        refreshLayout.setOnRefreshListener({
+            _interactor.onUpdate()
+        })
     }
 
     override fun openEmptyContentMessage(isOpen: Boolean) {
-        itemsList.visibility = if (isOpen) View.GONE else View.VISIBLE
-        contentMessageLayout.visibility = if (isOpen) View.VISIBLE else View.GONE
+        itemsList.setVisibility(!isOpen)
+        contentMessageLayout.setVisibility(isOpen)
     }
 
     override fun startUpdate(isStart: Boolean) {
@@ -79,34 +71,35 @@ class FeedPageFragment : BaseFragment(),
     }
 
     override fun setArticles(newArticles: List<ViewArticle>) {
-        listAdapter.setArticles(newArticles)
-        itemsIconLoadInteractor.clearQueue()
+        _listAdapter.setArticles(newArticles)
+        itemsList.adapter = null
+        itemsList.adapter = _listAdapter
     }
 
-    override fun updateImages(isWithoutQueue: Boolean) {
-        listAdapter.forEach { itemsIconLoadInteractor.getIconForItem(it, isWithoutQueue) }
+    override fun updateImages() {
+        _listAdapter.forEach { _interactor.load(it) }
     }
 
     private fun initListView() {
-        itemsList.adapter = listAdapter
+        itemsList.adapter = _listAdapter
         itemsList.layoutManager = LinearLayoutManager(context)
         itemsList.addOnScrollListener(ScrollListener(this))
         itemsList.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
 
-        listAdapter.setArticleClickListener(context as IOnArticleClickListener)
+        _listAdapter.setArticleClickListener(context as IOnArticleClickListener)
     }
 
     class ScrollListener(fragment: FeedPageFragment) : RecyclerView.OnScrollListener() {
-        private val fragment = WeakReference(fragment)
+        private val _fragment = WeakReference(fragment)
 
         override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
             if (Math.abs(dy) <= MAX_SCROLL_SPEED_TO_UPDATE_IMAGES) {
-                fragment.get()?.updateImages(false)
+                _fragment.get()?.updateImages()
             }
         }
 
         override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-            fragment.get()?.updateImages(false)
+            _fragment.get()?.updateImages()
         }
     }
 }

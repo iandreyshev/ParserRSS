@@ -2,10 +2,10 @@ package ru.iandreyshev.parserrss.ui.adapter
 
 import android.graphics.Bitmap
 
-interface IFeedItem {
-    val isImageLoaded: Boolean
-
+interface IItemIcon {
     val id: Long
+
+    val isLoaded: Boolean
 
     fun updateImage(bitmap: Bitmap)
 }

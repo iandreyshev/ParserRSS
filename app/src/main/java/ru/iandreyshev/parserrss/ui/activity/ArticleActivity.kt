@@ -10,31 +10,25 @@ import android.view.View
 
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
-import ru.iandreyshev.parserrss.presentation.presenter.ImagesLoadPresenter
 import ru.iandreyshev.parserrss.presentation.view.IArticleView
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.presentation.view.IImageView
 
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
-import java.text.SimpleDateFormat
-import java.util.Locale
-
 import kotlinx.android.synthetic.main.activity_article.*
+import ru.iandreyshev.parserrss.ui.extention.dateString
+import ru.iandreyshev.parserrss.ui.extention.setVisibility
 
-class ArticleActivity : BaseActivity(),
-        IArticleView,
-        IImageView {
+class ArticleActivity : BaseActivity(), IArticleView {
 
     companion object {
         const val ARTICLE_BOUND_KEY = "Article_to_open"
         private const val DEFAULT_ARTICLE_ID: Long = 0
         private const val BACK_BUTTON = android.R.id.home
         private const val OPEN_IN_BROWSER_BUTTON = R.id.article_option_open_in_browser
-        private val DATE_FORMAT = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH)
 
         fun getIntent(context: Context): Intent {
             return Intent(context, ArticleActivity::class.java)
@@ -43,13 +37,9 @@ class ArticleActivity : BaseActivity(),
 
     @InjectPresenter
     lateinit var presenter: ArticlePresenter
-    @InjectPresenter
-    lateinit var imageLoadPresenter: ImagesLoadPresenter
 
-    private val articleInteractor
+    private val _interactor
         get() = presenter.interactor
-    private val imageInteractor
-        get() = imageLoadPresenter.interactor
 
     @ProvidePresenter
     fun provideArticlePresenter(): ArticlePresenter {
@@ -69,17 +59,16 @@ class ArticleActivity : BaseActivity(),
     override fun onOptionsItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             BACK_BUTTON -> closeArticle()
-            OPEN_IN_BROWSER_BUTTON -> articleInteractor.onOpenOriginal()
+            OPEN_IN_BROWSER_BUTTON -> _interactor.onOpenOriginal()
         }
 
         return super.onOptionsItemSelected(menuItem)
     }
 
     override fun initArticle(rss: ViewRss, article: ViewArticle) {
-        supportActionBar?.title = rss.title
+        toolbarTitle.text = rss.title
         titleView.text = article.title
         descriptionView.text = article.description
-        imageInteractor.loadImage(article.id)
         loadDate(article.date)
     }
 
@@ -89,6 +78,17 @@ class ArticleActivity : BaseActivity(),
 
         initToolbar()
         initImageView()
+    }
+
+    override fun setImage(imageBitmap: Bitmap) {
+        imageView.visibility = View.VISIBLE
+        imageView.setImageBitmap(imageBitmap)
+    }
+
+    override fun startProgressBar(isStart: Boolean) {
+        progressBar.setVisibility(isStart)
+        toolbarContent.invalidate()
+        toolbarContent.requestLayout()
     }
 
     private fun initToolbar() {
@@ -107,12 +107,7 @@ class ArticleActivity : BaseActivity(),
     }
 
     private fun loadDate(date: Long?) {
-        dateView.visibility = if (date == null) View.GONE else View.VISIBLE
-        dateView.text = DATE_FORMAT.format(date)
-    }
-
-    override fun insertImage(bitmap: Bitmap) {
-        imageView.visibility = View.VISIBLE
-        imageView.setImageBitmap(bitmap)
+        dateView.setVisibility(date != null)
+        dateView.text = date?.dateString
     }
 }

@@ -2,11 +2,10 @@ package ru.iandreyshev.parserrss.ui.adapter
 
 import android.graphics.Bitmap
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import kotlinx.android.synthetic.main.view_feed_item.view.*
 
 import java.lang.ref.WeakReference
@@ -19,18 +18,19 @@ import ru.iandreyshev.parserrss.ui.extention.dateString
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
-    private val itemsOnWindow: HashSet<ListItem> = HashSet()
-    private val articles = ArrayList<ViewArticle>()
-    private var articleClickListener: WeakReference<IOnArticleClickListener>? = null
+
+    private val _itemsOnWindow: HashSet<ListItem> = HashSet()
+    private val _articles = ArrayList<ViewArticle>()
+    private var _articleClickListener: WeakReference<IOnArticleClickListener>? = null
 
     fun setArticles(newItems: List<ViewArticle>) {
-        articles.clear()
-        articles.addAll(newItems)
+        _articles.clear()
+        _articles.addAll(newItems)
         notifyDataSetChanged()
     }
 
     fun setArticleClickListener(listener: IOnArticleClickListener) {
-        articleClickListener = WeakReference(listener)
+        _articleClickListener = WeakReference(listener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItem {
@@ -41,58 +41,64 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
     }
 
     override fun onBindViewHolder(item: ListItem, position: Int) {
-        item.setContent(articles[position])
-        item.clickListener = articleClickListener
+        item.bind(_articles[position])
+        item.setClickListener(_articleClickListener)
     }
 
     override fun onViewAttachedToWindow(item: ListItem) {
-        itemsOnWindow.add(item)
+        _itemsOnWindow.add(item)
     }
 
     override fun onViewDetachedFromWindow(item: ListItem) {
-        itemsOnWindow.remove(item)
+        _itemsOnWindow.remove(item)
     }
 
     override fun getItemCount(): Int {
-        return articles.size
+        return _articles.size
     }
 
     fun forEach(action: (ListItem) -> Unit) {
-        itemsOnWindow.forEach { it -> action(it) }
+        _itemsOnWindow.forEach { it -> action(it) }
     }
 
     class ListItem constructor(view: View) : RecyclerView.ViewHolder(view),
-            IFeedItem,
+            IItemIcon,
             View.OnClickListener {
 
-        override var id: Long = 0
-        override var isImageLoaded: Boolean = false
-        var clickListener: WeakReference<IOnArticleClickListener>? = null
+        override val id: Long
+            get() = _id
+        override val isLoaded: Boolean
+            get() = _isImageLoaded
 
-        private var title: TextView = view.titleView
-        private var description: TextView = view.descriptionView
-        private var image: ImageView = view.imageView
-        private var date: TextView = view.dateView
+        private var _id: Long = 0
+        private var _isImageLoaded: Boolean = false
+        private var _clickListener: WeakReference<IOnArticleClickListener>? = null
 
         override fun updateImage(bitmap: Bitmap) {
-            isImageLoaded = true
-            image.setImageBitmap(bitmap)
+            _isImageLoaded = true
+            itemView.imageView.setImageBitmap(bitmap)
         }
 
-        fun setContent(content: ViewArticle) {
-            id = content.id
-            title.text = content.title
-            description.text = content.description
+        fun bind(content: ViewArticle) {
+            Log.e("Holder bind ", content.id.toString())
+            _id = content.id
+            _isImageLoaded = false
 
-            image.setImageResource(R.drawable.ic_feed_item)
-            date.text = content.date?.dateString
+            itemView.titleView.text = content.title
+            itemView.descriptionView.text = content.description
+
+            itemView.imageView.setImageResource(R.drawable.ic_feed_item)
+            itemView.dateView.text = content.date?.dateString
 
             itemView.setOnClickListener(this)
-            isImageLoaded = false
+        }
+
+        fun setClickListener(listener: WeakReference<IOnArticleClickListener>?) {
+            _clickListener = listener
         }
 
         override fun onClick(view: View) {
-            clickListener?.get()?.onArticleClick(id)
+            _clickListener?.get()?.onArticleClick(_id)
         }
     }
 }

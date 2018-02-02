@@ -14,22 +14,24 @@ import ru.iandreyshev.parserrss.ui.extention.tabTitle
 import ru.iandreyshev.parserrss.ui.fragment.FeedPageFragment
 
 class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter(manager) {
-    private val rssList = ArrayList<ViewRss>()
+
+    private val _rssList = ArrayList<ViewRss>()
+
     val isEmpty
-        get() = rssList.isEmpty()
+        get() = _rssList.isEmpty()
 
     fun insert(rss: ViewRss) {
-        rssList.add(rss)
+        _rssList.add(rss)
         notifyDataSetChanged()
     }
 
     fun remove(rss: ViewRss) {
-        rssList.remove(rss)
+        _rssList.remove(rss)
         notifyDataSetChanged()
     }
 
     fun getRss(position: Int): ViewRss? {
-        return rssList.getOrNull(position)
+        return _rssList.getOrNull(position)
     }
 
     override fun getItem(position: Int): Fragment {
@@ -42,11 +44,11 @@ class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter
     }
 
     override fun getItemId(position: Int): Long {
-        return rssList.getOrNull(position)?.id ?: 0
+        return _rssList.getOrNull(position)?.id ?: 0
     }
 
     override fun getCount(): Int {
-        return rssList.size
+        return _rssList.size
     }
 
     override fun getPageTitle(position: Int): CharSequence {
@@ -54,7 +56,7 @@ class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter
     }
 
     override fun getItemPosition(item: Any): Int {
-        val position = rssList.indexOf(item)
+        val position = _rssList.indexOf(item)
 
         return if (position < 0) PagerAdapter.POSITION_NONE else position
     }

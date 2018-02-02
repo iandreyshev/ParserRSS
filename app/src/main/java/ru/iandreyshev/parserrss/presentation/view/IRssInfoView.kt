@@ -5,9 +5,12 @@ import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
 interface IRssInfoView : IBaseView {
-    @StateStrategyType(SkipStrategy::class)
-    fun close()
-
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun setInfo(title: String?, description: String?)
+
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun setOpenOriginalEnabled(isEnabled: Boolean)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun close()
 }

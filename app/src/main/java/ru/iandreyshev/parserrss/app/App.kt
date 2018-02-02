@@ -13,21 +13,21 @@ class App : Application() {
     companion object {
         private const val DEFAULT_STRING = ""
 
-        private lateinit var context: WeakReference<Context>
-        private lateinit var boxStore: BoxStore
+        private lateinit var _context: WeakReference<Context>
+        private lateinit var _boxStore: BoxStore
 
         val database: Database
-            get() = Database(boxStore)
+            get() = Database(_boxStore)
 
         fun getStr(id: Int): String {
-            return context.get()?.getString(id) ?: DEFAULT_STRING
+            return _context.get()?.getString(id) ?: DEFAULT_STRING
         }
     }
 
     override fun onCreate() {
         super.onCreate()
 
-        context = WeakReference(this)
-        boxStore = MyObjectBox.builder().androidContext(this).build()
+        _context = WeakReference(this)
+        _boxStore = MyObjectBox.builder().androidContext(this).build()
     }
 }

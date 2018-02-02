@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
@@ -14,44 +13,48 @@ import ru.iandreyshev.parserrss.ui.adapter.FeedPagesAdapter
 import ru.iandreyshev.parserrss.ui.fragment.AddRssDialog
 import ru.iandreyshev.parserrss.ui.fragment.RssInfoDialog
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
-import ru.iandreyshev.parserrss.ui.listeners.IOnSubmitAddRssListener
 
 import kotlinx.android.synthetic.main.activity_feed.*
 
 import com.arellomobile.mvp.presenter.InjectPresenter
+import ru.iandreyshev.parserrss.ui.extention.setVisibility
+import ru.iandreyshev.parserrss.ui.fragment.InternetPermissionDialog
 
 class FeedActivity : BaseActivity(),
         IFeedView,
         IOnArticleClickListener,
-        IOnSubmitAddRssListener {
+        AddRssDialog.IOnSubmitListener,
+        InternetPermissionDialog.IOnOpenSettingsListener {
 
     companion object {
         private const val ADD_BUTTON = R.id.feed_options_add
         private const val INFO_BUTTON = R.id.feed_options_info
         private const val DELETE_BUTTON = R.id.feed_options_delete
 
+        private const val TOOLBAR_SCROLL_OFF = 0
         private const val TOOLBAR_SCROLL_ON =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
-        private const val TOOLBAR_SCROLL_OFF = 0
+                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
+                AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
     }
 
     @InjectPresenter
     lateinit var presenter: FeedPresenter
 
-    private val interactor
+    private val _interactor
         get() = presenter.interactor
-    private lateinit var pagesAdapter: FeedPagesAdapter
-    private lateinit var menuInfoButton: MenuItem
-    private lateinit var menuDeleteButton: MenuItem
+    private lateinit var _pagesAdapter: FeedPagesAdapter
+    private var _menu: Menu? = null
+    private var _isAddButtonEnabled = true
+    private var _isInfoButtonEnabled = true
+    private var _isDeleteButtonEnabled = true
 
-    override fun insertRss(rss: ViewRss) = pagesAdapter.insert(rss)
+    override fun insertRss(rss: ViewRss) = _pagesAdapter.insert(rss)
 
-    override fun removeRss(rss: ViewRss) = pagesAdapter.remove(rss)
+    override fun removeRss(rss: ViewRss) = _pagesAdapter.remove(rss)
 
     override fun openPage(position: Int) {
-        if (!pagesAdapter.isEmpty || position in 0 until pagesAdapter.count) {
+        if (!_pagesAdapter.isEmpty || position in 0 until _pagesAdapter.count) {
             pagerLayout.currentItem = position
         }
     }
@@ -67,44 +70,58 @@ class FeedActivity : BaseActivity(),
 
     override fun openRssInfo(rss: ViewRss) = RssInfoDialog.show(supportFragmentManager, rss)
 
-    override fun startProgressBar(isStart: Boolean) {
-        progressBar.visibility = if (isStart) View.VISIBLE else View.GONE
-    }
+    override fun startProgressBar(isStart: Boolean) = progressBar.setVisibility(isStart)
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_feed_options, menu)
-        menuInfoButton = menu.findItem(INFO_BUTTON)
-        menuDeleteButton = menu.findItem(DELETE_BUTTON)
+
+        this._menu = menu
+        menu.findItem(ADD_BUTTON).isEnabled = _isAddButtonEnabled
+        menu.findItem(INFO_BUTTON).isEnabled = _isInfoButtonEnabled
+        menu.findItem(DELETE_BUTTON).isEnabled = _isDeleteButtonEnabled
 
         return true
-    }
-
-    override fun onMenuOpened(featureId: Int, menu: Menu?): Boolean {
-        menuInfoButton.isEnabled = !pagesAdapter.isEmpty
-        menuDeleteButton.isEnabled = !pagesAdapter.isEmpty
-
-        return super.onMenuOpened(featureId, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             ADD_BUTTON -> openAddingRssDialog()
-            INFO_BUTTON -> interactor.onOpenRssInfo(pagesAdapter.getRss(pagerLayout.currentItem))
-            DELETE_BUTTON -> interactor.onDeleteRss(pagesAdapter.getRss(pagerLayout.currentItem))
+            INFO_BUTTON -> _interactor.onOpenRssInfo(_pagesAdapter.getRss(pagerLayout.currentItem))
+            DELETE_BUTTON -> _interactor.onDeleteRss(_pagesAdapter.getRss(pagerLayout.currentItem))
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onArticleClick(articleId: Long) = interactor.onOpenArticle(articleId)
+    override fun onArticleClick(articleId: Long) = _interactor.onOpenArticle(articleId)
 
-    override fun addRss(url: String) = interactor.onInsertRss(url)
+    override fun addRss(url: String) = _interactor.onInsertRss(url)
+
+    override fun enableAddButton(isEnabled: Boolean) {
+        _isAddButtonEnabled = isEnabled
+        _menu?.findItem(ADD_BUTTON)?.isEnabled = isEnabled
+    }
+
+    override fun enableInfoButton(isEnabled: Boolean) {
+        _isInfoButtonEnabled = isEnabled
+        _menu?.findItem(INFO_BUTTON)?.isEnabled = isEnabled
+    }
+
+    override fun enableDeleteButton(isEnabled: Boolean) {
+        _isDeleteButtonEnabled = isEnabled
+        _menu?.findItem(DELETE_BUTTON)?.isEnabled = isEnabled
+    }
+
+    override fun openToolbarTitle(isOpen: Boolean) {
+        tabsLayout.setVisibility(!isOpen)
+        titleView.setVisibility(isOpen)
+        titleView.text = getString(R.string.feed_toolbar_title)
+    }
 
     override fun openEmptyContentMessage(isOpen: Boolean) {
-        pagerLayout.visibility = if (isOpen) View.GONE else View.VISIBLE
-        tabsLayout.visibility = if (isOpen) View.GONE else View.VISIBLE
-        val res = if (isOpen) View.VISIBLE else View.GONE
-        contentMessageLayout.visibility = res
+        pagerLayout.setVisibility(!isOpen)
+        tabsLayout.setVisibility(!isOpen)
+        contentMessageLayout.setVisibility(isOpen)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,6 +137,10 @@ class FeedActivity : BaseActivity(),
         params.scrollFlags = if (isScrollable) TOOLBAR_SCROLL_ON else TOOLBAR_SCROLL_OFF
     }
 
+    override fun openInternetPermissionDialog() {}
+
+    override fun openSettings() {}
+
     private fun initToolbar() {
         setSupportActionBar(toolbar)
         startProgressBar(false)
@@ -127,8 +148,8 @@ class FeedActivity : BaseActivity(),
     }
 
     private fun initTabsView() {
-        pagesAdapter = FeedPagesAdapter(supportFragmentManager)
-        pagerLayout.adapter = pagesAdapter
+        _pagesAdapter = FeedPagesAdapter(supportFragmentManager)
+        pagerLayout.adapter = _pagesAdapter
         tabsLayout.setupWithViewPager(pagerLayout)
     }
 }

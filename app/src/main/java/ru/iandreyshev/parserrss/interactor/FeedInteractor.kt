@@ -11,16 +11,16 @@ import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
-class FeedInteractor(private val outputPort: IOutputPort) : BaseInteractor(outputPort) {
+class FeedInteractor(private val _outputPort: IOutputPort) : BaseInteractor(_outputPort) {
 
     companion object {
         private const val MAX_RSS_COUNT = 5
     }
 
-    private var rssCount: Int = 0
+    private var _rssCount: Int = 0
 
     init {
-        outputPort.onChangeRssCount(rssCount)
+        updateRssCount()
     }
 
     interface IOutputPort : IInteractorOutputPort {
@@ -30,24 +30,26 @@ class FeedInteractor(private val outputPort: IOutputPort) : BaseInteractor(outpu
 
         fun openRssInfo(rss: ViewRss)
 
-        fun onChangeRssCount(newCount: Int)
+        fun onChangeRssCount(newCount: Int, isFull: Boolean)
 
         fun openArticle(articleId: Long)
+
+        fun openInternetPermissionDialog()
     }
 
     fun onInsertRss(url: String) {
-        when (rssCount >= MAX_RSS_COUNT) {
-            true -> outputPort.showMessage(R.string.feed_is_full)
+        when (_rssCount >= MAX_RSS_COUNT) {
+            true -> _outputPort.showMessage(R.string.feed_is_full)
             else -> {
                 updateProcessCount()
-                InsertNewRssTask.execute(InsertRssFromNetListener(), url, FilterByDate.newInstance())
+                InsertNewRssTask.execute(InsertRssFromNetListener(), url, FilterByDate.newInstance)
             }
         }
     }
 
     fun onDeleteRss(rss: ViewRss?) {
         when (rss) {
-            null -> outputPort.showMessage(R.string.toast_error_deleting_from_db)
+            null -> _outputPort.showMessage(R.string.toast_error_deleting_from_db)
             else -> {
                 updateProcessCount()
                 DeleteRssFromDbTask.execute(DeletingRssListener(), rss)
@@ -57,33 +59,31 @@ class FeedInteractor(private val outputPort: IOutputPort) : BaseInteractor(outpu
 
     fun onOpenRssInfo(rss: ViewRss?) {
         when (rss) {
-            null -> outputPort.showMessage(R.string.toast_rss_not_exist)
-            else -> outputPort.openRssInfo(rss)
+            null -> _outputPort.showMessage(R.string.toast_rss_not_exist)
+            else -> _outputPort.openRssInfo(rss)
         }
     }
 
     fun onLoadFromDatabase() {
         updateProcessCount()
-        GetAllRssFromDbTask.execute(LoadFromDatabaseListener(), FilterByDate.newInstance())
+        GetAllRssFromDbTask.execute(LoadFromDatabaseListener(), FilterByDate.newInstance)
     }
 
-    fun onOpenArticle(articleId: Long) {
-        outputPort.openArticle(articleId)
-    }
+    fun onOpenArticle(articleId: Long) = _outputPort.openArticle(articleId)
 
-    private fun updateRssCount(isAddRss: Boolean = true) {
-        rssCount += if (isAddRss) 1 else -1
-        outputPort.onChangeRssCount(rssCount)
+    private fun updateRssCount(isAddRss: Boolean? = null) {
+        isAddRss?.let { _rssCount += if (it) 1 else -1 }
+        _outputPort.onChangeRssCount(_rssCount, _rssCount >= MAX_RSS_COUNT)
     }
 
     private inner class DeletingRssListener : ITaskListener<ViewRss, Any, ViewRss> {
         override fun onPostExecute(result: ViewRss?) {
             if (result == null) {
-                outputPort.showMessage(R.string.toast_error_deleting_from_db)
+                _outputPort.showMessage(R.string.toast_error_deleting_from_db)
             } else {
                 updateProcessCount(false)
                 updateRssCount(false)
-                outputPort.removeRss(result)
+                _outputPort.removeRss(result)
             }
         }
     }
@@ -91,25 +91,28 @@ class FeedInteractor(private val outputPort: IOutputPort) : BaseInteractor(outpu
     private inner class InsertRssFromNetListener : InsertNewRssTask.IEventListener {
         override fun onPostExecute(result: Rss?) = updateProcessCount(false)
 
-        override fun onInvalidUrl() = outputPort.showMessage(R.string.toast_invalid_url)
+        override fun onInvalidUrl() = _outputPort.showMessage(R.string.toast_invalid_url)
 
-        override fun onParserError() = outputPort.showMessage(R.string.toast_invalid_rss_format)
+        override fun onParserError() = _outputPort.showMessage(R.string.toast_invalid_rss_format)
 
         override fun onNetError(requestResult: IHttpRequestResult) {
-            outputPort.showMessage(when (requestResult.state) {
+            _outputPort.showMessage(when (requestResult.state) {
                 HttpRequestHandler.State.BadConnection -> R.string.toast_bad_connection
-                HttpRequestHandler.State.PermissionDenied -> R.string.toast_internet_permission_denied
+                HttpRequestHandler.State.PermissionDenied -> {
+                    _outputPort.openInternetPermissionDialog()
+                    R.string.toast_internet_permission_denied
+                }
                 else -> return
             })
         }
 
-        override fun onRssAlreadyExist() = outputPort.showMessage(R.string.toast_rss_already_exist)
+        override fun onRssAlreadyExist() = _outputPort.showMessage(R.string.toast_rss_already_exist)
 
-        override fun onDatabaseError() = outputPort.showMessage(R.string.toast_error_saving_to_db)
+        override fun onDatabaseError() = _outputPort.showMessage(R.string.toast_error_saving_to_db)
 
         override fun onSuccess(rss: ViewRss) {
-            outputPort.insertRss(rss)
-            updateRssCount()
+            _outputPort.insertRss(rss)
+            updateRssCount(true)
         }
     }
 
@@ -117,8 +120,8 @@ class FeedInteractor(private val outputPort: IOutputPort) : BaseInteractor(outpu
         override fun onPostExecute(result: Any?) = updateProcessCount(false)
 
         override fun onLoad(rss: ViewRss) {
-            outputPort.insertRss(rss)
-            updateRssCount()
+            _outputPort.insertRss(rss)
+            updateRssCount(true)
         }
     }
 }

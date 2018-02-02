@@ -8,16 +8,16 @@ import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
-class UpdateRssFromNetTask private constructor(
-        override val listener: IEventListener,
-        url: String,
-        private val filter: IArticlesFilter) : GetRssFromNetTask(listener, url) {
+class UpdateRssTask private constructor(
+        private val _listener: IEventListener,
+        private val _url: String,
+        private val _filter: IArticlesFilter) : GetRssFromNetTask(_listener, _url) {
 
     companion object {
-        private val TAG = UpdateRssFromNetTask::class.java.name
+        private val TAG = UpdateRssTask::class.java.name
 
         fun execute(listener: IEventListener, url: String, filter: IArticlesFilter) {
-            UpdateRssFromNetTask(listener, url, filter).executeOnExecutor(Task.EXECUTOR)
+            UpdateRssTask(listener, url, filter).executeOnExecutor(Task.EXECUTOR)
         }
     }
 
@@ -26,8 +26,8 @@ class UpdateRssFromNetTask private constructor(
 
             return false
 
-        } else if (!App.database.isRssWithUrlExist(url)) {
-            setResultEvent { listener.onRssNotExist() }
+        } else if (!App.database.isRssWithUrlExist(_url)) {
+            setResultEvent { _listener.onRssNotExist() }
 
             return false
         }
@@ -38,14 +38,14 @@ class UpdateRssFromNetTask private constructor(
     override fun onSuccess(rss: Rss) {
         try {
             if (App.database.updateRssWithSameUrl(rss)) {
-                rss.articles = filter.sort(rss.articles)
-                setResultEvent { listener.onSuccess(ViewRss(rss).articles) }
+                rss.articles = _filter.sort(rss.articles)
+                setResultEvent { _listener.onSuccess(ViewRss(rss).articles) }
             } else {
-                setResultEvent { listener.onRssNotExist() }
+                setResultEvent { _listener.onRssNotExist() }
             }
         } catch (ex: Exception) {
             Log.e(TAG, Log.getStackTraceString(ex))
-            setResultEvent { listener.onDatabaseError() }
+            setResultEvent { _listener.onDatabaseError() }
         }
     }
 

@@ -59,6 +59,7 @@ dependencies {
     compile "io.objectbox:objectbox-kotlin:$objectboxVersion"
     compile "org.jetbrains.anko:anko-commons:$ankoVersion"
     compile 'eu.inloop:pageradapter:0.1.0'
+    compile 'me.zhanghai.android.materialprogressbar:library:1.4.2'
 
     kapt "com.arello-mobile:moxy-compiler:1.5.3"
     kapt "com.jakewharton:butterknife-compiler:8.4.0"

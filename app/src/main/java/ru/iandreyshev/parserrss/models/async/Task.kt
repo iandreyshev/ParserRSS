@@ -5,31 +5,31 @@ import android.support.annotation.CallSuper
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-abstract class Task<T, U, V>(private val listener: ITaskListener<T, U, V>) : AsyncTask<T, U, V>() {
+abstract class Task<T, U, V>(private val _listener: ITaskListener<T, U, V>) : AsyncTask<T, U, V>() {
     companion object {
         private const val THREADS_COUNT = 25
         val EXECUTOR: Executor = Executors.newFixedThreadPool(THREADS_COUNT)
     }
 
-    private var resultEvent: (() -> Unit)? = null
+    private var _resultEvent: (() -> Unit)? = null
 
     @CallSuper
     override fun onPreExecute() {
-        listener.onPreExecute()
+        _listener.onPreExecute()
     }
 
     @CallSuper
     override fun onProgressUpdate(vararg values: U) {
-        listener.onProgressUpdate(*values)
+        _listener.onProgressUpdate(*values)
     }
 
     @CallSuper
     override fun onPostExecute(result: V) {
-        listener.onPostExecute(result)
-        resultEvent?.invoke()
+        _listener.onPostExecute(result)
+        _resultEvent?.invoke()
     }
 
     fun setResultEvent(resultEvent: (() -> Unit)?) {
-        this.resultEvent = resultEvent
+        _resultEvent = resultEvent
     }
 }

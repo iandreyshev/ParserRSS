@@ -4,9 +4,7 @@ import ru.iandreyshev.parserrss.models.repository.Article
 
 class FilterByDate : IArticlesFilter {
     companion object {
-        fun newInstance(): FilterByDate {
-            return FilterByDate()
-        }
+        val newInstance = FilterByDate()
     }
 
     override fun sort(articles: MutableList<Article>): ArrayList<Article> {

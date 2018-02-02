@@ -14,6 +14,7 @@
     <string name="feed_options_add">Add</string>
     <string name="feed_options_info">Info</string>
     <string name="feed_options_delete">Delete</string>
+    <string name="feed_toolbar_title">Feed</string>
 
     <string name="add_feed_dialog_title">New RSS</string>
     <string name="add_feed_dialog_link_placeholder">URL</string>
@@ -21,9 +22,14 @@
     <string name="add_feed_dialog_cancel_button">Cancel</string>
 
     <string name="rss_info_dialog_default_title">News RSS</string>
-    <string name="rss_info_dialog_default_description">News...</string>
-    <string name="rss_info_dialog_button">OK</string>
+    <string name="rss_info_dialog_default_description">News…</string>
+    <string name="rss_info_dialog_ok_button">OK</string>
     <string name="rss_info_open_original_button">OPEN ORIGINAL</string>
+
+    <string name="internet_permission_denied_dialog_accept">OK</string>
+    <string name="internet_permission_denied_dialog_open_settings">OPEN SETTINGS</string>
+    <string name="internet_permission_denied_dialog_title">Internet permission denied</string>
+    <string name="internet_permission_denied_dialog_description">The application does not have internet access. You can enable access in the settings.</string>
 
     <string name="toast_invalid_url">Invalid url</string>
     <string name="toast_bad_connection">Connection error</string>

@@ -94,11 +94,10 @@ internal class ParserV2 : ParserEngine() {
 
     private fun parseArticleImage(item: Element, article: Article) {
         val resource = item.getChild(ARTICLE_IMG_NODE) ?: return
+        val url = resource.getAttributeValue(ARTICLE_IMG_URL) ?: return
+        val type = resource.getAttributeValue(ARTICLE_IMG_TYPE) ?: return
 
-        val url = resource.getAttributeValue(ARTICLE_IMG_URL)
-        val type = resource.getAttributeValue(ARTICLE_IMG_TYPE)
-
-        if (url == null || !IMAGE_TYPES.contains(type)) {
+        if (type !in IMAGE_TYPES) {
             return
         }
 

@@ -8,9 +8,9 @@ import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
 class InsertNewRssTask private constructor(
-        override val listener: IEventListener,
-        url: String,
-        private val filter: IArticlesFilter) : GetRssFromNetTask(listener, url) {
+        private val _listener: IEventListener,
+        private val _url: String,
+        private val _filter: IArticlesFilter) : GetRssFromNetTask(_listener, _url) {
 
     companion object {
         private val TAG = InsertNewRssTask::class.java.name
@@ -20,16 +20,16 @@ class InsertNewRssTask private constructor(
         }
     }
 
-    private val mDatabase = App.database
+    private val _database = App.database
 
     override fun isUrlValid(): Boolean {
         if (!super.isUrlValid()) {
-            setResultEvent { listener.onInvalidUrl() }
+            setResultEvent { _listener.onInvalidUrl() }
 
             return false
 
-        } else if (mDatabase.isRssWithUrlExist(url)) {
-            setResultEvent { listener.onRssAlreadyExist() }
+        } else if (_database.isRssWithUrlExist(_url)) {
+            setResultEvent { _listener.onRssAlreadyExist() }
 
             return false
         }
@@ -39,15 +39,15 @@ class InsertNewRssTask private constructor(
 
     override fun onSuccess(rss: Rss) {
         try {
-            if (mDatabase.putRssIfSameUrlNotExist(rss)) {
-                rss.articles = filter.sort(rss.articles)
-                setResultEvent { listener.onSuccess(ViewRss(rss)) }
+            if (_database.putRssIfSameUrlNotExist(rss)) {
+                rss.articles = _filter.sort(rss.articles)
+                setResultEvent { _listener.onSuccess(ViewRss(rss)) }
             } else {
-                setResultEvent { listener.onRssAlreadyExist() }
+                setResultEvent { _listener.onRssAlreadyExist() }
             }
         } catch (ex: Exception) {
             Log.e(TAG, Log.getStackTraceString(ex))
-            setResultEvent { listener.onDatabaseError() }
+            setResultEvent { _listener.onDatabaseError() }
         }
     }
 

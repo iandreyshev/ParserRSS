@@ -3,23 +3,22 @@ package ru.iandreyshev.parserrss.models.imageProps
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-
+import ru.iandreyshev.parserrss.models.extention.scaleToSize
 import java.io.ByteArrayOutputStream
 
 class FeedListIconProps : IImageProps {
+
     companion object {
         private val TAG = FeedListIconProps::class.java.name
         private val FORMAT = Bitmap.CompressFormat.JPEG
         private const val QUALITY = 25
-        private const val SIZE_FACTOR = 0.4f
+        private const val MAX_SIZE = 144
 
         val newInstance = FeedListIconProps()
     }
 
-    override fun configure(originImage: Bitmap): Bitmap {
-        val newWidth = (originImage.width * SIZE_FACTOR).toInt()
-        val newHeight = (originImage.height * SIZE_FACTOR).toInt()
-        val copy = Bitmap.createScaledBitmap(originImage, newWidth, newHeight, false)
+    override fun configureToView(originImage: Bitmap): Bitmap {
+        val copy = originImage.scaleToSize(MAX_SIZE)
 
         try {
             ByteArrayOutputStream().use { stream ->
@@ -33,5 +32,9 @@ class FeedListIconProps : IImageProps {
         }
 
         return originImage
+    }
+
+    override fun configureToMemory(originImage: Bitmap): Bitmap {
+        return originImage.scaleToSize(IImageProps.MAX_MEMORY_SIZE)
     }
 }

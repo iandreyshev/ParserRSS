@@ -181,7 +181,7 @@ class DatabaseTest : TestCase() {
         }
 
         for (articleFromDatabase in rssFromDatabase.articles) {
-            Assert.assertTrue(articles.contains(articleFromDatabase))
+            Assert.assertTrue(articleFromDatabase in articles)
         }
     }
 

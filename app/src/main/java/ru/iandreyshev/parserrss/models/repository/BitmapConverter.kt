@@ -16,10 +16,8 @@ internal class BitmapConverter : PropertyConverter<Bitmap, ByteArray> {
     }
 
     override fun convertToEntityProperty(databaseValue: ByteArray?): Bitmap? {
-        return when (databaseValue) {
-            null -> null
-            else -> BitmapFactory.decodeByteArray(databaseValue, 0, databaseValue.size)
-        }
+        databaseValue ?: return null
+        return BitmapFactory.decodeByteArray(databaseValue, 0, databaseValue.size)
     }
 
     override fun convertToDatabaseValue(entityProperty: Bitmap?): ByteArray? {

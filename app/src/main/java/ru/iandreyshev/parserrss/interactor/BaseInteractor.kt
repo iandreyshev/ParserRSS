@@ -1,11 +1,11 @@
 package ru.iandreyshev.parserrss.interactor
 
-open class BaseInteractor(private val output: IInteractorOutputPort) {
+open class BaseInteractor(private val _outputPort: IInteractorOutputPort) {
 
-    private var processCount: Int = 0
+    private var _processCount: Int = 0
 
     init {
-        output.onChangeProcessCount(processCount)
+        _outputPort.onChangeProcessCount(_processCount)
     }
 
     interface IInteractorOutputPort {
@@ -15,12 +15,12 @@ open class BaseInteractor(private val output: IInteractorOutputPort) {
     }
 
     protected fun updateProcessCount(isAddProcess: Boolean = true) {
-        processCount += if (isAddProcess) 1 else -1
+        _processCount += if (isAddProcess) 1 else -1
 
-        if (processCount < 0) {
-            processCount = 0
+        if (_processCount < 0) {
+            _processCount = 0
         }
 
-        output.onChangeProcessCount(processCount)
+        _outputPort.onChangeProcessCount(_processCount)
     }
 }

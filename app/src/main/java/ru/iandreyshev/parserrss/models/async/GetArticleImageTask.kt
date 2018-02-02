@@ -5,30 +5,26 @@ import android.graphics.Bitmap
 import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.models.extention.bitmap
 import ru.iandreyshev.parserrss.models.imageProps.IImageProps
-import ru.iandreyshev.parserrss.models.repository.ArticleImage
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 class GetArticleImageTask private constructor(
-        private val articleId: Long,
+        private val _articleId: Long,
         listener: ITaskListener<Long, Void, Bitmap>,
-        private val imageProps: IImageProps) : Task<Long, Void, Bitmap>(listener) {
+        private val _imageProps: IImageProps) : Task<Long, Void, Bitmap>(listener) {
 
     companion object {
-        private const val MAX_BYTES_COUNT = 1048576 // 1MB
+        private const val MAX_BYTES_COUNT = 1048576L // 1MB
 
-        fun execute(articleId: Long, listener: ITaskListener<Long, Void, Bitmap>, props: IImageProps) {
-            GetArticleImageTask(articleId, listener, props).executeOnExecutor(Task.EXECUTOR)
+        fun execute(id: Long, listener: ITaskListener<Long, Void, Bitmap>, props: IImageProps) {
+            GetArticleImageTask(id, listener, props).executeOnExecutor(Task.EXECUTOR)
         }
     }
 
     override fun doInBackground(vararg articles: Long?): Bitmap? {
-        val article = App.database.getArticleById(articleId)
-        val articleImage = App.database.getArticleImageByArticle(articleId)
-        val bitmap = articleImage?.bitmap
+        val article = App.database.getArticleById(_articleId)
+        val articleImage = App.database.getArticleImageByArticle(_articleId)
 
-        if (bitmap != null) {
-            return imageProps.configure(bitmap)
-        }
+        articleImage?.bitmap?.let { return _imageProps.configureToView(it) }
 
         val imageUrl = article?.imageUrl ?: return null
         val mRequestHandler = HttpRequestHandler(imageUrl)
@@ -39,8 +35,8 @@ class GetArticleImageTask private constructor(
         var imageBitmap = imageBytes?.bitmap
 
         if (requestResult === HttpRequestHandler.State.Success && imageBitmap != null) {
-            App.database.putArticleImage(ArticleImage(articleId = articleId, bitmap = imageBitmap))
-            imageBitmap = imageProps.configure(imageBitmap)
+            App.database.putArticleImage(_articleId, _imageProps.configureToMemory(imageBitmap))
+            imageBitmap = _imageProps.configureToView(imageBitmap)
         }
 
         return imageBitmap

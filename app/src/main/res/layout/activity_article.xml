@@ -20,6 +20,42 @@
             android:background="@color/toolBarBackground"
             app:titleTextAppearance="@style/ToolbarStyle.TitleTextAppearance">
 
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/toolbarContent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/toolbarTitle"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/progressBar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Title" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="@style/ActivityFeed.ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:theme="@style/ToolbarStyle.ProgressBar"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
@@ -80,6 +116,7 @@
                 style="@style/ActivityArticle.DescriptionView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:textAlignment="viewStart"
                 android:textAllCaps="false"
                 android:textColor="@color/primaryDarkText"

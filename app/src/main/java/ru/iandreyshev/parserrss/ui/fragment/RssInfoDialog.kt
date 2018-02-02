@@ -1,8 +1,6 @@
 package ru.iandreyshev.parserrss.ui.fragment
 
 import android.app.Dialog
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
@@ -19,7 +17,10 @@ import ru.iandreyshev.parserrss.presentation.presenter.RssInfoPresenter
 import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
 
 class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
+
     companion object {
+        const val OPEN_ORIGINAL_BUTTON = AlertDialog.BUTTON_NEUTRAL
+
         fun show(fragmentManager: FragmentManager, rss: ViewRss) {
             val dialog = RssInfoDialog()
             dialog.presenter = RssInfoPresenter(rss)
@@ -29,7 +30,8 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
 
     @InjectPresenter
     lateinit var presenter: RssInfoPresenter
-    private val interactor
+
+    private val _interactor
         get() = presenter.interactor
 
     @ProvidePresenter
@@ -40,7 +42,8 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
 
         return AlertDialog.Builder(view.context)
                 .setView(view)
-                .setNeutralButton(R.string.rss_info_open_original_button, { _, _ -> interactor.onOpenOriginal() })
+                .setPositiveButton(R.string.rss_info_dialog_ok_button, { _, _ -> })
+                .setNeutralButton(R.string.rss_info_open_original_button, { _, _ -> _interactor.onOpenOriginal() })
                 .create()
     }
 
@@ -49,13 +52,11 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
         dialog.descriptionView.text = description ?: getString(R.string.rss_info_dialog_default_description)
     }
 
-    override fun openInBrowser(url: Uri) {
-        startActivity(Intent(Intent.ACTION_VIEW, url))
+    override fun setOpenOriginalEnabled(isEnabled: Boolean) {
+        (dialog as AlertDialog).getButton(OPEN_ORIGINAL_BUTTON).isEnabled = isEnabled
     }
 
     override fun close() = dialog.cancel()
 
-    override fun showShortToast(message: String) {}
-
-    override fun showLongToast(message: String) {}
+    override fun showToast(message: String) {}
 }
