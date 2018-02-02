@@ -23,8 +23,7 @@ import ru.iandreyshev.parserrss.ui.fragment.InternetPermissionDialog
 class FeedActivity : BaseActivity(),
         IFeedView,
         IOnArticleClickListener,
-        AddRssDialog.IOnSubmitListener,
-        InternetPermissionDialog.IOnOpenSettingsListener {
+        AddRssDialog.IOnSubmitListener {
 
     companion object {
         private const val ADD_BUTTON = R.id.feed_options_add
@@ -137,9 +136,9 @@ class FeedActivity : BaseActivity(),
         params.scrollFlags = if (isScrollable) TOOLBAR_SCROLL_ON else TOOLBAR_SCROLL_OFF
     }
 
-    override fun openInternetPermissionDialog() {}
-
-    override fun openSettings() {}
+    override fun openInternetPermissionDialog() {
+        InternetPermissionDialog.show(supportFragmentManager)
+    }
 
     private fun initToolbar() {
         setSupportActionBar(toolbar)

@@ -80,6 +80,10 @@ class FeedPageFragment : BaseFragment(),
         _listAdapter.forEach { _interactor.load(it) }
     }
 
+    override fun openInternetPermissionDialog() {
+        InternetPermissionDialog.show(fragmentManager ?: return)
+    }
+
     private fun initListView() {
         itemsList.adapter = _listAdapter
         itemsList.layoutManager = LinearLayoutManager(context)
@@ -89,7 +93,7 @@ class FeedPageFragment : BaseFragment(),
         _listAdapter.setArticleClickListener(context as IOnArticleClickListener)
     }
 
-    class ScrollListener(fragment: FeedPageFragment) : RecyclerView.OnScrollListener() {
+    private class ScrollListener(fragment: FeedPageFragment) : RecyclerView.OnScrollListener() {
         private val _fragment = WeakReference(fragment)
 
         override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {

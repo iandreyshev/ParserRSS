@@ -8,6 +8,7 @@
     <style name="ToolbarStyle">
         <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:itemIconDisabledAlpha">0.5</item>
     </style>
 
     <style name="ToolbarStyle.ProgressBar" parent="Theme.AppCompat.Light">

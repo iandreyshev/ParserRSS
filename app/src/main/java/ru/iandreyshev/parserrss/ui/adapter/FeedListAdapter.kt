@@ -2,7 +2,6 @@ package ru.iandreyshev.parserrss.ui.adapter
 
 import android.graphics.Bitmap
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,7 +79,6 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
         }
 
         fun bind(content: ViewArticle) {
-            Log.e("Holder bind ", content.id.toString())
             _id = content.id
             _isImageLoaded = false
 

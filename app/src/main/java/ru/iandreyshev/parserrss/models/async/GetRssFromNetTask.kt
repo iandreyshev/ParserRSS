@@ -11,6 +11,9 @@ abstract class GetRssFromNetTask(
 
     companion object {
         private const val MAX_ARTICLES_COUNT = 64
+        private const val MAX_CONNECTION_TIMEOUT_SEC = 4L
+        private const val MAX_READ_TIMEOUT_SEC = 4L
+        private const val MAX_WRITE_TIMEOUT_SEC = 4L
     }
 
     private var requestHandler: HttpRequestHandler = HttpRequestHandler(url)
@@ -27,6 +30,9 @@ abstract class GetRssFromNetTask(
     }
 
     open fun getRssFromNet(): Boolean {
+        requestHandler.connectionTimeoutSec = MAX_CONNECTION_TIMEOUT_SEC
+        requestHandler.readTimeoutSec = MAX_READ_TIMEOUT_SEC
+        requestHandler.writeTimeoutSec = MAX_WRITE_TIMEOUT_SEC
         requestHandler.sendGet()
 
         return when (requestHandler.state == HttpRequestHandler.State.Success) {

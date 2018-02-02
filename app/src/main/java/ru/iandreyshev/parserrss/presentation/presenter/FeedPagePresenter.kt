@@ -17,6 +17,10 @@ class FeedPagePresenter(rss: ViewRss) : MvpPresenter<IFeedPageView>() {
     val interactor = FeedPageInteractor(FeedPageInteractorOutput(), rss)
 
     private inner class FeedPageInteractorOutput : FeedPageInteractor.IOutputPort {
+        override fun openInternetPermissionDialog() {
+            viewState.openInternetPermissionDialog()
+        }
+
         override fun insertImage(item: IItemIcon, imageBitmap: Bitmap) {
             item.updateImage(imageBitmap)
         }

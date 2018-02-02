@@ -46,9 +46,7 @@ class ArticleActivity : BaseActivity(), IArticleView {
         return ArticlePresenter(intent.getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID))
     }
 
-    override fun closeArticle() {
-        finish()
-    }
+    override fun closeArticle() = finish()
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_article_options, menu)

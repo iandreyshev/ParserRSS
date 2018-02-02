@@ -61,7 +61,6 @@ dependencies {
     compile 'eu.inloop:pageradapter:0.1.0'
 
     kapt "com.arello-mobile:moxy-compiler:1.5.3"
-    kapt "com.jakewharton:butterknife-compiler:8.4.0"
 
     annotationProcessor "io.objectbox:objectbox-processor:$objectboxVersion"
     annotationProcessor "com.arello-mobile:moxy-compiler:1.5.3"

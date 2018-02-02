@@ -97,12 +97,11 @@ class FeedInteractor(private val _outputPort: IOutputPort) : BaseInteractor(_out
 
         override fun onNetError(requestResult: IHttpRequestResult) {
             _outputPort.showMessage(when (requestResult.state) {
-                HttpRequestHandler.State.BadConnection -> R.string.toast_bad_connection
                 HttpRequestHandler.State.PermissionDenied -> {
                     _outputPort.openInternetPermissionDialog()
                     R.string.toast_internet_permission_denied
                 }
-                else -> return
+                else -> R.string.toast_bad_connection
             })
         }
 

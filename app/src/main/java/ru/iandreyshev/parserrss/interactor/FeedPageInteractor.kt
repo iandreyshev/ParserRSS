@@ -27,6 +27,8 @@ class FeedPageInteractor(
         fun updateArticles(articles: List<ViewArticle>)
 
         fun insertImage(item: IItemIcon, imageBitmap: Bitmap)
+
+        fun openInternetPermissionDialog()
     }
 
     fun load(icon: IItemIcon) {
@@ -62,7 +64,10 @@ class FeedPageInteractor(
 
         override fun onNetError(requestResult: IHttpRequestResult) {
             _outputPort.showMessage(when (requestResult.state) {
-                HttpRequestHandler.State.PermissionDenied -> R.string.toast_internet_permission_denied
+                HttpRequestHandler.State.PermissionDenied -> {
+                    _outputPort.openInternetPermissionDialog()
+                    R.string.toast_internet_permission_denied
+                }
                 else -> R.string.toast_bad_connection
             })
         }

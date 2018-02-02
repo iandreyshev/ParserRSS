@@ -18,4 +18,7 @@ interface IFeedPageView : IBaseView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun openEmptyContentMessage(isOpen: Boolean)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun openInternetPermissionDialog()
 }
