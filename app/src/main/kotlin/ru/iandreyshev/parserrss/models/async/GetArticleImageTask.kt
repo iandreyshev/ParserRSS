@@ -21,8 +21,8 @@ class GetArticleImageTask private constructor(
     }
 
     override fun doInBackground(vararg articles: Long?): Bitmap? {
-        val article = App.database.getArticleById(mArticleId)
-        val articleImage = App.database.getArticleImageByArticle(mArticleId)
+        val article = App.repository.getArticleById(mArticleId)
+        val articleImage = App.repository.getArticleImageByArticle(mArticleId)
 
         articleImage?.bitmap?.let { return mImageProps.configureToView(it) }
 
@@ -34,8 +34,8 @@ class GetArticleImageTask private constructor(
         val imageBytes = mRequestHandler.body
         var imageBitmap = imageBytes?.bitmap
 
-        if (requestResult === HttpRequestHandler.State.Success && imageBitmap != null) {
-            App.database.putArticleImage(mArticleId, mImageProps.configureToMemory(imageBitmap))
+        if (requestResult === HttpRequestHandler.State.SUCCESS && imageBitmap != null) {
+            App.repository.putArticleImage(mArticleId, mImageProps.configureToMemory(imageBitmap))
             imageBitmap = mImageProps.configureToView(imageBitmap)
         }
 

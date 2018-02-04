@@ -20,7 +20,7 @@ class InsertNewRssTask private constructor(
         }
     }
 
-    private val mDatabase = App.database
+    private val mDatabase = App.repository
 
     override fun isUrlValid(): Boolean {
         if (!super.isUrlValid()) {
@@ -40,7 +40,7 @@ class InsertNewRssTask private constructor(
     override fun onSuccess(rss: Rss) {
         try {
             if (mDatabase.putRssIfSameUrlNotExist(rss)) {
-                rss.articles = mFilter.sort(rss.articles)
+                mFilter.sort(rss.articles)
                 setResultEvent { mListener.onSuccess(ViewRss(rss)) }
             } else {
                 setResultEvent { mListener.onRssAlreadyExist() }

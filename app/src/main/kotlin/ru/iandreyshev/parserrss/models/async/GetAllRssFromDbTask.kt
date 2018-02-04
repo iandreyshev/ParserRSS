@@ -24,11 +24,11 @@ class GetAllRssFromDbTask private constructor(
         val result = ArrayList<ViewRss>()
 
         try {
-            App.database.getRssIdList().forEach { id ->
-                val rss = App.database.getRssById(id)
+            App.repository.getRssIdList().forEach { id ->
+                val rss = App.repository.getRssById(id)
 
                 if (rss != null) {
-                    rss.articles = mFilter.sort(rss.articles)
+                    mFilter.sort(rss.articles)
                     publishProgress(ViewRss(rss))
                 }
             }

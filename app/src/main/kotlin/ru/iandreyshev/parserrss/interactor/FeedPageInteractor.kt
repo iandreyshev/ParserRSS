@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.models.async.GetArticleImageTask
 import ru.iandreyshev.parserrss.models.async.UpdateRssTask
-import ru.iandreyshev.parserrss.models.filters.FilterByDate
+import ru.iandreyshev.parserrss.models.filters.ArticlesFilterByDate
 import ru.iandreyshev.parserrss.models.imageProps.FeedListIconProps
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
@@ -36,7 +36,7 @@ class FeedPageInteractor(
             return
         }
 
-        GetArticleImageTask.execute(icon.id, InsertImageListener(icon, icon.id), FeedListIconProps.newInstance)
+        GetArticleImageTask.execute(icon.id, InsertImageListener(icon, icon.id), FeedListIconProps)
     }
 
     fun onUpdate() {
@@ -46,7 +46,7 @@ class FeedPageInteractor(
             null -> mOutputPort.showMessage(R.string.toast_invalid_url)
             else -> {
                 updateProcessCount()
-                UpdateRssTask.execute(UpdateFromNetListener(), url, FilterByDate.newInstance)
+                UpdateRssTask.execute(UpdateFromNetListener(), url, ArticlesFilterByDate)
             }
         }
     }
@@ -64,7 +64,7 @@ class FeedPageInteractor(
 
         override fun onNetError(requestResult: IHttpRequestResult) {
             mOutputPort.showMessage(when (requestResult.state) {
-                HttpRequestHandler.State.PermissionDenied -> {
+                HttpRequestHandler.State.PERMISSION_DENIED -> {
                     mOutputPort.openInternetPermissionDialog()
                     R.string.toast_internet_permission_denied
                 }

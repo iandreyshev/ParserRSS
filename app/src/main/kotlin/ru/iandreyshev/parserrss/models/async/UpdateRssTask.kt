@@ -26,7 +26,7 @@ class UpdateRssTask private constructor(
 
             return false
 
-        } else if (!App.database.isRssWithUrlExist(mUrl)) {
+        } else if (!App.repository.isRssWithUrlExist(mUrl)) {
             setResultEvent { mListener.onRssNotExist() }
 
             return false
@@ -37,8 +37,8 @@ class UpdateRssTask private constructor(
 
     override fun onSuccess(rss: Rss) {
         try {
-            if (App.database.updateRssWithSameUrl(rss)) {
-                rss.articles = mFilter.sort(rss.articles)
+            if (App.repository.updateRssWithSameUrl(rss)) {
+                mFilter.sort(rss.articles)
                 setResultEvent { mListener.onSuccess(ViewRss(rss).articles) }
             } else {
                 setResultEvent { mListener.onRssNotExist() }

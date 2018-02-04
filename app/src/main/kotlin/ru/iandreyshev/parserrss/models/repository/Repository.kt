@@ -6,7 +6,7 @@ import java.util.HashSet
 
 import io.objectbox.BoxStore
 
-class Database(private val boxStore: BoxStore) {
+class Repository(private val boxStore: BoxStore) : IRepository {
 
     companion object {
         internal val INVALID_IDS: MutableList<Long> = ArrayList()
@@ -21,25 +21,25 @@ class Database(private val boxStore: BoxStore) {
     private val mArticleBox = boxStore.boxFor(Article::class.java)
     private val mArticleImageBox = boxStore.boxFor(ArticleImage::class.java)
 
-    fun getRssIdList(): LongArray = boxStore.callInTx {
+    override fun getRssIdList(): LongArray = boxStore.callInTx {
         mRssBox.query()
                 .notNull(Rss_.id)
                 .build()
                 .findIds()
     }
 
-    fun getRssById(id: Long): Rss? {
+    override fun getRssById(id: Long): Rss? {
         val rss = getRss(id) ?: return null
         rss.articles = getArticlesByRssId(rss.id)
 
         return rss
     }
 
-    fun getArticleById(id: Long): Article? = getArticle(id)
+    override fun getArticleById(id: Long): Article? = getArticle(id)
 
-    fun isRssWithUrlExist(url: String): Boolean = !mRssBox.find(Rss_.url, url).isEmpty()
+    override fun isRssWithUrlExist(url: String): Boolean = !mRssBox.find(Rss_.url, url).isEmpty()
 
-    fun putRssIfSameUrlNotExist(newRss: Rss): Boolean {
+    override fun putRssIfSameUrlNotExist(newRss: Rss): Boolean {
         return boxStore.callInTx {
             val rssWithSameUrl = mRssBox.query()
                     .equal(Rss_.url, newRss.url)
@@ -56,7 +56,7 @@ class Database(private val boxStore: BoxStore) {
         }
     }
 
-    fun updateRssWithSameUrl(newRss: Rss): Boolean {
+    override fun updateRssWithSameUrl(newRss: Rss): Boolean {
         return boxStore.callInTx {
             val rssWithSameUrl = mRssBox.query()
                     .equal(Rss_.url, newRss.url)
@@ -74,31 +74,33 @@ class Database(private val boxStore: BoxStore) {
         }
     }
 
-    fun getRssTitle(id: Long): String = mRssBox.get(id).title
+    override fun getRssTitle(id: Long): String = mRssBox.get(id).title
 
-    fun removeRssById(id: Long) {
+    override fun removeRssById(id: Long): Boolean {
         if (id in INVALID_IDS) {
-            return
+            return false
         }
 
-        boxStore.runInTx {
+        return boxStore.callInTx {
             mRssBox.remove(id)
             mArticleBox.query()
                     .equal(Article_.rssId, id)
                     .build()
                     .findIds()
                     .forEach { removeArticle(it) }
+
+            true
         }
     }
 
-    fun getArticleImageByArticle(articleId: Long): ArticleImage? {
+    override fun getArticleImageByArticle(articleId: Long): ArticleImage? {
         return mArticleImageBox.query()
                 .equal(ArticleImage_.articleId, articleId)
                 .build()
                 .findFirst()
     }
 
-    fun putArticleImage(articleId: Long, imageBitmap: Bitmap): Boolean {
+    override fun putArticleImage(articleId: Long, imageBitmap: Bitmap): Boolean {
         return boxStore.callInTx {
             val record = ArticleImage(articleId = articleId, bitmap = imageBitmap)
             val isArticleExist = mArticleBox.query()

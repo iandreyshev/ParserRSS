@@ -19,7 +19,7 @@ class DeleteRssFromDbTask private constructor(
 
     override fun doInBackground(vararg rssToDelete: ViewRss): ViewRss? {
         return try {
-            App.database.removeRssById(this.mRssToDelete.id)
+            App.repository.removeRssById(this.mRssToDelete.id)
             mRssToDelete
         } catch (ex: Exception) {
             Log.e(TAG, Log.getStackTraceString(ex))

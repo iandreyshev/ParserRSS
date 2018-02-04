@@ -23,11 +23,11 @@ class GetArticleFromDbTask private constructor(
 
     override fun doInBackground(vararg args: Long?): Any? {
         try {
-            val article = App.database.getArticleById(mArticleId) ?: return null
+            val article = App.repository.getArticleById(mArticleId) ?: return null
             mArticle = ViewArticle(article)
             mRss = ViewRss(
                     id = article.rssId,
-                    title = App.database.getRssTitle(article.rssId)
+                    title = App.repository.getRssTitle(article.rssId)
             )
         } catch (ex: Exception) {
             Log.e(TAG, Log.getStackTraceString(ex))

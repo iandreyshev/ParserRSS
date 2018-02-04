@@ -20,7 +20,7 @@ abstract class GetRssFromNetTask(
     private var resultRss: Rss? = null
 
     open fun isUrlValid(): Boolean {
-        return when (requestHandler.state != HttpRequestHandler.State.BadUrl) {
+        return when (requestHandler.state != HttpRequestHandler.State.BAD_URL) {
             true -> true
             false -> {
                 setResultEvent { mListener.onInvalidUrl() }
@@ -35,7 +35,7 @@ abstract class GetRssFromNetTask(
         requestHandler.writeTimeoutSec = MAX_WRITE_TIMEOUT_SEC
         requestHandler.sendGet()
 
-        return when (requestHandler.state == HttpRequestHandler.State.Success) {
+        return when (requestHandler.state == HttpRequestHandler.State.SUCCESS) {
             true -> true
             false -> {
                 setResultEvent { mListener.onNetError(requestHandler) }

@@ -5,7 +5,7 @@ import ru.iandreyshev.parserrss.models.async.DeleteRssFromDbTask
 import ru.iandreyshev.parserrss.models.async.GetAllRssFromDbTask
 import ru.iandreyshev.parserrss.models.async.ITaskListener
 import ru.iandreyshev.parserrss.models.async.InsertNewRssTask
-import ru.iandreyshev.parserrss.models.filters.FilterByDate
+import ru.iandreyshev.parserrss.models.filters.ArticlesFilterByDate
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
@@ -42,7 +42,7 @@ class FeedInteractor(private val mOutputPort: IOutputPort) : BaseInteractor(mOut
             true -> mOutputPort.showMessage(R.string.feed_is_full)
             else -> {
                 updateProcessCount()
-                InsertNewRssTask.execute(InsertRssFromNetListener(), url, FilterByDate.newInstance)
+                InsertNewRssTask.execute(InsertRssFromNetListener(), url, ArticlesFilterByDate)
             }
         }
     }
@@ -66,7 +66,7 @@ class FeedInteractor(private val mOutputPort: IOutputPort) : BaseInteractor(mOut
 
     fun onLoadFromDatabase() {
         updateProcessCount()
-        GetAllRssFromDbTask.execute(LoadFromDatabaseListener(), FilterByDate.newInstance)
+        GetAllRssFromDbTask.execute(LoadFromDatabaseListener(), ArticlesFilterByDate)
     }
 
     fun onOpenArticle(articleId: Long) = mOutputPort.openArticle(articleId)
@@ -97,7 +97,7 @@ class FeedInteractor(private val mOutputPort: IOutputPort) : BaseInteractor(mOut
 
         override fun onNetError(requestResult: IHttpRequestResult) {
             mOutputPort.showMessage(when (requestResult.state) {
-                HttpRequestHandler.State.PermissionDenied -> {
+                HttpRequestHandler.State.PERMISSION_DENIED -> {
                     mOutputPort.openInternetPermissionDialog()
                     R.string.toast_internet_permission_denied
                 }
