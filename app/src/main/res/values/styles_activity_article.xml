@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ActivityArticle.ContentLayout">
+        <item name="android:paddingTop">@dimen/ActivityArticle.BottomTopPadding</item>
+        <item name="android:paddingBottom">@dimen/ActivityArticle.BottomTopPadding</item>
+    </style>
+
+    <style name="ActivityArticle.TitleView">
+        <item name="android:paddingLeft">@dimen/ActivityArticle.SidePadding</item>
+        <item name="android:paddingRight">@dimen/ActivityArticle.SidePadding</item>
+        <item name="android:textSize">@dimen/FontSize.ExtraLarge</item>
+    </style>
+
+    <style name="ActivityArticle.DateView">
+        <item name="android:layout_marginTop">@dimen/ActivityArticle.DateTopMargin</item>
+        <item name="android:layout_marginBottom">@dimen/ActivityArticle.DateBottomMargin</item>
+        <item name="android:paddingLeft">@dimen/ActivityArticle.SidePadding</item>
+        <item name="android:paddingRight">@dimen/ActivityArticle.SidePadding</item>
+        <item name="android:textSize">@dimen/FontSize.Small</item>
+    </style>
+
+    <style name="ActivityArticle.ImageView">
+        <item name="android:layout_marginTop">@dimen/ActivityArticle.ImageTopMargin</item>
+        <item name="android:layout_marginBottom">@dimen/ActivityArticle.ImageBottomMargin</item>
+    </style>
+
+    <style name="ActivityArticle.DescriptionView">
+        <item name="android:paddingLeft">@dimen/ActivityArticle.SidePadding</item>
+        <item name="android:paddingRight">@dimen/ActivityArticle.SidePadding</item>
+        <item name="android:textSize">@dimen/FontSize.Large</item>
+    </style>
+
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ActivityArticle.SidePadding">14dp</dimen>
+    <dimen name="ActivityArticle.BottomTopPadding">16dp</dimen>
+    <dimen name="ActivityArticle.DateTopMargin">5dp</dimen>
+    <dimen name="ActivityArticle.DateBottomMargin">9dp</dimen>
+    <dimen name="ActivityArticle.ImageTopMargin">11dp</dimen>
+    <dimen name="ActivityArticle.ImageBottomMargin">18dp</dimen>
+
+    <dimen name="ActivityFeed.ProgressBarMargin">16dp</dimen>
+
+    <dimen name="FeedItem.Margin">14dp</dimen>
+    <dimen name="FeedItem.TextSpacing">5dp</dimen>
+
+    <dimen name="FontSize.ExtraSmall">14sp</dimen>
+    <dimen name="FontSize.Small">16sp</dimen>
+    <dimen name="FontSize.Normal">18sp</dimen>
+    <dimen name="FontSize.Large">20sp</dimen>
+    <dimen name="FontSize.ExtraLarge">22sp</dimen>
+</resources>

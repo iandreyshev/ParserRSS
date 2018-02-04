@@ -4,107 +4,100 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "1:7607103338035436478",
-      "lastPropertyId": "5:3211331341425510491",
-      "name": "Rss",
+      "id": "1:3717223406012390009",
+      "lastPropertyId": "7:4198749637115185005",
+      "name": "Article",
       "properties": [
         {
-          "id": "1:6537712490121292561",
-          "name": "mId"
+          "id": "1:7050773820950126270",
+          "name": "id"
         },
         {
-          "id": "2:6726121234535229723",
-          "name": "mTitle"
+          "id": "2:7374547085416522824",
+          "name": "rssId"
         },
         {
-          "id": "3:59860844164724118",
-          "indexId": "1:7507319041879971012",
-          "name": "mUrl"
+          "id": "3:4542775586901157094",
+          "name": "title"
         },
         {
-          "id": "4:6745236295242036849",
-          "name": "mOrigin"
+          "id": "4:2553658781773441780",
+          "name": "description"
         },
         {
-          "id": "5:3211331341425510491",
-          "name": "mDescription"
+          "id": "5:8555806297479892700",
+          "name": "originUrl"
+        },
+        {
+          "id": "6:3037717328592859225",
+          "name": "imageUrl"
+        },
+        {
+          "id": "7:4198749637115185005",
+          "name": "date"
         }
       ],
       "relations": []
     },
     {
-      "id": "3:7392335833848441508",
-      "lastPropertyId": "10:4492143752173292436",
-      "name": "Article",
+      "id": "2:5558054973010106954",
+      "lastPropertyId": "3:4374828976414320465",
+      "name": "ArticleImage",
       "properties": [
         {
-          "id": "1:7191775488062770194",
-          "name": "mId"
+          "id": "1:9173564974472070783",
+          "name": "id"
         },
         {
-          "id": "2:1331711556045162409",
-          "name": "mRssId"
+          "id": "2:6936049460389343914",
+          "name": "articleId"
         },
         {
-          "id": "3:467704572142343611",
-          "name": "mTitle"
+          "id": "3:4374828976414320465",
+          "name": "bitmap"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:1804771424348771313",
+      "lastPropertyId": "5:6121912654518476775",
+      "name": "Rss",
+      "properties": [
+        {
+          "id": "1:71281281242264070",
+          "name": "id"
         },
         {
-          "id": "4:5313069794377499295",
-          "name": "mOriginUrl"
+          "id": "2:3232928295920846296",
+          "name": "title"
         },
         {
-          "id": "5:7350141353103232532",
-          "name": "mDescription"
+          "id": "3:8037925841137336112",
+          "indexId": "1:7404169823549688840",
+          "name": "url"
         },
         {
-          "id": "6:8892409390512148903",
-          "name": "mImageUrl"
+          "id": "4:8459190374189809122",
+          "name": "origin"
         },
         {
-          "id": "7:3551016296599981261",
-          "name": "mPostDate"
-        },
-        {
-          "id": "8:6963133814209693231",
-          "name": "mImage"
+          "id": "5:6121912654518476775",
+          "name": "description"
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "3:7392335833848441508",
-  "lastIndexId": "5:6807310177412727964",
-  "lastRelationId": "2:821553657612450318",
+  "lastEntityId": "3:1804771424348771313",
+  "lastIndexId": "1:7404169823549688840",
+  "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
-  "retiredEntityUids": [
-    1887863730840755597
-  ],
-  "retiredIndexUids": [
-    295193391020914019,
-    1870931293326120339,
-    4452936048600984123,
-    6807310177412727964
-  ],
-  "retiredPropertyUids": [
-    8623554236450700882,
-    6959782989321378076,
-    2832279044317439382,
-    7607378172268916589,
-    5458286276517822065,
-    3987042327281416812,
-    8291512098263575961,
-    6168202660942536946,
-    4955681863776762729,
-    6028772999437422509,
-    4968755052630103859,
-    4492143752173292436
-  ],
-  "retiredRelationUids": [
-    1010034729771361257,
-    821553657612450318
-  ],
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
   "version": 1
 }
