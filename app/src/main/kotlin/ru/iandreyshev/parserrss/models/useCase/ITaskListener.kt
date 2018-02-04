@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.async
+package ru.iandreyshev.parserrss.models.useCase
 
 interface ITaskListener<T, in U, in V> {
     fun onPreExecute() {}

@@ -11,13 +11,13 @@ class ArticleInteractor(useCaseFactory: IUseCaseFactory, presenter: IPresenter, 
 
     init {
         useCaseFactory.create(
-                UseCaseType.LOAD_AND_OPEN_ARTICLE,
+                UseCaseType.LOAD_ARTICLE_DATA,
                 presenter,
                 articleId
         ).start()
 
         useCaseFactory.create(
-                UseCaseType.GET_ARTICLE_IMAGE,
+                UseCaseType.LOAD_IMAGE_TO_ACTIVITY,
                 presenter,
                 articleId
         ).start()

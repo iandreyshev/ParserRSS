@@ -8,6 +8,8 @@ interface IImageProps {
         const val MAX_MEMORY_SIZE = 360
     }
 
+    val maxBytesCount: Long
+
     fun configureToMemory(originImage: Bitmap): Bitmap
 
     fun configureToView(originImage: Bitmap): Bitmap

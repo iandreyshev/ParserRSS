@@ -1,19 +1,23 @@
 package ru.iandreyshev.parserrss.models.util
 
 class ProcessCounter(private val mListener: (Int) -> Unit) {
-    private var mProcessCount: Int = 0
+    private var mCount: Int = 0
+
+    init {
+        mListener(mCount)
+    }
 
     fun startProcess() {
-        if (mProcessCount < Int.MAX_VALUE) {
-            ++mProcessCount
-            mListener(mProcessCount)
+        if (mCount < Int.MAX_VALUE) {
+            ++mCount
+            mListener(mCount)
         }
     }
 
     fun endProcess() {
-        if (mProcessCount > 0) {
-            --mProcessCount
-            mListener(mProcessCount)
+        if (mCount > 0) {
+            --mCount
+            mListener(mCount)
         }
     }
 }

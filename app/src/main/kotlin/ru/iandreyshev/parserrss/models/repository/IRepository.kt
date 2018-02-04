@@ -19,7 +19,11 @@ interface IRepository {
 
     fun removeRssById(id: Long): Boolean
 
-    fun getArticleImageByArticle(articleId: Long): ArticleImage?
+    fun getArticleImage(articleId: Long): ArticleImage?
+
+    fun getArticleImageBitmap(articleId: Long): Bitmap?
+
+    fun getArticleImageUrl(articleId: Long): String?
 
     fun putArticleImage(articleId: Long, imageBitmap: Bitmap): Boolean
 }

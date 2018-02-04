@@ -1,33 +1,35 @@
-package ru.iandreyshev.parserrss.models.async
+package ru.iandreyshev.parserrss.models.useCase
 
 import android.util.Log
 
 import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
-class UpdateRssTask private constructor(
+class InsertNewRssTask private constructor(
         private val mListener: IEventListener,
         private val mUrl: String,
         private val mFilter: IArticlesFilter) : GetRssFromNetTask(mListener, mUrl) {
 
     companion object {
-        private val TAG = UpdateRssTask::class.java.name
+        private val TAG = InsertNewRssTask::class.java.name
 
         fun execute(listener: IEventListener, url: String, filter: IArticlesFilter) {
-            UpdateRssTask(listener, url, filter).executeOnExecutor(Task.EXECUTOR)
+            InsertNewRssTask(listener, url, filter).executeOnExecutor(Task.EXECUTOR)
         }
     }
 
+    private val mDatabase = App.repository
+
     override fun isUrlValid(): Boolean {
         if (!super.isUrlValid()) {
+            setResultEvent { mListener.onInvalidUrl() }
 
             return false
 
-        } else if (!App.repository.isRssWithUrlExist(mUrl)) {
-            setResultEvent { mListener.onRssNotExist() }
+        } else if (mDatabase.isRssWithUrlExist(mUrl)) {
+            setResultEvent { mListener.onRssAlreadyExist() }
 
             return false
         }
@@ -37,11 +39,11 @@ class UpdateRssTask private constructor(
 
     override fun onSuccess(rss: Rss) {
         try {
-            if (App.repository.updateRssWithSameUrl(rss)) {
+            if (mDatabase.putRssIfSameUrlNotExist(rss)) {
                 mFilter.sort(rss.articles)
-                setResultEvent { mListener.onSuccess(ViewRss(rss).articles) }
+                setResultEvent { mListener.onSuccess(ViewRss(rss)) }
             } else {
-                setResultEvent { mListener.onRssNotExist() }
+                setResultEvent { mListener.onRssAlreadyExist() }
             }
         } catch (ex: Exception) {
             Log.e(TAG, Log.getStackTraceString(ex))
@@ -50,10 +52,10 @@ class UpdateRssTask private constructor(
     }
 
     interface IEventListener : GetRssFromNetTask.IEventListener {
-        fun onRssNotExist()
+        fun onRssAlreadyExist()
 
         fun onDatabaseError()
 
-        fun onSuccess(articles: List<ViewArticle>)
+        fun onSuccess(rss: ViewRss)
     }
 }

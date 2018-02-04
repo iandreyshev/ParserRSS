@@ -12,19 +12,22 @@ import ru.iandreyshev.parserrss.factory.UseCaseFactory
 import ru.iandreyshev.parserrss.interactor.ArticleInteractor
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
-import ru.iandreyshev.parserrss.models.useCase.GetArticleImageUseCase
 import ru.iandreyshev.parserrss.models.useCase.LoadArticleUseCase
+import ru.iandreyshev.parserrss.models.useCase.LoadImageToActivityUseCase
 import ru.iandreyshev.parserrss.models.useCase.OpenOriginalUseCase
+import ru.iandreyshev.parserrss.models.util.ProcessCounter
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 
 @InjectViewState
-class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>(), IPresenter {
+class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>() {
 
+    private val mProcessCounter = ProcessCounter(this::onProcessCountChange)
     val interactor = ArticleInteractor(UseCaseFactory, UseCasesListener(), articleId)
 
-    private inner class UseCasesListener : GetArticleImageUseCase.IListener,
+    private inner class UseCasesListener : LoadImageToActivityUseCase.IListener,
             LoadArticleUseCase.IListener,
-            OpenOriginalUseCase.IListener {
+            OpenOriginalUseCase.IListener,
+            IPresenter {
 
         override fun openOriginal(path: Uri) {
             viewState.startActivity(Intent(Intent.ACTION_VIEW, path))
@@ -45,5 +48,13 @@ class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>(), IPresent
         override fun insertImage(imageBitmap: Bitmap) {
             viewState.setImage(imageBitmap)
         }
+
+        override fun processStart() = mProcessCounter.startProcess()
+
+        override fun processEnd() = mProcessCounter.endProcess()
+    }
+
+    private fun onProcessCountChange(newCount: Int) {
+        viewState.startProgressBar(newCount > 0)
     }
 }

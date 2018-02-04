@@ -12,8 +12,10 @@ class FeedListIconProps {
         private val FORMAT = Bitmap.CompressFormat.JPEG
         private const val QUALITY = 25
         private const val MAX_SIZE = 144
+        private const val MAX_BYTES_COUNT = 1048576L // 1MB
 
-        val newInstance = FeedListIconProps()
+        override val maxBytesCount: Long
+            get() = MAX_BYTES_COUNT
 
         override fun configureToView(originImage: Bitmap): Bitmap {
             val copy = originImage.scaleToSize(MAX_SIZE)

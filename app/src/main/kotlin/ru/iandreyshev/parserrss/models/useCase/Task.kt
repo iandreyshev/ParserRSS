@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.async
+package ru.iandreyshev.parserrss.models.useCase
 
 import android.os.AsyncTask
 import android.support.annotation.CallSuper

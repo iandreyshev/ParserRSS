@@ -66,21 +66,19 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListAdapter.ListItem>() {
 
         override val id: Long
             get() = mId
-        override val isLoaded: Boolean
-            get() = mIsImageLoaded
+        override var isLoaded: Boolean = false
 
         private var mId: Long = 0
-        private var mIsImageLoaded: Boolean = false
         private var mClickListener: WeakReference<IOnArticleClickListener>? = null
 
         override fun updateImage(bitmap: Bitmap) {
-            mIsImageLoaded = true
             itemView.imageView.setImageBitmap(bitmap)
+            isLoaded = true
         }
 
         fun bind(content: ViewArticle) {
             mId = content.id
-            mIsImageLoaded = false
+            isLoaded = false
 
             itemView.titleView.text = content.title
             itemView.descriptionView.text = content.description

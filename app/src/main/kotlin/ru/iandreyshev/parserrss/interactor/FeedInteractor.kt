@@ -1,10 +1,10 @@
 package ru.iandreyshev.parserrss.interactor
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.async.DeleteRssFromDbTask
-import ru.iandreyshev.parserrss.models.async.GetAllRssFromDbTask
-import ru.iandreyshev.parserrss.models.async.ITaskListener
-import ru.iandreyshev.parserrss.models.async.InsertNewRssTask
+import ru.iandreyshev.parserrss.models.useCase.DeleteRssFromDbTask
+import ru.iandreyshev.parserrss.models.useCase.GetAllRssFromDbTask
+import ru.iandreyshev.parserrss.models.useCase.ITaskListener
+import ru.iandreyshev.parserrss.models.useCase.InsertNewRssTask
 import ru.iandreyshev.parserrss.models.filters.ArticlesFilterByDate
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewRss

@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.async
+package ru.iandreyshev.parserrss.models.useCase
 
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ParserEngine

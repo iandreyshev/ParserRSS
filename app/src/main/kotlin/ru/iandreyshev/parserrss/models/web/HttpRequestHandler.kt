@@ -30,10 +30,10 @@ class HttpRequestHandler(urlString: String) : IHttpRequestHandler {
         PERMISSION_DENIED
     }
 
-    var maxContentBytes: Long = MAX_CONTENT_BYTES
-    var readTimeoutSec: Long = READ_TIMEOUT_SEC
-    var connectionTimeoutSec: Long = CONNECTION_TIMEOUT_SEC
-    var writeTimeoutSec: Long = WRITE_TIMEOUT_SEC
+    override var maxContentBytes: Long = MAX_CONTENT_BYTES
+    override var readTimeoutSec: Long = READ_TIMEOUT_SEC
+    override var connectionTimeoutSec: Long = CONNECTION_TIMEOUT_SEC
+    override var writeTimeoutSec: Long = WRITE_TIMEOUT_SEC
 
     override var urlString: String = urlString
         private set
@@ -53,7 +53,8 @@ class HttpRequestHandler(urlString: String) : IHttpRequestHandler {
         }
 
     override fun sendGet(): State {
-        mUrl = parseUrl(urlString)
+        parseUrl(urlString)
+
         mUrl?.let {
             send(Request.Builder()
                     .url(it)
@@ -99,7 +100,7 @@ class HttpRequestHandler(urlString: String) : IHttpRequestHandler {
         }
     }
 
-    private fun parseUrl(url: String): HttpUrl? {
-        return HttpUrl.parse(url) ?: HttpUrl.parse(DEFAULT_PROTOCOL + url)
+    private fun parseUrl(url: String) {
+        mUrl = HttpUrl.parse(url) ?: HttpUrl.parse(DEFAULT_PROTOCOL + url)
     }
 }

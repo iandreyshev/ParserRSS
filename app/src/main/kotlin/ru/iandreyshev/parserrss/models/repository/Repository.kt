@@ -93,7 +93,7 @@ class Repository(private val boxStore: BoxStore) : IRepository {
         }
     }
 
-    override fun getArticleImageByArticle(articleId: Long): ArticleImage? {
+    override fun getArticleImage(articleId: Long): ArticleImage? {
         return mArticleImageBox.query()
                 .equal(ArticleImage_.articleId, articleId)
                 .build()
@@ -114,6 +114,14 @@ class Repository(private val boxStore: BoxStore) : IRepository {
 
             isArticleExist != null
         }
+    }
+
+    override fun getArticleImageBitmap(articleId: Long): Bitmap? {
+        return getArticleImage(articleId)?.bitmap
+    }
+
+    override fun getArticleImageUrl(articleId: Long): String? {
+        return getArticle(articleId)?.imageUrl
     }
 
     private fun putArticles(rss: Rss) {

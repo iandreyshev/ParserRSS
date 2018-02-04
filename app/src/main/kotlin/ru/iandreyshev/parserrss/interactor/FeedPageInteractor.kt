@@ -1,88 +1,41 @@
 package ru.iandreyshev.parserrss.interactor
 
-import android.graphics.Bitmap
-import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.async.GetArticleImageTask
-import ru.iandreyshev.parserrss.models.async.UpdateRssTask
-import ru.iandreyshev.parserrss.models.filters.ArticlesFilterByDate
-import ru.iandreyshev.parserrss.models.imageProps.FeedListIconProps
-import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
-import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
-import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
+import ru.iandreyshev.parserrss.factory.IUseCaseFactory
+import ru.iandreyshev.parserrss.models.useCase.*
+import ru.iandreyshev.parserrss.presentation.presenter.IPresenter
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
+import ru.iandreyshev.parserrss.models.rss.ViewRss
 
 class FeedPageInteractor(
-        private val mOutputPort: IOutputPort,
-        private val mRss: ViewRss) : BaseInteractor(mOutputPort) {
+        private val mUseCaseFactory: IUseCaseFactory,
+        private val mPresenter: IListener,
+        private val mRss: ViewRss) {
+
+    interface IListener : IPresenter,
+            UpdateRssUseCase.IListener,
+            LoadArticlesFirstTimeUseCase.IListener
 
     init {
-        mOutputPort.setArticles(mRss.articles)
-    }
-
-    interface IOutputPort : IInteractorOutputPort {
-        fun setArticles(articles: List<ViewArticle>)
-
-        fun updateArticles(articles: List<ViewArticle>)
-
-        fun insertImage(item: IItemIcon, imageBitmap: Bitmap)
-
-        fun openInternetPermissionDialog()
+        mUseCaseFactory.create(
+                UseCaseType.LOAD_ARTICLES_FIRST_TIME,
+                mPresenter,
+                mRss
+        ).start()
     }
 
     fun load(icon: IItemIcon) {
-        if (icon.isLoaded) {
-            return
-        }
-
-        GetArticleImageTask.execute(icon.id, InsertImageListener(icon, icon.id), FeedListIconProps)
+        mUseCaseFactory.create(
+                UseCaseType.LOAD_IMAGE_TO_FEED_ITEM,
+                mPresenter,
+                icon
+        ).start()
     }
 
     fun onUpdate() {
-        val url = mRss.url
-
-        when (url) {
-            null -> mOutputPort.showMessage(R.string.toast_invalid_url)
-            else -> {
-                updateProcessCount()
-                UpdateRssTask.execute(UpdateFromNetListener(), url, ArticlesFilterByDate)
-            }
-        }
-    }
-
-    private inner class UpdateFromNetListener : UpdateRssTask.IEventListener {
-        override fun onPostExecute(result: Rss?) = updateProcessCount(false)
-
-        override fun onRssNotExist() = mOutputPort.showMessage(R.string.toast_rss_not_exist)
-
-        override fun onDatabaseError() = mOutputPort.showMessage(R.string.toast_error_saving_to_db)
-
-        override fun onInvalidUrl() = mOutputPort.showMessage(R.string.toast_invalid_url)
-
-        override fun onParserError() = mOutputPort.showMessage(R.string.toast_invalid_rss_format)
-
-        override fun onNetError(requestResult: IHttpRequestResult) {
-            mOutputPort.showMessage(when (requestResult.state) {
-                HttpRequestHandler.State.PERMISSION_DENIED -> {
-                    mOutputPort.openInternetPermissionDialog()
-                    R.string.toast_internet_permission_denied
-                }
-                else -> R.string.toast_bad_connection
-            })
-        }
-
-        override fun onSuccess(articles: List<ViewArticle>) = mOutputPort.updateArticles(articles)
-    }
-
-    private inner class InsertImageListener constructor(
-            private val mIcon: IItemIcon,
-            private val mIdBeforeLoad: Long) : GetArticleImageTask.IEventListener {
-
-        override fun onPostExecute(result: Bitmap?) {
-            if (mIcon.id == mIdBeforeLoad) {
-                mOutputPort.insertImage(mIcon, result ?: return)
-            }
-        }
+        mUseCaseFactory.create(
+                UseCaseType.UPDATE_RSS,
+                mPresenter,
+                mRss.id
+        ).start()
     }
 }
