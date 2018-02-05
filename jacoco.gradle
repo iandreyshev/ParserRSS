@@ -15,7 +15,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
     }
 
     // what to exclude from coverage report
-    // UI, "noise", generated classes, platform classes, etc. 
+    // UI, "noise", generated classes, platform classes, etc.
     def excludes = [
             '**/R.class',
             '**/R$*.class',
