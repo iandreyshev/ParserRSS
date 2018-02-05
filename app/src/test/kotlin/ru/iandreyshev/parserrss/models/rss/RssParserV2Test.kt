@@ -20,11 +20,11 @@ class RssParserV2Test {
         private const val ARTICLE_IMG_URL = "Article_image_url"
     }
 
-    private lateinit var parser: ParserV2
+    private lateinit var mParser: ParserV2
 
     @Before
     fun setup() {
-        parser = ParserV2()
+        mParser = ParserV2()
     }
 
     @Test
@@ -110,7 +110,7 @@ class RssParserV2Test {
 
     @Test
     fun returnNullIfParseNullString() {
-        val rss = parser.parse(null)
+        val rss = mParser.parse(null)
 
         assertNull(rss)
     }
@@ -140,7 +140,7 @@ class RssParserV2Test {
 
     private fun parseFile(fileName: String): Rss {
         val data = TestUtils.readFromFile(toPath(fileName))
-        return parser.parse(data) ?: throw IllegalArgumentException()
+        return mParser.parse(data) ?: throw IllegalArgumentException()
     }
 
     private fun toPath(fileName: String): String {

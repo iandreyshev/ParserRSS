@@ -3,34 +3,53 @@ package ru.iandreyshev.parserrss.models.web
 import org.junit.Test
 
 import org.junit.Assert.*
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class HttpRequestHandlerTest {
     companion object {
-        private const val VALID_URL = "http://domain.com"
-        private const val URL_WITHOUT_PROTOCOL = "domain.com"
-        private const val URL_WITH_PORT = "http://domain.com:80/"
-    }
-
-    private lateinit var handler: HttpRequestHandler
-
-    @Test
-    fun returnNotSendStateAfterCreate() {
-        handler = HttpRequestHandler(VALID_URL)
-
-        assertEquals(HttpRequestHandler.State.NotSend, handler.state)
+        private const val VALID_URL_WITH_PROTOCOL = "http://domain.com"
+        private const val VALID_URL_WITHOUT_PROTOCOL = "domain.com"
+        private const val INVALID_URL = ""
     }
 
     @Test
-    fun returnNotSendAfterInitWithUrlWithoutProtocol() {
-        handler = HttpRequestHandler(URL_WITHOUT_PROTOCOL)
-
-        assertEquals(handler.state, HttpRequestHandler.State.NotSend)
+    fun returnNotSendAfterCreateWithValidUrl() {
+        val handler = HttpRequestHandler(VALID_URL_WITH_PROTOCOL)
+        assertEquals(handler.state, HttpRequestHandler.State.NOT_SEND)
     }
 
     @Test
-    fun returnNotSendAfterInitFromUrlWithPort() {
-        handler = HttpRequestHandler(URL_WITH_PORT)
+    fun returnNotSendAfterCreateWithValidUrlWithoutProtocol() {
+        val handler = HttpRequestHandler(VALID_URL_WITHOUT_PROTOCOL)
+        assertEquals(handler.state, HttpRequestHandler.State.NOT_SEND)
+    }
 
-        assertEquals(HttpRequestHandler.State.NotSend, handler.state)
+    @Test
+    fun returnBadUrlAfterCreateWithInvalidUrl() {
+        val handler = HttpRequestHandler(INVALID_URL)
+        assertEquals(HttpRequestHandler.State.NOT_SEND, handler.state)
+    }
+
+    @Test
+    fun returnUrlStringAfterCreate() {
+        val handler = HttpRequestHandler(VALID_URL_WITH_PROTOCOL)
+        assertEquals(handler.urlString, VALID_URL_WITH_PROTOCOL)
+    }
+
+    @Test
+    fun returnNullBodyBeforeSendRequest() {
+        val handler = HttpRequestHandler(VALID_URL_WITH_PROTOCOL)
+        assertNull(handler.body)
+        assertNull(handler.bodyAsString)
+    }
+
+    @Test
+    fun resetStateAfterResetUrl() {
+        val handler = HttpRequestHandler(VALID_URL_WITH_PROTOCOL)
+        assertEquals(handler.state, HttpRequestHandler.State.NOT_SEND)
+        handler.sendGet(INVALID_URL)
+        assertEquals(handler.state, HttpRequestHandler.State.BAD_URL)
     }
 }

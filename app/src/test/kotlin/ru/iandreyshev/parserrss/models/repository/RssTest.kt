@@ -6,7 +6,10 @@ import org.junit.Test
 import java.util.ArrayList
 
 import org.junit.Assert.*
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class RssTest {
 
     companion object {
@@ -18,91 +21,91 @@ class RssTest {
         private val ARTICLE = Article(title = TITLE, description = DESCRIPTION, originUrl = ORIGIN)
     }
 
-    private lateinit var rss: Rss
-    private lateinit var defaultRss: Rss
+    private lateinit var mRss: Rss
+    private lateinit var mDefaultRss: Rss
 
     @Before
     fun setup() {
-        rss = Rss(title = TITLE, origin = ORIGIN)
-        defaultRss = Rss(title = "", origin = "")
+        mRss = Rss(title = TITLE, origin = ORIGIN)
+        mDefaultRss = Rss(title = "", origin = "")
     }
 
     @Test
     fun haveIdGetterAndSetter() {
-        rss.id = ID
+        mRss.id = ID
 
-        assertEquals(rss.id, ID)
+        assertEquals(mRss.id, ID)
     }
 
     @Test
     fun haveTitleGetter() {
-        assertEquals(rss.title, TITLE)
+        assertEquals(mRss.title, TITLE)
     }
 
     @Test
     fun haveDescriptionGetterAndSetter() {
-        rss.description = DESCRIPTION
+        mRss.description = DESCRIPTION
 
-        assertEquals(rss.description, DESCRIPTION)
+        assertEquals(mRss.description, DESCRIPTION)
     }
 
     @Test
     fun haveEmptyTitleByDefault() {
-        assertEquals(defaultRss.title, "")
+        assertEquals(mDefaultRss.title, "")
     }
 
     @Test
     fun haveEmptyUrlByDefault() {
-        assertEquals(defaultRss.url, "")
+        assertEquals(mDefaultRss.url, "")
     }
 
     @Test
     fun haveEmptyOriginByDefault() {
-        assertEquals(defaultRss.origin, "")
+        assertEquals(mDefaultRss.origin, "")
     }
 
     @Test
     fun haveEmptyListOfArticlesByDefault() {
-        assertEquals(defaultRss.articles.size.toLong(), 0)
+        assertEquals(mDefaultRss.articles.size.toLong(), 0)
     }
 
     @Test
     fun haveEmptyListOfArticlesViewsByDefault() {
-        assertTrue(defaultRss.articles.isEmpty())
+        assertTrue(mDefaultRss.articles.isEmpty())
     }
 
     @Test
     fun haveArticlesGetterAndSetter() {
         val articles = ArrayList<Article>()
         articles.add(ARTICLE)
-        rss.articles = articles
+        mRss.articles = articles
 
-        assertEquals(rss.articles[0], ARTICLE)
+        assertEquals(mRss.articles[0], ARTICLE)
     }
 
     @Test
     fun haveUrlGetterAndSetter() {
-        rss.url = URL
+        mRss.url = URL
 
-        assertEquals(rss.url, URL)
+        assertEquals(mRss.url, URL)
     }
 
     @Test
     fun hashcodeEqualsUrlHashcode() {
-        rss.url = URL
+        mRss.url = URL
 
-        assertEquals(rss.hashCode().toLong(), URL.hashCode().toLong())
+        assertEquals(mRss.hashCode().toLong(), URL.hashCode().toLong())
     }
 
     @Test
     fun equalsWithObjectIfEqualsItsUrls() {
-        rss.url = URL
+        mRss.url = URL
         val otherRss = Rss(title = "", origin = "")
 
-        assertFalse(rss == otherRss)
+        assertFalse(mRss == otherRss)
 
         otherRss.url = URL
 
-        assertTrue(rss == otherRss)
+        assertTrue(mRss == otherRss)
     }
 }

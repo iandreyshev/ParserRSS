@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.models.repository
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+
 import org.robolectric.RobolectricTestRunner
 
 import java.util.Date
@@ -21,28 +22,34 @@ class ArticleTest {
         private val POST_DATE = Date()
     }
 
-    private lateinit var article: Article
-    private lateinit var defaultArticle: Article
+    private lateinit var mArticle: Article
+    private lateinit var mDefaultArticle: Article
 
     @Before
     fun setup() {
-        article = Article(title = TITLE, description = DESCRIPTION, originUrl = ORIGIN)
-        defaultArticle = Article(title = "", description = "", originUrl = "")
+        mArticle = Article(
+                title = TITLE,
+                description = DESCRIPTION,
+                originUrl = ORIGIN)
+        mDefaultArticle = Article(
+                title = "",
+                description = "",
+                originUrl = "")
     }
 
     @Test
     fun haveEmptyTitleByDefault() {
-        assertEquals(defaultArticle.title, "")
+        assertEquals(mDefaultArticle.title, "")
     }
 
     @Test
     fun haveEmptyDescriptionByDefault() {
-        assertEquals(defaultArticle.description, "")
+        assertEquals(mDefaultArticle.description, "")
     }
 
     @Test
     fun haveEmptyOriginByDefault() {
-        assertEquals(defaultArticle.originUrl, "")
+        assertEquals(mDefaultArticle.originUrl, "")
     }
 
     @Test
@@ -54,43 +61,43 @@ class ArticleTest {
 
     @Test
     fun haveIdGetter() {
-        assertEquals(article.id, 0)
+        assertEquals(mArticle.id, 0)
     }
 
     @Test
     fun haveRssIdGetterAndSetter() {
-        article.rssId = RSS_ID
+        mArticle.rssId = RSS_ID
 
-        assertEquals(article.rssId, RSS_ID)
+        assertEquals(mArticle.rssId, RSS_ID)
     }
 
     @Test
     fun haveImageUrlGetterAndSetter() {
-        article.imageUrl = IMAGE_URL
+        mArticle.imageUrl = IMAGE_URL
 
-        assertEquals(article.imageUrl, IMAGE_URL)
+        assertEquals(mArticle.imageUrl, IMAGE_URL)
     }
 
     @Test
     fun haveDateGetterAndSetter() {
-        article.date = POST_DATE.time
+        mArticle.date = POST_DATE.time
 
-        assertEquals(article.date ?: 0, POST_DATE.time)
+        assertEquals(mArticle.date ?: 0, POST_DATE.time)
     }
 
     @Test
     fun equalWithObjectIfEqualsItsOrigins() {
         var other = Article(title = TITLE, description = DESCRIPTION, originUrl = "")
 
-        assertFalse(other == article)
+        assertFalse(other == mArticle)
 
-        other = Article(title = "", description = "", originUrl = article.originUrl)
+        other = Article(title = "", description = "", originUrl = mArticle.originUrl)
 
-        assertTrue(article == other)
+        assertTrue(mArticle == other)
     }
 
     @Test
     fun hashcodeEqualOriginHashcode() {
-        assertEquals(article.hashCode().toLong(), article.originUrl.hashCode().toLong())
+        assertEquals(mArticle.hashCode().toLong(), mArticle.originUrl.hashCode().toLong())
     }
 }
