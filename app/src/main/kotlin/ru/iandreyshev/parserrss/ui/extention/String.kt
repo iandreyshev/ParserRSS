@@ -21,4 +21,3 @@ internal val String.tabTitle: String
 
         return result
     }
-

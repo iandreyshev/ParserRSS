@@ -19,6 +19,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import kotlinx.android.synthetic.main.activity_article.*
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.ui.extention.dateString
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 
@@ -43,7 +44,8 @@ class ArticleActivity : BaseActivity(), IArticleView {
 
     @ProvidePresenter
     fun provideArticlePresenter(): ArticlePresenter {
-        return ArticlePresenter(intent.getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID))
+        val articleId = intent.getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID)
+        return ArticlePresenter(UseCaseFactory, articleId)
     }
 
     override fun closeArticle() = finish()

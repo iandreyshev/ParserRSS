@@ -17,16 +17,13 @@ class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter
 
     private val mRssList = ArrayList<ViewRss>()
 
-    val isEmpty
-        get() = mRssList.isEmpty()
-
     fun insert(rss: ViewRss) {
         mRssList.add(rss)
         notifyDataSetChanged()
     }
 
-    fun remove(rss: ViewRss) {
-        mRssList.remove(rss)
+    fun remove(rssId: Long) {
+        mRssList.remove(mRssList.find { it.id == rssId })
         notifyDataSetChanged()
     }
 

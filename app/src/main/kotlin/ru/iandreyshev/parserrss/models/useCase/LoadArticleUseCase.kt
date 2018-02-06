@@ -1,60 +1,34 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import android.util.Log
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
-import ru.iandreyshev.parserrss.presentation.presenter.IPresenter
 
 class LoadArticleUseCase(
         private val mRepository: IRepository,
-        private val mListener: IListener,
-        private val mArticleId: Long) : IUseCase {
+        private val mPresenter: IListener,
+        private val mArticleId: Long) : BaseUseCase<Any?, Any?, Any?>(mPresenter) {
 
-    companion object {
-        private val TAG = LoadArticleUseCase::class.java.name
+    interface IListener : IUseCaseListener {
+        fun loadArticle(rss: ViewRss?, article: ViewArticle?)
     }
 
-    interface IListener : IPresenter {
-        fun initArticle(rss: ViewRss, article: ViewArticle)
+    private var mRss: ViewRss? = null
+    private var mArticle: ViewArticle? = null
 
-        fun initArticleFail()
-    }
-
-    override fun start() {
-        mListener.processStart()
-        doAsync {
-            try {
-                val articleFromRepository = mRepository.getArticleById(mArticleId)
-
-                if (articleFromRepository == null) {
-                    uiThread {
-                        mListener.processEnd()
-                        mListener.initArticleFail()
-                    }
-                    return@doAsync
-                }
-
-                val resultArticle = ViewArticle(articleFromRepository)
-                val resultRss = ViewRss(
-                        id = articleFromRepository.rssId,
-                        title = mRepository.getRssTitle(articleFromRepository.rssId)
-                )
-
-                uiThread {
-                    mListener.processEnd()
-                    mListener.initArticle(resultRss, resultArticle)
-                }
-            } catch (ex: Exception) {
-                Log.e(TAG, Log.getStackTraceString(ex))
-                uiThread {
-                    mListener.processEnd()
-                    mListener.initArticleFail()
-                }
-            }
+    override fun doInBackground(vararg params: Any?): Any? {
+        val article = mRepository.getArticleById(mArticleId)
+        val rss = article?.let {
+            mArticle = ViewArticle(article)
+            return@let mRepository.getRssById(article.rssId)
         }
+        mRss = rss?.let { return@let ViewRss(rss) }
+
+        return null
+    }
+
+    override fun onPostExecute(result: Any?) {
+        super.onPostExecute(result)
+        mPresenter.loadArticle(mRss, mArticle)
     }
 }

@@ -72,21 +72,21 @@ class RepositoryTest {
     @Test
     @Throws(Exception::class)
     fun returnTrueIfRssWithSameUrlExist() {
-        mRepository.putRssIfSameUrlNotExist(mRss)
+        mRepository.putNewRss(mRss)
         assertTrue(mRepository.isRssWithUrlExist(RSS_URL))
     }
 
     @Test
     @Throws(Exception::class)
     fun returnFalseIfRssWithSameUrlNotExist() {
-        mRepository.putRssIfSameUrlNotExist(mRss)
+        mRepository.putNewRss(mRss)
         assertFalse(mRepository.isRssWithUrlExist(NOT_USE_RSS_URL))
     }
 
     @Test
     @Throws(Exception::class)
     fun returnArticlesById() {
-        mRepository.putRssIfSameUrlNotExist(mRss)
+        mRepository.putNewRss(mRss)
 
         for ((id) in mRss.articles) {
             assertNotNull(mRepository.getArticleById(id))
@@ -96,7 +96,7 @@ class RepositoryTest {
     @Test
     @Throws(Exception::class)
     fun updateRssIdAfterPut() {
-        mRepository.putRssIfSameUrlNotExist(mRss)
+        mRepository.putNewRss(mRss)
 
         assertEquals(mRepository.getRssById(mRss.id), mRss)
     }
@@ -114,7 +114,7 @@ class RepositoryTest {
 
         assertEquals(newRss.url, mRss.url)
 
-        assertTrue(mRepository.putRssIfSameUrlNotExist(newRss))
+        assertTrue(mRepository.putNewRss(newRss))
         assertTrue(mRepository.updateRssWithSameUrl(mRss))
 
         assertNotEquals(newRss.title, mRss.title)
@@ -126,14 +126,14 @@ class RepositoryTest {
     fun returnFalseWhenUpdatingNotExistRss() {
         val newRss = Rss(title = "", origin = "", url = NOT_USE_RSS_URL)
 
-        assertTrue(mRepository.putRssIfSameUrlNotExist(newRss))
+        assertTrue(mRepository.putNewRss(newRss))
         assertFalse(mRepository.updateRssWithSameUrl(mRss))
     }
 
     @Test
     @Throws(Exception::class)
     fun removeRss() {
-        assertTrue(mRepository.putRssIfSameUrlNotExist(mRss))
+        assertTrue(mRepository.putNewRss(mRss))
         mRepository.removeRssById(mRss.id)
         assertNull(mRepository.getRssById(mRss.id))
     }
@@ -141,16 +141,16 @@ class RepositoryTest {
     @Test
     @Throws(Exception::class)
     fun returnFalseAfterPutRssWithSameUrl() {
-        mRepository.putRssIfSameUrlNotExist(mRss)
+        mRepository.putNewRss(mRss)
         val rssWithSameUrl = Rss(title = "", origin = "", url = RSS_URL)
         rssWithSameUrl.url = mRss.url
-        assertFalse(mRepository.putRssIfSameUrlNotExist(rssWithSameUrl))
+        assertFalse(mRepository.putNewRss(rssWithSameUrl))
     }
 
     @Test
     @Throws(Exception::class)
     fun updateRssArticlesIdAfterPut() {
-        mRepository.putRssIfSameUrlNotExist(mRss)
+        mRepository.putNewRss(mRss)
 
         for ((_, rssId) in mRss.articles) {
             assertTrue(rssId == mRss.id)
@@ -162,7 +162,7 @@ class RepositoryTest {
     fun returnRssWithSameArticles() {
         val articles = HashSet(mRss.articles)
 
-        mRepository.putRssIfSameUrlNotExist(mRss)
+        mRepository.putNewRss(mRss)
         val rssFromDatabase = mRepository.getRssById(mRss.id)
 
         if (rssFromDatabase == null) {

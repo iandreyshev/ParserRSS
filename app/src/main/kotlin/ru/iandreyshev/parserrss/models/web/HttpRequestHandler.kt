@@ -9,18 +9,15 @@ import okhttp3.Request
 class HttpRequestHandler(urlString: String) : IHttpRequestHandler {
 
     companion object {
-        private const val MAX_CONTENT_BYTES = 5242880L // 5MB
+        private const val DEFAULT_CONTENT_BYTES = 5242880L // 5MB
 
         private const val GOOD_RESPONSE_CODE = 200
         private const val DEFAULT_PROTOCOL = "http://"
-        private const val DEFAULT_URL = ""
 
-        private const val READ_TIMEOUT_SEC = 3L
-        private const val CONNECTION_TIMEOUT_SEC = 3L
-        private const val WRITE_TIMEOUT_SEC = 3L
+        private const val DEFAULT_READ_TIMEOUT_MS = 3000L
+        private const val DEFAULT_CONNECTION_TIMEOUT_MS = 3000L
+        private const val DEFAULT_WRITE_TIMEOUT_MS = 3000L
     }
-
-    constructor() : this(DEFAULT_URL)
 
     enum class State {
         NOT_SEND,
@@ -30,10 +27,10 @@ class HttpRequestHandler(urlString: String) : IHttpRequestHandler {
         PERMISSION_DENIED
     }
 
-    override var maxContentBytes: Long = MAX_CONTENT_BYTES
-    override var readTimeoutSec: Long = READ_TIMEOUT_SEC
-    override var connectionTimeoutSec: Long = CONNECTION_TIMEOUT_SEC
-    override var writeTimeoutSec: Long = WRITE_TIMEOUT_SEC
+    override var maxContentBytes: Long = DEFAULT_CONTENT_BYTES
+    override var readTimeoutMs: Long = DEFAULT_READ_TIMEOUT_MS
+    override var connectionTimeoutMs: Long = DEFAULT_CONNECTION_TIMEOUT_MS
+    override var writeTimeoutMs: Long = DEFAULT_WRITE_TIMEOUT_MS
 
     override var urlString: String = urlString
         private set
@@ -74,9 +71,9 @@ class HttpRequestHandler(urlString: String) : IHttpRequestHandler {
     private fun send(request: Request) {
         try {
             val client = OkHttpClient.Builder()
-                    .readTimeout(readTimeoutSec, TimeUnit.SECONDS)
-                    .connectTimeout(connectionTimeoutSec, TimeUnit.SECONDS)
-                    .writeTimeout(writeTimeoutSec, TimeUnit.SECONDS)
+                    .readTimeout(readTimeoutMs, TimeUnit.MILLISECONDS)
+                    .connectTimeout(connectionTimeoutMs, TimeUnit.MILLISECONDS)
+                    .writeTimeout(writeTimeoutMs, TimeUnit.MILLISECONDS)
                     .build()
 
             client.newCall(request).execute().use { response ->

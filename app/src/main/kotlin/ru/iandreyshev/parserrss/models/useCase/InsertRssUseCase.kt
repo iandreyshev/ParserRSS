@@ -1,79 +1,78 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import android.util.Log
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.web.IHttpRequestHandler
+import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
-class InsertRssUseCase (
+class InsertRssUseCase(
         private val mRepository: IRepository,
         private val mRequestHandler: IHttpRequestHandler,
         filter: IArticlesFilter,
-        private val mListener: IListener)
+        private val mPresenter: IListener)
     : DownloadRssUseCase(
         mRequestHandler,
         filter,
-        mListener), IUseCase {
+        mPresenter) {
 
-    companion object {
-        private val TAG = InsertRssUseCase::class.java.name
+    private var mResultEvent: (() -> Unit)? = null
+
+    interface IListener : IUseCaseListener {
+        fun rssAlreadyExist()
+
+        fun rssCountIsMax()
+
+        fun invalidRssUrl()
+
+        fun connectionError(requestResult: IHttpRequestResult)
+
+        fun invalidRssFormat()
+
+        fun insertNewRss(rss: ViewRss, isFull: Boolean)
     }
 
-    private var mIsRssWithUrlExist = false
-
-    interface IListener : DownloadRssUseCase.IListener {
-        fun onRssAlreadyExist()
-
-        fun onDatabaseError()
-
-        fun onSuccess(rss: ViewRss)
+    override fun doInBackground(vararg params: Any?): Any? {
+        return if (mRepository.isFull) {
+            mResultEvent = mPresenter::rssCountIsMax
+            null
+        } else {
+            super.doInBackground(*params)
+        }
     }
 
     override fun isUrlValidAsync(): Boolean {
         if (!super.isUrlValidAsync()) {
-
+            mResultEvent = mPresenter::invalidRssUrl
             return false
 
         } else if (mRepository.isRssWithUrlExist(mRequestHandler.urlString)) {
-            mIsRssWithUrlExist = true
-
+            mResultEvent = mPresenter::rssAlreadyExist
             return false
         }
 
         return true
     }
 
-    override fun onUrlError() {
-        if (mIsRssWithUrlExist) {
-            mListener.onRssAlreadyExist()
-        } else {
-            mListener.onInvalidUrl()
-        }
+    override fun onNetErrorAsync(requestResult: IHttpRequestResult) {
+        mResultEvent = { mPresenter.connectionError(requestResult) }
+    }
+
+    override fun onParserErrorAsync() {
+        mResultEvent = mPresenter::invalidRssFormat
     }
 
     override fun onSuccessAsync(rss: Rss) {
-        doAsync {
-            try {
-                if (mRepository.putRssIfSameUrlNotExist(rss)) {
-                    uiThread {
-                        mListener.onSuccess(ViewRss(rss))
-                    }
-                } else {
-                    uiThread {
-                        mListener.onRssAlreadyExist()
-                    }
-                }
-            } catch (ex: Exception) {
-                Log.e(TAG, Log.getStackTraceString(ex))
-                uiThread {
-                    mListener.onDatabaseError()
-                }
-            }
+        mResultEvent = when (mRepository.putNewRss(rss)) {
+            IRepository.PutRssState.SUCCESS -> { -> mPresenter.insertNewRss(ViewRss(rss), mRepository.isFull) }
+            IRepository.PutRssState.EXIST -> mPresenter::rssAlreadyExist
+            IRepository.PutRssState.FULL -> mPresenter::rssCountIsMax
         }
+    }
+
+    override fun onPostExecute(result: Any?) {
+        super.onPostExecute(result)
+        mResultEvent?.invoke()
     }
 }

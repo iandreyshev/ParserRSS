@@ -1,17 +1,18 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import android.net.Uri
+import ru.iandreyshev.parserrss.models.extention.uri
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
-class LoadArticlesFirstTimeUseCase(
+class OpenRssOriginalUseCase(
         private val mRss: ViewRss,
         private val mPresenter: IListener) : IUseCase {
 
     interface IListener : IUseCaseListener {
-        fun insertArticlesFirstTime(articles: MutableList<ViewArticle>)
+        fun openOriginal(path: Uri?)
     }
 
     override fun start() {
-        mPresenter.insertArticlesFirstTime(mRss.articles)
+        mPresenter.openOriginal(mRss.origin?.uri)
     }
 }

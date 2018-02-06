@@ -20,6 +20,7 @@ import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.view_feed_list.*
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.presentation.view.IItemsListView
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import java.lang.ref.WeakReference
@@ -33,7 +34,7 @@ class FeedPageFragment : BaseFragment(),
 
         fun newInstance(rss: ViewRss): FeedPageFragment {
             val fragment = FeedPageFragment()
-            fragment.presenter = FeedPagePresenter(rss)
+            fragment.presenter = FeedPagePresenter(UseCaseFactory, rss)
 
             return fragment
         }

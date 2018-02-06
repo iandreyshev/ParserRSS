@@ -7,14 +7,14 @@ class ProcessCounter(private val mListener: (Int) -> Unit) {
         mListener(mCount)
     }
 
-    fun startProcess() {
+    fun add() {
         if (mCount < Int.MAX_VALUE) {
             ++mCount
             mListener(mCount)
         }
     }
 
-    fun endProcess() {
+    fun remove() {
         if (mCount > 0) {
             --mCount
             mListener(mCount)

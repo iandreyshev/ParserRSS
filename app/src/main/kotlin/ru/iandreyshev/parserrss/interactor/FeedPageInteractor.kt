@@ -1,41 +1,37 @@
 package ru.iandreyshev.parserrss.interactor
 
-import ru.iandreyshev.parserrss.factory.IUseCaseFactory
-import ru.iandreyshev.parserrss.models.useCase.*
-import ru.iandreyshev.parserrss.presentation.presenter.IPresenter
+import ru.iandreyshev.parserrss.R
+import ru.iandreyshev.parserrss.app.App
+import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
+import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 
 class FeedPageInteractor(
         private val mUseCaseFactory: IUseCaseFactory,
-        private val mPresenter: IListener,
+        private val mListener: IUseCaseListener,
         private val mRss: ViewRss) {
 
-    interface IListener : IPresenter,
-            UpdateRssUseCase.IListener,
-            LoadArticlesFirstTimeUseCase.IListener
-
     init {
-        mUseCaseFactory.create(
-                UseCaseType.LOAD_ARTICLES_FIRST_TIME,
-                mPresenter,
-                mRss
-        ).start()
+        mUseCaseFactory
+                .create(UseCaseType.LOAD_ARTICLES_FIRST_TIME, mListener, mRss)
+                .start()
     }
 
     fun load(icon: IItemIcon) {
-        mUseCaseFactory.create(
-                UseCaseType.LOAD_IMAGE_TO_FEED_ITEM,
-                mPresenter,
-                icon
-        ).start()
+        mUseCaseFactory
+                .create(UseCaseType.LOAD_ARTICLE_IMAGE_TO_FEED_ITEM, mListener, icon)
+                .start()
     }
 
     fun onUpdate() {
-        mUseCaseFactory.create(
-                UseCaseType.UPDATE_RSS,
-                mPresenter,
-                mRss.id
-        ).start()
+        val url = mRss.url
+        when (url) {
+            null -> mUseCaseFactory
+                    .create(UseCaseType.MESSAGE, mListener, App.getStr(R.string.toast_invalid_url))
+            else -> mUseCaseFactory
+                    .create(UseCaseType.UPDATE_RSS, mListener, url)
+        }.start()
     }
 }

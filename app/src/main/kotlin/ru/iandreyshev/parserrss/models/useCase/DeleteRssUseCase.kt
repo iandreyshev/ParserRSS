@@ -1,40 +1,24 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import android.util.Log
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-
 import ru.iandreyshev.parserrss.models.repository.IRepository
 
 class DeleteRssUseCase(
         private val mRepository: IRepository,
         private val mRssId: Long,
-        private val mListener: IListener) : IUseCase {
+        private val mPresenter: IListener) : BaseUseCase<Any, Any, Any?>(mPresenter) {
 
-    companion object {
-        private val TAG = DeleteRssUseCase::class.java.name
+    interface IListener : IUseCaseListener {
+        fun removeRss(id: Long)
     }
 
-    interface IListener {
-        fun onDeleteRssSuccess(rssId: Long)
+    override fun doInBackground(vararg rssToDelete: Any): Long? {
+        mRepository.removeRssById(mRssId)
 
-        fun onDeleteRssFail()
+        return null
     }
 
-    override fun start() {
-        doAsync {
-            try {
-                mRepository.removeRssById(mRssId)
-
-                uiThread {
-                    mListener.onDeleteRssSuccess(mRssId)
-                }
-            } catch (ex: Exception) {
-                Log.e(TAG, Log.getStackTraceString(ex))
-                uiThread {
-                    mListener.onDeleteRssFail()
-                }
-            }
-        }
+    override fun onPostExecute(result: Any?) {
+        super.onPostExecute(result)
+        mPresenter.removeRss(mRssId)
     }
 }

@@ -12,7 +12,7 @@ interface IFeedView : IBaseView {
     fun insertRss(rss: ViewRss)
 
     @StateStrategyType(AddToEndStrategy::class)
-    fun removeRss(rss: ViewRss)
+    fun removeRss(rssId: Long)
 
     @StateStrategyType(SkipStrategy::class)
     fun openArticle(articleId: Long)
@@ -28,9 +28,6 @@ interface IFeedView : IBaseView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun openEmptyContentMessage(isOpen: Boolean)
-
-    @StateStrategyType(SkipStrategy::class)
-    fun openPage(position: Int)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun setToolbarScrollable(isScrollable: Boolean)

@@ -6,9 +6,10 @@ import java.util.HashSet
 
 import io.objectbox.BoxStore
 
-class Repository(private val boxStore: BoxStore) : IRepository {
+class Repository(private val mBoxStore: BoxStore) : IRepository {
 
     companion object {
+        const val MAX_RSS_COUNT = 5L
         internal val INVALID_IDS: MutableList<Long> = ArrayList()
 
         init {
@@ -17,16 +18,20 @@ class Repository(private val boxStore: BoxStore) : IRepository {
         }
     }
 
-    private val mRssBox = boxStore.boxFor(Rss::class.java)
-    private val mArticleBox = boxStore.boxFor(Article::class.java)
-    private val mArticleImageBox = boxStore.boxFor(ArticleImage::class.java)
+    private val mRssBox = mBoxStore.boxFor(Rss::class.java)
+    private val mArticleBox = mBoxStore.boxFor(Article::class.java)
+    private val mArticleImageBox = mBoxStore.boxFor(ArticleImage::class.java)
 
-    override fun getRssIdList(): LongArray = boxStore.callInTx {
-        mRssBox.query()
-                .notNull(Rss_.id)
-                .build()
-                .findIds()
-    }
+    override val isFull: Boolean
+        get() = mRssBox.count() == MAX_RSS_COUNT
+
+    override val rssIdList: LongArray
+        get() = mBoxStore.callInTx {
+            mRssBox.query()
+                    .notNull(Rss_.id)
+                    .build()
+                    .findIds()
+        }
 
     override fun getRssById(id: Long): Rss? {
         val rss = getRss(id) ?: return null
@@ -39,8 +44,12 @@ class Repository(private val boxStore: BoxStore) : IRepository {
 
     override fun isRssWithUrlExist(url: String): Boolean = !mRssBox.find(Rss_.url, url).isEmpty()
 
-    override fun putRssIfSameUrlNotExist(newRss: Rss): Boolean {
-        return boxStore.callInTx {
+    override fun putNewRss(newRss: Rss): IRepository.PutRssState {
+        return mBoxStore.callInTx {
+            if (mRssBox.count() == MAX_RSS_COUNT) {
+                IRepository.PutRssState.FULL
+            }
+
             val rssWithSameUrl = mRssBox.query()
                     .equal(Rss_.url, newRss.url)
                     .build()
@@ -49,15 +58,15 @@ class Repository(private val boxStore: BoxStore) : IRepository {
             if (rssWithSameUrl == null) {
                 mRssBox.put(newRss)
                 putArticles(newRss)
-                true
+                IRepository.PutRssState.SUCCESS
             } else {
-                false
+                IRepository.PutRssState.EXIST
             }
         }
     }
 
     override fun updateRssWithSameUrl(newRss: Rss): Boolean {
-        return boxStore.callInTx {
+        return mBoxStore.callInTx {
             val rssWithSameUrl = mRssBox.query()
                     .equal(Rss_.url, newRss.url)
                     .build()
@@ -81,7 +90,7 @@ class Repository(private val boxStore: BoxStore) : IRepository {
             return false
         }
 
-        return boxStore.callInTx {
+        return mBoxStore.callInTx {
             mRssBox.remove(id)
             mArticleBox.query()
                     .equal(Article_.rssId, id)
@@ -100,8 +109,8 @@ class Repository(private val boxStore: BoxStore) : IRepository {
                 .findFirst()
     }
 
-    override fun putArticleImage(articleId: Long, imageBitmap: Bitmap): Boolean {
-        return boxStore.callInTx {
+    override fun putArticleImageIfArticleExist(articleId: Long, imageBitmap: Bitmap): Boolean {
+        return mBoxStore.callInTx {
             val record = ArticleImage(articleId = articleId, bitmap = imageBitmap)
             val isArticleExist = mArticleBox.query()
                     .equal(Article_.id, articleId)
@@ -163,7 +172,7 @@ class Repository(private val boxStore: BoxStore) : IRepository {
     }
 
     private fun removeArticle(id: Long) {
-        boxStore.runInTx {
+        mBoxStore.runInTx {
             mArticleBox.remove(id)
             mArticleImageBox.query()
                     .equal(ArticleImage_.articleId, id)

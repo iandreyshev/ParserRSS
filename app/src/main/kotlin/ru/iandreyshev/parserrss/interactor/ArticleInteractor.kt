@@ -1,33 +1,27 @@
 package ru.iandreyshev.parserrss.interactor
 
-import ru.iandreyshev.parserrss.factory.IUseCaseFactory
-import ru.iandreyshev.parserrss.models.useCase.IUseCase
-import ru.iandreyshev.parserrss.models.useCase.UseCaseType
-import ru.iandreyshev.parserrss.presentation.presenter.IPresenter
+import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
+import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 
-class ArticleInteractor(useCaseFactory: IUseCaseFactory, presenter: IPresenter, articleId: Long) {
-
-    private val mOpenOriginalUseCase: IUseCase
+class ArticleInteractor(
+        private val mUseCaseFactory: IUseCaseFactory,
+        private val mListener: IUseCaseListener,
+        private val mArticleId: Long) {
 
     init {
-        useCaseFactory.create(
-                UseCaseType.LOAD_ARTICLE_DATA,
-                presenter,
-                articleId
-        ).start()
+        mUseCaseFactory
+                .create(UseCaseType.LOAD_ARTICLE, mListener, mArticleId)
+                .start()
 
-        useCaseFactory.create(
-                UseCaseType.LOAD_IMAGE_TO_ACTIVITY,
-                presenter,
-                articleId
-        ).start()
-
-        mOpenOriginalUseCase = useCaseFactory.create(
-                UseCaseType.OPEN_ARTICLE_ORIGINAL,
-                presenter,
-                articleId
-        )
+        mUseCaseFactory
+                .create(UseCaseType.LOAD_ARTICLE_IMAGE, mListener, mArticleId)
+                .start()
     }
 
-    fun onOpenOriginal() = mOpenOriginalUseCase.start()
+    fun onOpenOriginal() {
+        mUseCaseFactory
+                .create(UseCaseType.OPEN_ARTICLE_ORIGINAL, mListener, mArticleId)
+                .start()
+    }
 }

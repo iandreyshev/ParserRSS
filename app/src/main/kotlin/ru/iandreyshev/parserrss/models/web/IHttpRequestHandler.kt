@@ -2,9 +2,9 @@ package ru.iandreyshev.parserrss.models.web
 
 interface IHttpRequestHandler : IHttpRequestResult {
     var maxContentBytes: Long
-    var readTimeoutSec: Long
-    var connectionTimeoutSec: Long
-    var writeTimeoutSec: Long
+    var readTimeoutMs: Long
+    var connectionTimeoutMs: Long
+    var writeTimeoutMs: Long
 
     fun sendGet(): HttpRequestHandler.State
 

@@ -55,6 +55,7 @@ dependencies {
     implementation "io.objectbox:objectbox-windows:$objectboxVersion"
     implementation "io.objectbox:objectbox-kotlin:$objectboxVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "org.jetbrains.anko:anko-coroutines:$ankoVersion"
     implementation "org.jetbrains.anko:anko-commons:$ankoVersion"
     implementation "eu.inloop:pageradapter:0.1.0"
 
