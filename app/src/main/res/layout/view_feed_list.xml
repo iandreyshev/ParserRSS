@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/feed_list_empty"
+            android:text="@string/rss_page_is_empty"
             android:textAlignment="center" />
 
     </FrameLayout>

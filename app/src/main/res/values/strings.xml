@@ -28,6 +28,8 @@
     <string name="rss_info_dialog_ok_button">OK</string>
     <string name="rss_info_open_original_button">OPEN ORIGINAL</string>
 
+    <string name="rss_page_is_empty">Rss is empty</string>
+
     <string name="internet_permission_denied_dialog_accept">OK</string>
     <string name="internet_permission_denied_dialog_open_settings">OPEN SETTINGS</string>
     <string name="internet_permission_denied_dialog_title">Internet permission denied</string>
