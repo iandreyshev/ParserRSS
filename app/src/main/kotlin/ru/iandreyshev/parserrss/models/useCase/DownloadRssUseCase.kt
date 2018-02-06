@@ -3,11 +3,10 @@ package ru.iandreyshev.parserrss.models.useCase
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ParserEngine
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
-import ru.iandreyshev.parserrss.models.web.IHttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 abstract class DownloadRssUseCase(
-        private val mRequestHandler: IHttpRequestHandler,
+        private val mRequestHandler: HttpRequestHandler,
         mListener: IUseCaseListener) : BaseUseCase<Any, Any, Any?>(mListener) {
 
     companion object {
@@ -31,7 +30,7 @@ abstract class DownloadRssUseCase(
     }
 
     protected open fun getRssFromNetAsync(): Boolean {
-        mRequestHandler.sendGet()
+        mRequestHandler.send()
 
         return mRequestHandler.state == HttpRequestHandler.State.SUCCESS
     }

@@ -10,7 +10,7 @@ import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadArticlesFirstTimeUseCase
 import ru.iandreyshev.parserrss.models.useCase.UpdateRssUseCase
-import ru.iandreyshev.parserrss.models.util.ProcessCounter
+import ru.iandreyshev.parserrss.models.counter.ProcessCounter
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast

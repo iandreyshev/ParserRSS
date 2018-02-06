@@ -20,6 +20,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import kotlinx.android.synthetic.main.activity_article.*
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
+import ru.iandreyshev.parserrss.ui.animation.ImageFadeChangeAnimation
 import ru.iandreyshev.parserrss.ui.extention.dateString
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 
@@ -30,6 +31,8 @@ class ArticleActivity : BaseActivity(), IArticleView {
         private const val DEFAULT_ARTICLE_ID: Long = 0
         private const val BACK_BUTTON = android.R.id.home
         private const val OPEN_IN_BROWSER_BUTTON = R.id.article_option_open_in_browser
+        private const val IMAGE_IN_DURATION_MS: Long = 750
+        private const val IMAGE_OUT_DURATION_MS: Long = 0
 
         fun getIntent(context: Context): Intent {
             return Intent(context, ArticleActivity::class.java)
@@ -37,10 +40,11 @@ class ArticleActivity : BaseActivity(), IArticleView {
     }
 
     @InjectPresenter
-    lateinit var presenter: ArticlePresenter
+    lateinit var mPresenter: ArticlePresenter
 
     private val mInteractor
-        get() = presenter.interactor
+        get() = mPresenter.interactor
+    private var mIsOpenOriginalEnabled = false
 
     @ProvidePresenter
     fun provideArticlePresenter(): ArticlePresenter {
@@ -83,6 +87,8 @@ class ArticleActivity : BaseActivity(), IArticleView {
     override fun setImage(imageBitmap: Bitmap) {
         imageView.visibility = View.VISIBLE
         imageView.setImageBitmap(imageBitmap)
+        ImageFadeChangeAnimation(this, IMAGE_IN_DURATION_MS, IMAGE_OUT_DURATION_MS)
+                .start(imageView, imageBitmap)
     }
 
     override fun startProgressBar(isStart: Boolean) {

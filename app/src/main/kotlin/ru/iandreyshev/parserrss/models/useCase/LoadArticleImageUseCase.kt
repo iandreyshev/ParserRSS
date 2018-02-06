@@ -4,11 +4,11 @@ import android.graphics.Bitmap
 
 import ru.iandreyshev.parserrss.models.imageProps.IImageProps
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.web.IHttpRequestHandler
+import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 open class LoadArticleImageUseCase(
         repository: IRepository,
-        requestHandler: IHttpRequestHandler,
+        requestHandler: HttpRequestHandler,
         imageProps: IImageProps,
         articleId: Long,
         private val mListener: IListener)

@@ -3,12 +3,12 @@ package ru.iandreyshev.parserrss.models.useCase
 import android.graphics.Bitmap
 import ru.iandreyshev.parserrss.models.imageProps.IImageProps
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.web.IHttpRequestHandler
+import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 
 class LoadArticleImageToFeedItemUseCase(
         repository: IRepository,
-        requestHandler: IHttpRequestHandler,
+        requestHandler: HttpRequestHandler,
         imageProps: IImageProps,
         private val mIcon: IItemIcon,
         mListener: IUseCaseListener)

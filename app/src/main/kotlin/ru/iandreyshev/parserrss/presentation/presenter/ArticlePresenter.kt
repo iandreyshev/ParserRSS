@@ -14,7 +14,7 @@ import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadArticleUseCase
 import ru.iandreyshev.parserrss.models.useCase.LoadArticleImageUseCase
 import ru.iandreyshev.parserrss.models.useCase.OpenArticleOriginalUseCase
-import ru.iandreyshev.parserrss.models.util.ProcessCounter
+import ru.iandreyshev.parserrss.models.counter.ProcessCounter
 import ru.iandreyshev.parserrss.presentation.presenter.extention.openInBrowser
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 

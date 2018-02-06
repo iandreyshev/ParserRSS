@@ -9,7 +9,7 @@ import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
 import ru.iandreyshev.parserrss.interactor.FeedInteractor
 import ru.iandreyshev.parserrss.models.useCase.*
-import ru.iandreyshev.parserrss.models.util.ProcessCounter
+import ru.iandreyshev.parserrss.models.counter.ProcessCounter
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast

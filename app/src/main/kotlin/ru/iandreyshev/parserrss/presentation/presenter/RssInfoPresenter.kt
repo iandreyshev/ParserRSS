@@ -20,6 +20,7 @@ class RssInfoPresenter(useCaseFactory: IUseCaseFactory, rss: ViewRss) : MvpPrese
 
     private inner class UseCaseListener : LoadRssInfoUseCase.IListener,
             OpenRssOriginalUseCase.IListener {
+
         override fun enableOpenOriginalButton(isEnabled: Boolean) {
             viewState.setOpenOriginalEnabled(isEnabled)
         }

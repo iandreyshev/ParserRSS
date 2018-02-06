@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.util
+package ru.iandreyshev.parserrss.models.counter
 
 class ProcessCounter(private val mListener: (Int) -> Unit) {
     private var mCount: Int = 0

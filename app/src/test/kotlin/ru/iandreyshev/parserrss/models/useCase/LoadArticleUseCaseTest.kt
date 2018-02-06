@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import android.app.Activity
 import io.objectbox.BoxStore
 import org.junit.Assert.*
 import org.junit.Before
@@ -8,7 +7,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 import org.robolectric.RobolectricTestRunner
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.MyObjectBox

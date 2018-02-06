@@ -5,12 +5,12 @@ import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
-import ru.iandreyshev.parserrss.models.web.IHttpRequestHandler
+import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 class UpdateRssUseCase(
         private val mRepository: IRepository,
-        private val mRequestHandler: IHttpRequestHandler,
+        private val mRequestHandler: HttpRequestHandler,
         private val mArticlesFilter: IArticlesFilter,
         private val mListener: IListener) : DownloadRssUseCase(mRequestHandler, mListener) {
 
@@ -50,11 +50,11 @@ class UpdateRssUseCase(
     }
 
     override fun onSuccessAsync(rss: Rss) {
-        if (mRepository.updateRssWithSameUrl(rss)) {
+        mResultEvent = if (mRepository.updateRssWithSameUrl(rss)) {
             mArticlesFilter.sort(rss.articles)
-            mResultEvent = { mListener.updateSuccess(ViewRss(rss).articles) }
+            fun() { mListener.updateSuccess(ViewRss(rss).articles) }
         } else {
-            mResultEvent = mListener::rssNotExist
+            mListener::rssNotExist
         }
     }
 
