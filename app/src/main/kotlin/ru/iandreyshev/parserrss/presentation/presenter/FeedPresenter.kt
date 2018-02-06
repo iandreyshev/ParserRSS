@@ -35,6 +35,7 @@ class FeedPresenter(useCaseFactory: IUseCaseFactory) : MvpPresenter<IFeedView>()
 
         override fun insertNewRss(rss: ViewRss, isFull: Boolean) {
             viewState.insertRss(rss)
+            viewState.openRssPage(rss.id)
             mRssCounter.add()
             onChangeCapacityStatus(isFull)
         }
@@ -74,6 +75,10 @@ class FeedPresenter(useCaseFactory: IUseCaseFactory) : MvpPresenter<IFeedView>()
             viewState.openAddingRssDialog()
         }
 
+        override fun updateCapacityBeforeLoad(isFull: Boolean) {
+            onChangeCapacityStatus(isFull)
+        }
+
         override fun openRssInfo(rss: ViewRss) = viewState.openRssInfo(rss)
 
         override fun processStart() = mProcessCounter.add()
@@ -96,6 +101,8 @@ class FeedPresenter(useCaseFactory: IUseCaseFactory) : MvpPresenter<IFeedView>()
 
     private fun onChangeCapacityStatus(isFull: Boolean) {
         viewState.enableAddButton(!isFull)
-        if (isFull) toast(R.string.feed_is_full)
+        if (isFull) {
+            toast(R.string.feed_is_full)
+        }
     }
 }

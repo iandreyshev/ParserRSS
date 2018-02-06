@@ -57,4 +57,8 @@ class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter
 
         return if (position < 0) PagerAdapter.POSITION_NONE else position
     }
+
+    fun getPagePositionById(rssId: Long): Int {
+        return mRssList.indexOfFirst { it.id == rssId }
+    }
 }

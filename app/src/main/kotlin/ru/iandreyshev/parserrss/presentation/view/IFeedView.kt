@@ -15,6 +15,9 @@ interface IFeedView : IBaseView {
     fun removeRss(rssId: Long)
 
     @StateStrategyType(SkipStrategy::class)
+    fun openRssPage(rssId: Long)
+
+    @StateStrategyType(SkipStrategy::class)
     fun openArticle(articleId: Long)
 
     @StateStrategyType(SkipStrategy::class)

@@ -6,7 +6,7 @@ import java.util.HashSet
 
 import io.objectbox.BoxStore
 
-class Repository(private val mBoxStore: BoxStore) : IRepository {
+class RssRepository(private val mBoxStore: BoxStore) : IRepository {
 
     companion object {
         const val MAX_RSS_COUNT = 5L

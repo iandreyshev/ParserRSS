@@ -26,7 +26,7 @@ class RepositoryTest {
         private const val ARTICLE_ORIGIN = "ORIGIN %s"
     }
 
-    private lateinit var mRepository: Repository
+    private lateinit var mRepository: RssRepository
     private lateinit var mRss: Rss
 
     @Before
@@ -36,7 +36,7 @@ class RepositoryTest {
 
         assertTrue(tempFile.delete())
 
-        mRepository = Repository(MyObjectBox.builder().directory(tempFile).build())
+        mRepository = RssRepository(MyObjectBox.builder().directory(tempFile).build())
 
         mRss = Rss(
                 title = RSS_TITLE,
@@ -54,7 +54,7 @@ class RepositoryTest {
     @Test
     fun noThrowExceptionIfTryToGetItemByInvalidId() {
         try {
-            Repository.INVALID_IDS.forEach {
+            RssRepository.INVALID_IDS.forEach {
                 mRepository.getArticleById(it)
                 mRepository.getRssById(it)
                 mRepository.removeRssById(it)

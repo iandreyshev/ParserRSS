@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.rss.ParserEngine
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
@@ -9,7 +8,6 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 abstract class DownloadRssUseCase(
         private val mRequestHandler: IHttpRequestHandler,
-        private val mArticlesFilter: IArticlesFilter,
         mListener: IUseCaseListener) : BaseUseCase<Any, Any, Any?>(mListener) {
 
     companion object {
@@ -59,7 +57,6 @@ abstract class DownloadRssUseCase(
                 null -> onParserErrorAsync()
                 else -> {
                     it.url = mRequestHandler.urlString
-                    mArticlesFilter.sort(it.articles)
                     onSuccessAsync(it)
                 }
             }

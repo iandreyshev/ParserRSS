@@ -2,10 +2,8 @@ package ru.iandreyshev.parserrss.app
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 
 import io.objectbox.BoxStore
-import io.objectbox.kotlin.boxFor
 import ru.iandreyshev.parserrss.models.repository.*
 import java.lang.ref.WeakReference
 
@@ -17,7 +15,7 @@ class App : Application() {
         private lateinit var mBoxStore: BoxStore
 
         val repository: IRepository
-            get() = Repository(mBoxStore)
+            get() = RssRepository(mBoxStore)
 
         fun getStr(id: Int): String = mCtxInstance.get()?.getString(id) ?: DEFAULT_STRING
     }

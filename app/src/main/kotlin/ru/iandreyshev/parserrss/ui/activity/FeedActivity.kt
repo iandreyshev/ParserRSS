@@ -53,9 +53,21 @@ class FeedActivity : BaseActivity(),
     @ProvidePresenter
     fun provideFeedPresenter() = FeedPresenter(UseCaseFactory)
 
-    override fun insertRss(rss: ViewRss) = mPagesAdapter.insert(rss)
+    override fun insertRss(rss: ViewRss) {
+        mPagesAdapter.insert(rss)
+    }
 
-    override fun removeRss(rssId: Long) = mPagesAdapter.remove(rssId)
+    override fun removeRss(rssId: Long) {
+        mPagesAdapter.remove(rssId)
+    }
+
+    override fun openRssPage(rssId: Long) {
+        val pagePosition = mPagesAdapter.getPagePositionById(rssId)
+
+        if (pagePosition >= 0) {
+            pagerLayout.currentItem = pagePosition
+        }
+    }
 
     override fun openArticle(articleId: Long) {
         val intent = ArticleActivity.getIntent(this)
