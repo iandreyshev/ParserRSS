@@ -17,19 +17,19 @@ class HttpRequestHandlerTest {
     @Test
     fun returnNotSendAfterCreateWithValidUrl() {
         val handler = GetRequestHandler(VALID_URL_WITH_PROTOCOL)
-        assertEquals(handler.state, GetRequestHandler.State.NOT_SEND)
+        assertEquals(handler.state, HttpRequestHandler.State.NOT_SEND)
     }
 
     @Test
     fun returnNotSendAfterCreateWithValidUrlWithoutProtocol() {
         val handler = GetRequestHandler(VALID_URL_WITHOUT_PROTOCOL)
-        assertEquals(handler.state, GetRequestHandler.State.NOT_SEND)
+        assertEquals(handler.state, HttpRequestHandler.State.NOT_SEND)
     }
 
     @Test
     fun returnBadUrlAfterCreateWithInvalidUrl() {
         val handler = GetRequestHandler(INVALID_URL)
-        assertEquals(GetRequestHandler.State.NOT_SEND, handler.state)
+        assertEquals(HttpRequestHandler.State.NOT_SEND, handler.state)
     }
 
     @Test
@@ -48,8 +48,8 @@ class HttpRequestHandlerTest {
     @Test
     fun resetStateAfterResetUrl() {
         val handler = GetRequestHandler(VALID_URL_WITH_PROTOCOL)
-        assertEquals(handler.state, GetRequestHandler.State.NOT_SEND)
-        handler.sendGet(INVALID_URL)
-        assertEquals(handler.state, GetRequestHandler.State.BAD_URL)
+        assertEquals(handler.state, HttpRequestHandler.State.NOT_SEND)
+        handler.send(INVALID_URL)
+        assertEquals(handler.state, HttpRequestHandler.State.BAD_URL)
     }
 }

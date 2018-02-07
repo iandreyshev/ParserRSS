@@ -114,7 +114,7 @@ class RepositoryTest {
 
         assertEquals(newRss.url, mRss.url)
 
-        assertTrue(mRepository.putNewRss(newRss))
+        assertEquals(mRepository.putNewRss(newRss), IRepository.PutRssState.SUCCESS)
         assertTrue(mRepository.updateRssWithSameUrl(mRss))
 
         assertNotEquals(newRss.title, mRss.title)
@@ -126,25 +126,25 @@ class RepositoryTest {
     fun returnFalseWhenUpdatingNotExistRss() {
         val newRss = Rss(title = "", origin = "", url = NOT_USE_RSS_URL)
 
-        assertTrue(mRepository.putNewRss(newRss))
+        assertEquals(mRepository.putNewRss(newRss), IRepository.PutRssState.SUCCESS)
         assertFalse(mRepository.updateRssWithSameUrl(mRss))
     }
 
     @Test
     @Throws(Exception::class)
     fun removeRss() {
-        assertTrue(mRepository.putNewRss(mRss))
+        assertEquals(mRepository.putNewRss(mRss), IRepository.PutRssState.SUCCESS)
         mRepository.removeRssById(mRss.id)
         assertNull(mRepository.getRssById(mRss.id))
     }
 
     @Test
     @Throws(Exception::class)
-    fun returnFalseAfterPutRssWithSameUrl() {
+    fun returnExistStateAfterPutRssWithSameUrl() {
         mRepository.putNewRss(mRss)
         val rssWithSameUrl = Rss(title = "", origin = "", url = RSS_URL)
         rssWithSameUrl.url = mRss.url
-        assertFalse(mRepository.putNewRss(rssWithSameUrl))
+        assertEquals(mRepository.putNewRss(rssWithSameUrl), IRepository.PutRssState.EXIST)
     }
 
     @Test
