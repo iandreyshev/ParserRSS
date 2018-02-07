@@ -6,7 +6,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 
-class ImageFadeChangeAnimation(context: Context, inDurationMs: Long, outDurationMs: Long) {
+class ImageFadeChangeAnimation(context: Context, inDurationMs: Long, outDurationMs: Long) : IImageAnimation {
 
     private val mAnimOut = AnimationUtils.loadAnimation(context, android.R.anim.fade_out)
     private val mAnimIn = AnimationUtils.loadAnimation(context, android.R.anim.fade_in)
@@ -16,10 +16,10 @@ class ImageFadeChangeAnimation(context: Context, inDurationMs: Long, outDuration
         mAnimIn.duration = inDurationMs
     }
 
-    fun start(view: ImageView, bitmap: Bitmap) {
+    override fun start(view: ImageView, imageBitmap: Bitmap) {
         mAnimOut.setAnimationListener(object : EmptyAnimationListener() {
             override fun onAnimationEnd(animation: Animation) {
-                view.setImageBitmap(bitmap)
+                view.setImageBitmap(imageBitmap)
                 view.startAnimation(mAnimIn)
             }
         })

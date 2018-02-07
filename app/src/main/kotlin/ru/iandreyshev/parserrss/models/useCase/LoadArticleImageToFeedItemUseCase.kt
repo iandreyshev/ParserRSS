@@ -21,6 +21,13 @@ class LoadArticleImageToFeedItemUseCase(
 
     private val mIdBeforeLoad = mIcon.id
 
+    override fun start() {
+        if (!mIcon.isUpdateStart) {
+            mIcon.onStartUpdate()
+            super.start()
+        }
+    }
+
     override fun onPreExecute() {
         // Implements to ignore notify listener about process starting
     }
@@ -28,13 +35,6 @@ class LoadArticleImageToFeedItemUseCase(
     override fun onPostExecute(result: Bitmap?) {
         if (result != null && mIdBeforeLoad == mIcon.id) {
             mIcon.updateImage(result)
-        }
-    }
-
-    override fun start() {
-        if (!mIcon.isLoaded) {
-            mIcon.isLoaded = true
-            super.start()
         }
     }
 }

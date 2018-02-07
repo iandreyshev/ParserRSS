@@ -19,7 +19,7 @@ class FeedPageInteractor(
                 .start()
     }
 
-    fun load(icon: IItemIcon) {
+    fun updateImage(icon: IItemIcon) {
         mUseCaseFactory
                 .create(UseCaseType.LOAD_ARTICLE_IMAGE_TO_FEED_ITEM, mListener, icon)
                 .start()

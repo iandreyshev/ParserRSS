@@ -29,6 +29,8 @@ class ArticleActivity : BaseActivity(), IArticleView {
     companion object {
         const val ARTICLE_BOUND_KEY = "Article_to_open"
         private const val DEFAULT_ARTICLE_ID: Long = 0
+        private const val MENU_ENABLED_ALPHA = 255
+        private const val MENU_DISABLED_ALPHA = 96
         private const val BACK_BUTTON = android.R.id.home
         private const val OPEN_IN_BROWSER_BUTTON = R.id.article_option_open_in_browser
         private const val IMAGE_IN_DURATION_MS: Long = 750
@@ -49,13 +51,22 @@ class ArticleActivity : BaseActivity(), IArticleView {
     @ProvidePresenter
     fun provideArticlePresenter(): ArticlePresenter {
         val articleId = intent.getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID)
+
         return ArticlePresenter(UseCaseFactory, articleId)
     }
 
     override fun closeArticle() = finish()
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_article_options, menu)
+
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val item = menu?.findItem(OPEN_IN_BROWSER_BUTTON)
+        item?.isEnabled = mIsOpenOriginalEnabled
+        item?.icon?.alpha = if (mIsOpenOriginalEnabled) MENU_ENABLED_ALPHA else MENU_DISABLED_ALPHA
 
         return true
     }
@@ -65,7 +76,6 @@ class ArticleActivity : BaseActivity(), IArticleView {
             BACK_BUTTON -> closeArticle()
             OPEN_IN_BROWSER_BUTTON -> mInteractor.onOpenOriginal()
         }
-
         return super.onOptionsItemSelected(menuItem)
     }
 
@@ -74,6 +84,8 @@ class ArticleActivity : BaseActivity(), IArticleView {
         titleView.text = article.title
         descriptionView.text = article.description
         loadDate(article.date)
+        mIsOpenOriginalEnabled = article.originUrl != null
+        invalidateOptionsMenu()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

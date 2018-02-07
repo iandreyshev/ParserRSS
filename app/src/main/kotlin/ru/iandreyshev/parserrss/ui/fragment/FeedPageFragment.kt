@@ -62,6 +62,15 @@ class FeedPageFragment : BaseFragment(),
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        mListAdapter.itemsOnWindowForEach {
+            if (!it.isUpdateEnd) {
+                it.resetUpdate()
+            }
+        }
+    }
+
     override fun openEmptyContentMessage(isOpen: Boolean) {
         itemsList.setVisibility(!isOpen)
         contentMessageLayout.setVisibility(isOpen)
@@ -78,7 +87,9 @@ class FeedPageFragment : BaseFragment(),
     }
 
     override fun updateImages() {
-        mListAdapter.forEach { mInteractor.load(it) }
+        mListAdapter.itemsOnWindowForEach {
+            mInteractor.updateImage(it)
+        }
     }
 
     override fun openInternetPermissionDialog() {
@@ -90,7 +101,6 @@ class FeedPageFragment : BaseFragment(),
         itemsList.layoutManager = LinearLayoutManager(context)
         itemsList.addOnScrollListener(ScrollListener(this))
         itemsList.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
-
         mListAdapter.setArticleClickListener(context as IOnArticleClickListener)
     }
 

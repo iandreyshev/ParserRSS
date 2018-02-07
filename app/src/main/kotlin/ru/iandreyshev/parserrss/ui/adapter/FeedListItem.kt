@@ -20,20 +20,37 @@ class FeedListItem constructor(view: View) : RecyclerView.ViewHolder(view), IIte
 
     override val id: Long
         get() = mId
-    override var isLoaded: Boolean = false
+    override val isUpdateStart: Boolean
+        get() = mIsUpdateStart
+    val isUpdateEnd: Boolean
+        get() = mIsUpdateEnd
 
     private var mId: Long = 0
+    private var mIsUpdateStart = false
+    private var mIsUpdateEnd = false
     private var mClickListener: WeakReference<IOnArticleClickListener>? = null
     private val mAnimation = ImageFadeChangeAnimation(view.context, ICON_IN_DURATION_MS, ICON_OUT_DURATION_MS)
 
     override fun updateImage(bitmap: Bitmap) {
         mAnimation.start(itemView.imageView, bitmap)
-        isLoaded = true
+        mIsUpdateEnd = true
+    }
+
+    override fun onClick(view: View) {
+        mClickListener?.get()?.onArticleClick(mId)
+    }
+
+    override fun onStartUpdate() {
+        mIsUpdateStart = true
+    }
+
+    fun resetUpdate() {
+        mIsUpdateStart = false
     }
 
     fun bind(content: ViewArticle) {
         mId = content.id
-        isLoaded = false
+        mIsUpdateStart = false
 
         itemView.titleView.text = content.title
         itemView.descriptionView.text = content.description
@@ -46,9 +63,5 @@ class FeedListItem constructor(view: View) : RecyclerView.ViewHolder(view), IIte
 
     fun setClickListener(listener: WeakReference<IOnArticleClickListener>?) {
         mClickListener = listener
-    }
-
-    override fun onClick(view: View) {
-        mClickListener?.get()?.onArticleClick(mId)
     }
 }

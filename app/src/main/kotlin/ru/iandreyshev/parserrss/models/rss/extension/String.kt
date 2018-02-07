@@ -6,7 +6,7 @@ import java.io.StringReader
 import java.util.ArrayList
 
 private object DocBuilders {
-    private const val DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonValidating/load-external-dtd"
+    private const val DISABLE_DTD_FEATURE = "http://apache.org/xml/features/nonValidating/updateImage-external-dtd"
     val BUILDERS = ArrayList<SAXBuilder>()
 
     private val withoutDtdBuilder = SAXBuilder()

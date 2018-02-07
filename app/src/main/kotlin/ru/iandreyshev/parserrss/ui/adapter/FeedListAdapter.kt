@@ -53,7 +53,7 @@ class FeedListAdapter : RecyclerView.Adapter<FeedListItem>() {
         return mArticles.size
     }
 
-    fun forEach(action: (FeedListItem) -> Unit) {
+    fun itemsOnWindowForEach(action: (FeedListItem) -> Unit) {
         mItemsOnWindow.forEach { it -> action(it) }
     }
 }

@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 interface IItemIcon {
     val id: Long
 
-    var isLoaded: Boolean
+    val isUpdateStart: Boolean
+
+    fun onStartUpdate()
 
     fun updateImage(bitmap: Bitmap)
 }
