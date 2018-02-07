@@ -11,7 +11,7 @@ import java.util.Locale
 import ru.iandreyshev.parserrss.models.repository.Article
 import ru.iandreyshev.parserrss.models.repository.Rss
 
-internal class ParserV2 : ParserEngine() {
+class ParserV2 : ParserEngine() {
 
     companion object {
         private const val FEED_NAME = "channel"

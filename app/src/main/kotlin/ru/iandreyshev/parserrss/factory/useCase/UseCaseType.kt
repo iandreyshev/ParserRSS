@@ -1,0 +1,18 @@
+package ru.iandreyshev.parserrss.factory.useCase
+
+enum class UseCaseType {
+    LOAD_ARTICLE_IMAGE,
+    LOAD_ARTICLE_IMAGE_TO_FEED_ITEM,
+    LOAD_ALL_RSS,
+    LOAD_ARTICLE,
+    LOAD_ARTICLES_FIRST_TIME,
+    LOAD_RSS_INFO,
+    INSERT_RSS,
+    UPDATE_RSS,
+    DELETE_RSS,
+    OPEN_ARTICLE,
+    OPEN_ARTICLE_ORIGINAL,
+    OPEN_RSS_ORIGINAL,
+    OPEN_RSS_INFO,
+    MESSAGE
+}

@@ -8,7 +8,7 @@ import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.repository.Article
 import ru.iandreyshev.parserrss.models.rss.extension.toDocument
 
-internal abstract class ParserEngine {
+abstract class ParserEngine {
 
     companion object {
         private val PARSERS = ArrayList<ParserEngine>()

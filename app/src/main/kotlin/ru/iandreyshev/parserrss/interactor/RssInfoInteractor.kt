@@ -1,35 +1,24 @@
 package ru.iandreyshev.parserrss.interactor
 
-import android.net.Uri
-import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.extention.uri
+import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
 import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
+import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 
 class RssInfoInteractor(
-        private val mOutputPort: IOutputPort,
-        private val mRss: ViewRss) : BaseInteractor(mOutputPort) {
+        private val mUseCaseFactory: IUseCaseFactory,
+        private val mRss: ViewRss,
+        private val mListener: IUseCaseListener) {
 
     init {
-        mOutputPort.setInfo(mRss.title, mRss.description)
-        mOutputPort.setOpenOriginalEnabled(mRss.origin != null)
+        mUseCaseFactory
+                .create(UseCaseType.LOAD_RSS_INFO, mListener, mRss)
+                .start()
     }
 
     fun onOpenOriginal() {
-        mRss.origin?.uri.let {
-            when (it) {
-                null -> mOutputPort.showMessage(R.string.toast_invalid_url)
-                else -> mOutputPort.openOriginal(it)
-            }
-        }
-    }
-
-    interface IOutputPort : IInteractorOutputPort {
-        fun openOriginal(uri: Uri)
-
-        fun setInfo(title: String?, description: String?)
-
-        fun setOpenOriginalEnabled(idEnabled: Boolean)
-
-        fun close()
+        mUseCaseFactory
+                .create(UseCaseType.OPEN_RSS_ORIGINAL, mListener, mRss)
+                .start()
     }
 }

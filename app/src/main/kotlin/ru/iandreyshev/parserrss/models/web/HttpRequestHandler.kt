@@ -1,91 +1,98 @@
 package ru.iandreyshev.parserrss.models.web
 
 import okhttp3.HttpUrl
-import java.util.concurrent.TimeUnit
-
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.concurrent.TimeUnit
 
-class HttpRequestHandler(override val urlString: String) : IHttpRequestResult {
+abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
 
     companion object {
-        private const val MAX_CONTENT_BYTES = 5242880L // 5MB
+        internal const val DEFAULT_MAX_CONTENT_BYTES = 5242880L // 5MB
 
-        private const val GOOD_RESPONSE_CODE = 200
+        private const val OK_RESPONSE_CODE = 200
         private const val DEFAULT_PROTOCOL = "http://"
 
-        private const val READ_TIMEOUT_SEC = 3L
-        private const val CONNECTION_TIMEOUT_SEC = 3L
-        private const val WRITE_TIMEOUT_SEC = 3L
+        private const val DEFAULT_MAX_READ_TIMEOUT_MS = 3000L
+        private const val DEFAULT_MAX_CONNECTION_TIMEOUT_MS = 3000L
+        private const val DEFAULT_MAX_WRITE_TIMEOUT_MS = 3000L
     }
 
     enum class State {
-        NotSend,
-        Success,
-        BadUrl,
-        BadConnection,
-        PermissionDenied
+        NOT_SEND,
+        SUCCESS,
+        BAD_URL,
+        BAD_CONNECTION,
+        PERMISSION_DENIED
     }
 
-    var maxContentBytes: Long = MAX_CONTENT_BYTES
-    var readTimeoutSec: Long = READ_TIMEOUT_SEC
-    var connectionTimeoutSec: Long = CONNECTION_TIMEOUT_SEC
-    var writeTimeoutSec: Long = WRITE_TIMEOUT_SEC
-    override var state: State = State.NotSend
+    var maxContentBytes: Long = DEFAULT_MAX_CONTENT_BYTES
+    var readTimeoutMs: Long = DEFAULT_MAX_READ_TIMEOUT_MS
+    var connectionTimeoutMs: Long = DEFAULT_MAX_CONNECTION_TIMEOUT_MS
+    var writeTimeoutMs: Long = DEFAULT_MAX_WRITE_TIMEOUT_MS
+
+    final override var urlString = urlString
         private set
-    override var body: ByteArray? = null
+    final override var state: State = State.NOT_SEND
         private set
-    override val bodyAsString: String?
+    final override var body: ByteArray? = null
+        private set
+    final override val bodyAsString: String?
         get() {
             return String(body ?: return null)
         }
 
-    private val mUrl: HttpUrl? = HttpUrl.parse(urlString)
-            ?: HttpUrl.parse(DEFAULT_PROTOCOL + urlString)
+    fun send(url: String? = null): State {
+        val httpUrl = parseUrl(url ?: urlString)
 
-    init {
-        state = when (mUrl) {
-            null -> State.BadUrl
-            else -> State.NotSend
+        state = if (httpUrl == null) {
+            State.BAD_URL
+        } else {
+            val client = createClient(getClientBuilder())
+            val request = createRequest(httpUrl)
+            send(client, request)
         }
-    }
-
-    fun sendGet(): State {
-        mUrl ?: return State.BadUrl
-
-        send(Request.Builder()
-                .url(mUrl)
-                .build())
 
         return state
     }
 
-    private fun send(request: Request) {
-        try {
-            val client = OkHttpClient.Builder()
-                    .readTimeout(readTimeoutSec, TimeUnit.SECONDS)
-                    .connectTimeout(connectionTimeoutSec, TimeUnit.SECONDS)
-                    .writeTimeout(writeTimeoutSec, TimeUnit.SECONDS)
-                    .build()
-
+    private fun send(client: OkHttpClient, request: Request): State {
+        return try {
             client.newCall(request).execute().use { response ->
                 response.body().use { body ->
-                    state = when {
-                        (response.code() != GOOD_RESPONSE_CODE || body == null || body.contentLength() > maxContentBytes) ->
-                            State.BadConnection
+                    when {
+                        (response.code() != OK_RESPONSE_CODE || body == null || body.contentLength() > maxContentBytes) ->
+                            State.BAD_CONNECTION
                         else -> {
                             val source = body.source()
                             source.request(maxContentBytes)
                             this.body = source.buffer().snapshot().toByteArray()
-                            State.Success
+                            State.SUCCESS
                         }
                     }
                 }
             }
         } catch (ex: SecurityException) {
-            state = State.PermissionDenied
+            State.PERMISSION_DENIED
         } catch (ex: Exception) {
-            state = State.BadConnection
+            State.BAD_CONNECTION
         }
+    }
+
+    protected open fun createClient(clientBuilder: OkHttpClient.Builder): OkHttpClient {
+        return clientBuilder.build()
+    }
+
+    protected abstract fun createRequest(url: HttpUrl): Request
+
+    private fun getClientBuilder(): OkHttpClient.Builder {
+        return OkHttpClient.Builder()
+                .readTimeout(readTimeoutMs, TimeUnit.MILLISECONDS)
+                .connectTimeout(connectionTimeoutMs, TimeUnit.MILLISECONDS)
+                .writeTimeout(writeTimeoutMs, TimeUnit.MILLISECONDS)
+    }
+
+    private fun parseUrl(url: String): HttpUrl? {
+        return HttpUrl.parse(url) ?: HttpUrl.parse(DEFAULT_PROTOCOL + url)
     }
 }

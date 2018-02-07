@@ -17,6 +17,8 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 import kotlinx.android.synthetic.main.activity_feed.*
 
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.arellomobile.mvp.presenter.ProvidePresenter
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import ru.iandreyshev.parserrss.ui.fragment.InternetPermissionDialog
 
@@ -33,8 +35,8 @@ class FeedActivity : BaseActivity(),
         private const val TOOLBAR_SCROLL_OFF = 0
         private const val TOOLBAR_SCROLL_ON =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
-                AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS or
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
     }
 
     @InjectPresenter
@@ -48,13 +50,22 @@ class FeedActivity : BaseActivity(),
     private var mIsInfoButtonEnabled = true
     private var mIsDeleteButtonEnabled = true
 
-    override fun insertRss(rss: ViewRss) = mPagesAdapter.insert(rss)
+    @ProvidePresenter
+    fun provideFeedPresenter() = FeedPresenter(UseCaseFactory)
 
-    override fun removeRss(rss: ViewRss) = mPagesAdapter.remove(rss)
+    override fun insertRss(rss: ViewRss) {
+        mPagesAdapter.insert(rss)
+    }
 
-    override fun openPage(position: Int) {
-        if (!mPagesAdapter.isEmpty || position in 0 until mPagesAdapter.count) {
-            pagerLayout.currentItem = position
+    override fun removeRss(rssId: Long) {
+        mPagesAdapter.remove(rssId)
+    }
+
+    override fun openRssPage(rssId: Long) {
+        val pagePosition = mPagesAdapter.getPagePositionById(rssId)
+
+        if (pagePosition >= 0) {
+            pagerLayout.currentItem = pagePosition
         }
     }
 
@@ -86,7 +97,7 @@ class FeedActivity : BaseActivity(),
         when (item.itemId) {
             ADD_BUTTON -> openAddingRssDialog()
             INFO_BUTTON -> mInteractor.onOpenRssInfo(mPagesAdapter.getRss(pagerLayout.currentItem))
-            DELETE_BUTTON -> mInteractor.onDeleteRss(mPagesAdapter.getRss(pagerLayout.currentItem))
+            DELETE_BUTTON -> mInteractor.onDeleteRss(mPagesAdapter.getRss(pagerLayout.currentItem)?.id)
         }
 
         return super.onOptionsItemSelected(item)
@@ -94,7 +105,7 @@ class FeedActivity : BaseActivity(),
 
     override fun onArticleClick(articleId: Long) = mInteractor.onOpenArticle(articleId)
 
-    override fun addRss(url: String) = mInteractor.onInsertRss(url)
+    override fun addRss(url: String) = mInteractor.onAddNewRss(url)
 
     override fun enableAddButton(isEnabled: Boolean) {
         mIsAddButtonEnabled = isEnabled

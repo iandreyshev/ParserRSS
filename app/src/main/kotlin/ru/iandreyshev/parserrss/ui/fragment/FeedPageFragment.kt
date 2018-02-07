@@ -20,6 +20,7 @@ import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.view_feed_list.*
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.presentation.view.IItemsListView
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import java.lang.ref.WeakReference
@@ -33,7 +34,7 @@ class FeedPageFragment : BaseFragment(),
 
         fun newInstance(rss: ViewRss): FeedPageFragment {
             val fragment = FeedPageFragment()
-            fragment.presenter = FeedPagePresenter(rss)
+            fragment.presenter = FeedPagePresenter(UseCaseFactory, rss)
 
             return fragment
         }
@@ -61,6 +62,15 @@ class FeedPageFragment : BaseFragment(),
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        mListAdapter.itemsOnWindowForEach {
+            if (!it.isUpdateEnd) {
+                it.resetUpdate()
+            }
+        }
+    }
+
     override fun openEmptyContentMessage(isOpen: Boolean) {
         itemsList.setVisibility(!isOpen)
         contentMessageLayout.setVisibility(isOpen)
@@ -77,7 +87,9 @@ class FeedPageFragment : BaseFragment(),
     }
 
     override fun updateImages() {
-        mListAdapter.forEach { mInteractor.load(it) }
+        mListAdapter.itemsOnWindowForEach {
+            mInteractor.updateImage(it)
+        }
     }
 
     override fun openInternetPermissionDialog() {
@@ -89,7 +101,6 @@ class FeedPageFragment : BaseFragment(),
         itemsList.layoutManager = LinearLayoutManager(context)
         itemsList.addOnScrollListener(ScrollListener(this))
         itemsList.addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
-
         mListAdapter.setArticleClickListener(context as IOnArticleClickListener)
     }
 

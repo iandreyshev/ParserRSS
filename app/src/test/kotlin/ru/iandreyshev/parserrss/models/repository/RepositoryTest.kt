@@ -1,22 +1,18 @@
 package ru.iandreyshev.parserrss.models.repository
 
-import junit.framework.Assert
-
-import junit.framework.TestCase
-
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 import org.junit.Assert.*
+import org.robolectric.RobolectricTestRunner
 
 import java.io.File
 import java.util.ArrayList
 import java.util.HashSet
 
 @RunWith(RobolectricTestRunner::class)
-class DatabaseTest : TestCase() {
+class RepositoryTest {
 
     companion object {
         private const val RSS_TITLE = "TITLE"
@@ -30,8 +26,8 @@ class DatabaseTest : TestCase() {
         private const val ARTICLE_ORIGIN = "ORIGIN %s"
     }
 
-    private lateinit var database: Database
-    private lateinit var rss: Rss
+    private lateinit var mRepository: RssRepository
+    private lateinit var mRss: Rss
 
     @Before
     @Throws(Exception::class)
@@ -40,9 +36,9 @@ class DatabaseTest : TestCase() {
 
         assertTrue(tempFile.delete())
 
-        database = Database(MyObjectBox.builder().directory(tempFile).build())
+        mRepository = RssRepository(MyObjectBox.builder().directory(tempFile).build())
 
-        rss = Rss(
+        mRss = Rss(
                 title = RSS_TITLE,
                 origin = RSS_ORIGIN,
                 url = RSS_URL)
@@ -52,59 +48,57 @@ class DatabaseTest : TestCase() {
             articleList.add(createArticle(it))
         }
 
-        rss.articles = articleList
+        mRss.articles = articleList
     }
 
     @Test
     fun noThrowExceptionIfTryToGetItemByInvalidId() {
         try {
-            Database.INVALID_IDS.forEach {
-                database.getArticleById(it)
-                database.getRssById(it)
-                database.removeRssById(it)
+            RssRepository.INVALID_IDS.forEach {
+                mRepository.getArticleById(it)
+                mRepository.getRssById(it)
+                mRepository.removeRssById(it)
             }
         } catch (ex: Exception) {
-            Assert.fail()
+            fail()
         }
     }
 
     @Test
     fun returnNullIfGetRssByInvalidId() {
-        Assert.assertNull(database.getRssById(-2))
+        assertNull(mRepository.getRssById(-2))
     }
 
     @Test
     @Throws(Exception::class)
     fun returnTrueIfRssWithSameUrlExist() {
-        database.putRssIfSameUrlNotExist(rss)
-
-        Assert.assertTrue(database.isRssWithUrlExist(RSS_URL))
+        mRepository.putNewRss(mRss)
+        assertTrue(mRepository.isRssWithUrlExist(RSS_URL))
     }
 
     @Test
     @Throws(Exception::class)
     fun returnFalseIfRssWithSameUrlNotExist() {
-        database.putRssIfSameUrlNotExist(rss)
-
-        Assert.assertFalse(database.isRssWithUrlExist(NOT_USE_RSS_URL))
+        mRepository.putNewRss(mRss)
+        assertFalse(mRepository.isRssWithUrlExist(NOT_USE_RSS_URL))
     }
 
     @Test
     @Throws(Exception::class)
     fun returnArticlesById() {
-        database.putRssIfSameUrlNotExist(rss)
+        mRepository.putNewRss(mRss)
 
-        for ((id) in rss.articles) {
-            Assert.assertNotNull(database.getArticleById(id))
+        for ((id) in mRss.articles) {
+            assertNotNull(mRepository.getArticleById(id))
         }
     }
 
     @Test
     @Throws(Exception::class)
     fun updateRssIdAfterPut() {
-        database.putRssIfSameUrlNotExist(rss)
+        mRepository.putNewRss(mRss)
 
-        Assert.assertEquals(database.getRssById(rss.id), rss)
+        assertEquals(mRepository.getRssById(mRss.id), mRss)
     }
 
     @Test
@@ -112,19 +106,19 @@ class DatabaseTest : TestCase() {
     fun returnTrueWhenUpdatingRssExist() {
         val newRss = Rss(title = "Title", origin = "Origin")
         newRss.description = "Description"
-        newRss.url = rss.url
+        newRss.url = mRss.url
 
-        assertNotEquals(newRss.title, rss.title)
-        assertNotEquals(newRss.description, rss.description)
-        assertNotEquals(newRss.articles.size.toLong(), rss.articles.size.toLong())
+        assertNotEquals(newRss.title, mRss.title)
+        assertNotEquals(newRss.description, mRss.description)
+        assertNotEquals(newRss.articles.size.toLong(), mRss.articles.size.toLong())
 
-        Assert.assertEquals(newRss.url, rss.url)
+        assertEquals(newRss.url, mRss.url)
 
-        Assert.assertTrue(database.putRssIfSameUrlNotExist(newRss))
-        Assert.assertTrue(database.updateRssWithSameUrl(rss))
+        assertEquals(mRepository.putNewRss(newRss), IRepository.PutRssState.SUCCESS)
+        assertTrue(mRepository.updateRssWithSameUrl(mRss))
 
-        assertNotEquals(newRss.title, rss.title)
-        assertNotEquals(newRss.description, rss.description)
+        assertNotEquals(newRss.title, mRss.title)
+        assertNotEquals(newRss.description, mRss.description)
     }
 
     @Test
@@ -132,48 +126,44 @@ class DatabaseTest : TestCase() {
     fun returnFalseWhenUpdatingNotExistRss() {
         val newRss = Rss(title = "", origin = "", url = NOT_USE_RSS_URL)
 
-        Assert.assertTrue(database.putRssIfSameUrlNotExist(newRss))
-        Assert.assertFalse(database.updateRssWithSameUrl(rss))
+        assertEquals(mRepository.putNewRss(newRss), IRepository.PutRssState.SUCCESS)
+        assertFalse(mRepository.updateRssWithSameUrl(mRss))
     }
 
     @Test
     @Throws(Exception::class)
     fun removeRss() {
-        assertTrue(database.putRssIfSameUrlNotExist(rss))
-
-        database.removeRssById(rss.id)
-
-        assertNull(database.getRssById(rss.id))
+        assertEquals(mRepository.putNewRss(mRss), IRepository.PutRssState.SUCCESS)
+        mRepository.removeRssById(mRss.id)
+        assertNull(mRepository.getRssById(mRss.id))
     }
 
     @Test
     @Throws(Exception::class)
-    fun returnFalseAfterPutRssWithSameUrl() {
-        database.putRssIfSameUrlNotExist(rss)
-
+    fun returnExistStateAfterPutRssWithSameUrl() {
+        mRepository.putNewRss(mRss)
         val rssWithSameUrl = Rss(title = "", origin = "", url = RSS_URL)
-        rssWithSameUrl.url = rss.url
-
-        Assert.assertFalse(database.putRssIfSameUrlNotExist(rssWithSameUrl))
+        rssWithSameUrl.url = mRss.url
+        assertEquals(mRepository.putNewRss(rssWithSameUrl), IRepository.PutRssState.EXIST)
     }
 
     @Test
     @Throws(Exception::class)
     fun updateRssArticlesIdAfterPut() {
-        database.putRssIfSameUrlNotExist(rss)
+        mRepository.putNewRss(mRss)
 
-        for ((_, rssId) in rss.articles) {
-            Assert.assertTrue(rssId == rss.id)
+        for ((_, rssId) in mRss.articles) {
+            assertTrue(rssId == mRss.id)
         }
     }
 
     @Test
     @Throws(Exception::class)
     fun returnRssWithSameArticles() {
-        val articles = HashSet(rss.articles)
+        val articles = HashSet(mRss.articles)
 
-        database.putRssIfSameUrlNotExist(rss)
-        val rssFromDatabase = database.getRssById(rss.id)
+        mRepository.putNewRss(mRss)
+        val rssFromDatabase = mRepository.getRssById(mRss.id)
 
         if (rssFromDatabase == null) {
             fail()
@@ -181,7 +171,7 @@ class DatabaseTest : TestCase() {
         }
 
         for (articleFromDatabase in rssFromDatabase.articles) {
-            Assert.assertTrue(articleFromDatabase in articles)
+            assertTrue(articleFromDatabase in articles)
         }
     }
 

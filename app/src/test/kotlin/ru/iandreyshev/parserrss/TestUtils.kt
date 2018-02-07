@@ -12,6 +12,5 @@ object TestUtils {
         } catch (ex: Exception) {
             null
         }
-
     }
 }

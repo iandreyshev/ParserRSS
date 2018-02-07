@@ -1,62 +1,27 @@
 package ru.iandreyshev.parserrss.interactor
 
-import android.graphics.Bitmap
-import android.net.Uri
-import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.async.GetArticleFromDbTask
-import ru.iandreyshev.parserrss.models.async.GetArticleImageTask
-import ru.iandreyshev.parserrss.models.extention.uri
-import ru.iandreyshev.parserrss.models.imageProps.ArticleImageProps
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
+import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 
 class ArticleInteractor(
-        private val mOutputPort: IOutputPort,
-        private val mArticleId: Long) : BaseInteractor(mOutputPort) {
+        private val mUseCaseFactory: IUseCaseFactory,
+        private val mListener: IUseCaseListener,
+        private val mArticleId: Long) {
 
     init {
-        updateProcessCount()
-        GetArticleFromDbTask.execute(mArticleId, GetArticleFromDbListener())
-    }
+        mUseCaseFactory
+                .create(UseCaseType.LOAD_ARTICLE, mListener, mArticleId)
+                .start()
 
-    private var mArticleUrl: String? = null
-
-    interface IOutputPort : IInteractorOutputPort {
-        fun initArticle(rss: ViewRss, article: ViewArticle)
-
-        fun openOriginal(url: Uri)
-
-        fun insertImage(imageBitmap: Bitmap)
-
-        fun close()
+        mUseCaseFactory
+                .create(UseCaseType.LOAD_ARTICLE_IMAGE, mListener, mArticleId)
+                .start()
     }
 
     fun onOpenOriginal() {
-        mArticleUrl?.uri.let {
-            when (it) {
-                null -> mOutputPort.showMessage(R.string.toast_invalid_url)
-                else -> mOutputPort.openOriginal(it)
-            }
-        }
-    }
-
-    private inner class GetArticleFromDbListener : GetArticleFromDbTask.IEventListener {
-        override fun onSuccess(rss: ViewRss, article: ViewArticle) {
-            mArticleUrl = article.originUrl
-            mOutputPort.initArticle(rss, article)
-            GetArticleImageTask.execute(mArticleId, GetImageFromNetListener(), ArticleImageProps.newInstance)
-        }
-
-        override fun onFail() {
-            mOutputPort.showMessage(R.string.article_error_load)
-            mOutputPort.close()
-        }
-    }
-
-    private inner class GetImageFromNetListener : GetArticleImageTask.IEventListener {
-        override fun onPostExecute(result: Bitmap?) {
-            updateProcessCount(false)
-            mOutputPort.insertImage(result ?: return)
-        }
+        mUseCaseFactory
+                .create(UseCaseType.OPEN_ARTICLE_ORIGINAL, mListener, mArticleId)
+                .start()
     }
 }
