@@ -11,15 +11,15 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 class InsertRssUseCase(
         private val mRepository: IRepository,
         requestHandler: HttpRequestHandler,
-        url: String,
         parser: RssParser,
+        private val mUrl: String,
         private val mArticlesFilter: IArticlesFilter,
         private val mListener: IListener)
     : DownloadRssUseCase(
         requestHandler,
-        url,
         parser,
-        mRepository.maxArticlesInRss,
+        mUrl,
+        mRepository.maxArticlesInRssCount,
         mListener) {
 
     interface IListener : IUseCaseListener {
@@ -31,7 +31,7 @@ class InsertRssUseCase(
 
         fun connectionError(requestResult: IHttpRequestResult)
 
-        fun invalidRssFormat()
+        fun invalidRssFormat(url: String)
 
         fun insertNewRss(rss: ViewRss, isFull: Boolean)
     }
@@ -70,7 +70,7 @@ class InsertRssUseCase(
     }
 
     override fun onParserErrorAsync() {
-        mResultEvent = mListener::invalidRssFormat
+        mResultEvent = { mListener.invalidRssFormat(mUrl) }
     }
 
     override fun onSuccessAsync(rss: Rss) {

@@ -7,9 +7,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.models.repository.IRepository
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = "src/main/AndroidManifest.xml")
 class DeleteRssUseCaseTest {
 
     companion object {

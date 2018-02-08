@@ -9,8 +9,10 @@ import ru.iandreyshev.parserrss.models.repository.Rss
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = "src/main/AndroidManifest.xml")
 class RssParserV2Test {
     companion object {
         private const val RSS_TITLE = "Feed title"

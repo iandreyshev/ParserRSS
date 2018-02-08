@@ -5,10 +5,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Rss
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = "src/main/AndroidManifest.xml")
 class LoadAllRssUseCaseTest {
 
     private lateinit var mFactory: MocksFactory

@@ -67,13 +67,16 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
                 HttpRequestHandler.State.PERMISSION_DENIED -> {
                     viewState.openInternetPermissionDialog()
                 }
-                else -> toast(R.string.toast_bad_connection)
+                else -> {
+                    toast(R.string.toast_bad_connection)
+                    viewState.openAddingRssDialog(requestResult.urlString)
+                }
             }
         }
 
-        override fun invalidRssFormat() {
+        override fun invalidRssFormat(url: String) {
             toast(R.string.toast_invalid_rss_format)
-            viewState.openAddingRssDialog()
+            viewState.openAddingRssDialog(url)
         }
 
         override fun updateCapacityAfterLoad(isFull: Boolean) {

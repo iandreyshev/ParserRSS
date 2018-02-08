@@ -23,7 +23,7 @@ class LoadAllRssUseCase(
 
             if (rss != null) {
                 mFilter.sort(rss.articles)
-                onProgressUpdate(ViewRss(rss))
+                publishProgress(ViewRss(rss))
             }
         }
         mIsFeedFull = mRepository.isFull

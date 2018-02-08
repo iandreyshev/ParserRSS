@@ -7,8 +7,8 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 abstract class DownloadRssUseCase(
         private val mRequestHandler: HttpRequestHandler,
-        private var mUrl: String,
         private val mParser: RssParser,
+        private var mUrl: String,
         private val mMaxArticlesCount: Int,
         mListener: IUseCaseListener) : BaseUseCase<Any, Any, Any?>(mListener) {
 

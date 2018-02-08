@@ -5,12 +5,14 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = "src/main/AndroidManifest.xml")
 class UpdateRssUseCaseTest {
 
     companion object {
@@ -63,7 +65,7 @@ class UpdateRssUseCaseTest {
         whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(rssString)
-        whenever(mFactory.parser.parse(rssString, mFactory.repository.maxArticlesInRss)).thenReturn(null)
+        whenever(mFactory.parser.parse(rssString, mFactory.repository.maxArticlesInRssCount)).thenReturn(null)
 
         createUseCase(VALID_URL).execute().get()
 
@@ -81,7 +83,7 @@ class UpdateRssUseCaseTest {
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(rssString)
         whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)
-        whenever(mFactory.parser.parse(rssString, mFactory.repository.maxArticlesInRss)).thenReturn(rss)
+        whenever(mFactory.parser.parse(rssString, mFactory.repository.maxArticlesInRssCount)).thenReturn(rss)
 
         createUseCase(VALID_URL).execute().get()
 
@@ -102,8 +104,8 @@ class UpdateRssUseCaseTest {
         return UpdateRssUseCase(
                 mFactory.repository,
                 mFactory.requestHandler,
-                url,
                 mFactory.parser,
+                url,
                 mFactory.articleFilter,
                 mListener
         )

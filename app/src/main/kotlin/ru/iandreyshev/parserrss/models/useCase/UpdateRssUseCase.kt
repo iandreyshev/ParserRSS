@@ -12,15 +12,15 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 class UpdateRssUseCase(
         private val mRepository: IRepository,
         requestHandler: HttpRequestHandler,
-        url: String,
         parser: RssParser,
+        url: String,
         private val mArticlesFilter: IArticlesFilter,
         private val mListener: IListener)
     : DownloadRssUseCase(
         requestHandler,
-        url,
         parser,
-        mRepository.maxArticlesInRss,
+        url,
+        mRepository.maxArticlesInRssCount,
         mListener) {
 
     interface IListener : IUseCaseListener {

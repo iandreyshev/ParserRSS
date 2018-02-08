@@ -10,8 +10,10 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = "src/main/AndroidManifest.xml")
 class GetRequestHandlerTest {
     companion object {
         private const val VALID_URL_WITH_PROTOCOL = "http://domain.com"

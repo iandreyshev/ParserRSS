@@ -48,16 +48,16 @@ object UseCaseFactory : IUseCaseFactory {
             UPDATE_RSS -> UpdateRssUseCase(
                     App.repository,
                     HttpRequestHandlerFactory.create(HttpRequestHandlerType.UPDATE_RSS),
-                    data as String,
                     ParserV2(),
+                    data as String,
                     ArticlesFilterByDate,
                     mListener as UpdateRssUseCase.IListener
             )
             INSERT_RSS -> InsertRssUseCase(
                     App.repository,
                     HttpRequestHandlerFactory.create(HttpRequestHandlerType.NEW_RSS),
-                    data as String,
                     ParserV2(),
+                    data as String,
                     ArticlesFilterByDate,
                     mListener as InsertRssUseCase.IListener
             )

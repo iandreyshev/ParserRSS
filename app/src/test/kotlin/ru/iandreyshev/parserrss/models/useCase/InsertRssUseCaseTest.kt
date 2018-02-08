@@ -5,12 +5,14 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = "src/main/AndroidManifest.xml")
 class InsertRssUseCaseTest {
 
     companion object {
@@ -88,12 +90,12 @@ class InsertRssUseCaseTest {
     fun callInvalidRssFormatIfParserReturnNull() {
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(EMPTY_RSS_STRING)
-        whenever(mFactory.parser.parse(EMPTY_RSS_STRING, mFactory.repository.maxArticlesInRss)).thenReturn(null)
+        whenever(mFactory.parser.parse(EMPTY_RSS_STRING, mFactory.repository.maxArticlesInRssCount)).thenReturn(null)
 
         createUseCase(VALID_URL).execute().get()
 
         verifyStartEndProcess()
-        verify(mListener).invalidRssFormat()
+        verify(mListener).invalidRssFormat(VALID_URL)
         verifyNoMoreInteractions(mListener)
     }
 
@@ -101,11 +103,11 @@ class InsertRssUseCaseTest {
     fun callSuccessAfterPutOnlyIfInsertStateIsSuccess() {
         fun verify(insertState: IRepository.InsertRssResult) {
             whenever(mFactory.repository.isFull).thenReturn(false)
-            whenever(mFactory.repository.maxArticlesInRss).thenReturn(MAX_RSS_ARTICLES)
+            whenever(mFactory.repository.maxArticlesInRssCount).thenReturn(MAX_RSS_ARTICLES)
             whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)
             whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
             whenever(mFactory.requestHandler.bodyAsString).thenReturn(EMPTY_RSS_STRING)
-            whenever(mFactory.parser.parse(EMPTY_RSS_STRING, mFactory.repository.maxArticlesInRss)).thenReturn(mEmptyRss)
+            whenever(mFactory.parser.parse(EMPTY_RSS_STRING, mFactory.repository.maxArticlesInRssCount)).thenReturn(mEmptyRss)
             whenever(mFactory.repository.putNewRss(mEmptyRss)).thenReturn(insertState)
 
             createUseCase(VALID_URL).execute().get()
@@ -141,8 +143,8 @@ class InsertRssUseCaseTest {
         return InsertRssUseCase(
                 mFactory.repository,
                 mFactory.requestHandler,
-                url,
                 mFactory.parser,
+                url,
                 mFactory.articleFilter,
                 mListener)
     }

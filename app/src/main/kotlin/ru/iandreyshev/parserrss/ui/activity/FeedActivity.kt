@@ -71,7 +71,9 @@ class FeedActivity : BaseActivity(), IFeedView, IOnArticleClickListener, AddRssD
         startActivity(intent)
     }
 
-    override fun openAddingRssDialog(url: String) = openDialog(AddRssDialog())
+    override fun openAddingRssDialog(url: String) {
+        openDialog(AddRssDialog.newInstance(url))
+    }
 
     override fun openRssInfoDialog(rss: ViewRss) = openDialog(RssInfoDialog.newInstance(rss))
 

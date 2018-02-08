@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 interface IRepository {
     val isFull: Boolean
 
-    val maxArticlesInRss: Int
+    val maxRssCount: Int
+
+    val maxArticlesInRssCount: Int
 
     val rssIdList: LongArray
 
