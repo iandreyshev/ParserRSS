@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 
 class LoadArticlesFirstTimeUseCase(
         private val mArticles: MutableList<ViewArticle>,

@@ -1,7 +1,7 @@
 package ru.iandreyshev.parserrss.models.useCase
 
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.rss.RssParser
+import ru.iandreyshev.parserrss.models.parser.RssParser
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 

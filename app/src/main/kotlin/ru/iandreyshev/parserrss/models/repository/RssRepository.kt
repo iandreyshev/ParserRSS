@@ -8,7 +8,7 @@ import io.objectbox.BoxStore
 class RssRepository(
         private val mBoxStore: BoxStore,
         private val mMaxRssCount: Long = MAX_RSS_COUNT,
-        private val mMaxArticlesInRssCount: Int = MAX_ARTICLES_IN_RSS_COUNT) : IRepository {
+        private var mMaxArticlesInRssCount: Int = MAX_ARTICLES_IN_RSS_COUNT) : IRepository {
 
     companion object {
         private const val MAX_RSS_COUNT = 5L
@@ -18,6 +18,10 @@ class RssRepository(
     private val mRssBox = mBoxStore.boxFor(Rss::class.java)
     private val mArticleBox = mBoxStore.boxFor(Article::class.java)
     private val mArticleImageBox = mBoxStore.boxFor(ArticleImage::class.java)
+
+    init {
+        mMaxArticlesInRssCount = Math.max(MAX_ARTICLES_IN_RSS_COUNT, 0)
+    }
 
     override val maxArticlesInRss: Int
         get() = mMaxArticlesInRssCount
@@ -140,6 +144,9 @@ class RssRepository(
     }
 
     private fun putArticles(rss: Rss) {
+        val maxCount = Math.min(mMaxArticlesInRssCount, rss.articles.count())
+        rss.articles = ArrayList(rss.articles.take(maxCount))
+
         bindArticles(rss)
 
         val newArticles = HashSet(rss.articles)

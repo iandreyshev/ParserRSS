@@ -1,10 +1,10 @@
-package ru.iandreyshev.parserrss.models.rss
+package ru.iandreyshev.parserrss.models.parser
 
 import org.jdom2.Element
 
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.repository.Article
-import ru.iandreyshev.parserrss.models.rss.extension.toDocument
+import ru.iandreyshev.parserrss.models.parser.extension.toDocument
 
 abstract class RssParser {
 

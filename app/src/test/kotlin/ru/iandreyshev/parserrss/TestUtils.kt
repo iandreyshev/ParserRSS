@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.apache.commons.io.IOUtils
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.rss.RssParser
+import ru.iandreyshev.parserrss.models.parser.RssParser
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 object TestUtils {

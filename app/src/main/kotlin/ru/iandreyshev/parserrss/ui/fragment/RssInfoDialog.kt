@@ -11,7 +11,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import kotlinx.android.synthetic.main.dialog_rss_info.*
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.RssInfoPresenter
 import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
 

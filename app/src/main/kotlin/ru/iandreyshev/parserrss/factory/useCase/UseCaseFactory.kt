@@ -6,11 +6,11 @@ import ru.iandreyshev.parserrss.factory.httpRequestHandler.HttpRequestHandlerFac
 import ru.iandreyshev.parserrss.models.filters.ArticlesFilterByDate
 import ru.iandreyshev.parserrss.models.imageProps.ArticleImageProps
 import ru.iandreyshev.parserrss.models.imageProps.FeedListIconProps
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.*
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType.*
-import ru.iandreyshev.parserrss.models.rss.ParserV2
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import ru.iandreyshev.parserrss.models.parser.ParserV2
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 

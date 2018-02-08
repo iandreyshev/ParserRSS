@@ -6,7 +6,7 @@ import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.models.interactor.RssInfoInteractor
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadRssInfoUseCase
 import ru.iandreyshev.parserrss.models.useCase.OpenRssOriginalUseCase
 import ru.iandreyshev.parserrss.presentation.presenter.extention.openInBrowser

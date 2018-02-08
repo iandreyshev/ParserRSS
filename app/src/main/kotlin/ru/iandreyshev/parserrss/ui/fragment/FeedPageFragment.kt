@@ -12,8 +12,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPagePresenter
 import ru.iandreyshev.parserrss.presentation.view.IFeedPageView
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter

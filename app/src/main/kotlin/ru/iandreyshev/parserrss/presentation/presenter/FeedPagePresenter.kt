@@ -6,8 +6,8 @@ import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 
 import ru.iandreyshev.parserrss.models.interactor.FeedPageInteractor
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadArticlesFirstTimeUseCase
 import ru.iandreyshev.parserrss.models.useCase.UpdateRssUseCase
 import ru.iandreyshev.parserrss.models.counter.ProcessCounter
@@ -46,14 +46,14 @@ class FeedPagePresenter(rss: ViewRss) : MvpPresenter<IFeedPageView>() {
             toast(R.string.toast_rss_not_exist)
         }
 
-        override fun updateSuccess(articles: MutableList<ViewArticle>) {
+        override fun updateRss(articles: MutableList<ViewArticle>) {
             viewState.setArticles(articles)
             viewState.openEmptyContentMessage(articles.isEmpty())
             viewState.updateImages()
         }
 
         override fun insertArticlesFirstTime(articles: MutableList<ViewArticle>) {
-            updateSuccess(articles)
+            updateRss(articles)
         }
 
         override fun processStart() = mProcessCounter.add()

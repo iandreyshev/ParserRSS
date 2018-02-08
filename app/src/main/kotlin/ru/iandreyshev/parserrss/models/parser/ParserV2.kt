@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.rss
+package ru.iandreyshev.parserrss.models.parser
 
 import android.os.Build
 import android.text.Html

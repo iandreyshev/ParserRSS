@@ -5,7 +5,7 @@ import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 interface IFeedView : IBaseView {
     @StateStrategyType(AddToEndStrategy::class)
@@ -21,7 +21,7 @@ interface IFeedView : IBaseView {
     fun openArticle(articleId: Long)
 
     @StateStrategyType(SkipStrategy::class)
-    fun openAddingRssDialog()
+    fun openAddingRssDialog(url: String = "")
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun startProgressBar(isStart: Boolean)

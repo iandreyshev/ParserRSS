@@ -49,6 +49,7 @@ class LoadAllRssUseCaseTest {
             createUseCase().execute().get()
 
             verify(mListener).updateCapacityAfterLoad(isFull)
+            clearInvocations(mListener)
         }
 
         verify(0, false)

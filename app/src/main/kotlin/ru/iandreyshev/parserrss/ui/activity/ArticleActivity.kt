@@ -8,8 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IArticleView
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter
 
@@ -19,7 +19,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import kotlinx.android.synthetic.main.activity_article.*
-import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.ui.animation.ImageFadeChangeAnimation
 import ru.iandreyshev.parserrss.ui.extention.dateString
 import ru.iandreyshev.parserrss.ui.extention.setVisibility

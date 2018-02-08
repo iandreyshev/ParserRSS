@@ -9,8 +9,8 @@ import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.models.interactor.ArticleInteractor
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadArticleUseCase
 import ru.iandreyshev.parserrss.models.useCase.LoadArticleImageUseCase
 import ru.iandreyshev.parserrss.models.useCase.OpenArticleOriginalUseCase

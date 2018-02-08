@@ -1,8 +1,8 @@
 package ru.iandreyshev.parserrss.models.useCase
 
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class LoadArticleUseCase(
         private val mRepository: IRepository,

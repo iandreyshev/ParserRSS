@@ -2,7 +2,7 @@ package ru.iandreyshev.parserrss.models.useCase
 
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class LoadAllRssUseCase(
         private val mRepository: IRepository,

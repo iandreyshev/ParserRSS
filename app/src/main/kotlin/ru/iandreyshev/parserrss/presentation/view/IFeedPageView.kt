@@ -4,7 +4,7 @@ import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 
 interface IFeedPageView : IBaseView {
     @StateStrategyType(AddToEndSingleStrategy::class)

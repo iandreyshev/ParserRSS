@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.rss
+package ru.iandreyshev.parserrss.models.viewModels
 
 import ru.iandreyshev.parserrss.models.repository.Article
 

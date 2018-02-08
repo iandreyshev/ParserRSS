@@ -6,7 +6,7 @@ import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class FeedPageInteractor(
         private val mUseCaseFactory: IUseCaseFactory,

@@ -1,13 +1,12 @@
 package ru.iandreyshev.parserrss.ui.activity
 
-import android.app.FragmentManager
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.view.Menu
 import android.view.MenuItem
 import com.arellomobile.mvp.MvpAppCompatDialogFragment
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter
 import ru.iandreyshev.parserrss.R
@@ -19,8 +18,6 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 import kotlinx.android.synthetic.main.activity_feed.*
 
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.ProvidePresenter
-import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import ru.iandreyshev.parserrss.ui.fragment.InternetPermissionDialog
 
@@ -74,7 +71,7 @@ class FeedActivity : BaseActivity(), IFeedView, IOnArticleClickListener, AddRssD
         startActivity(intent)
     }
 
-    override fun openAddingRssDialog() = openDialog(AddRssDialog())
+    override fun openAddingRssDialog(url: String) = openDialog(AddRssDialog())
 
     override fun openRssInfoDialog(rss: ViewRss) = openDialog(RssInfoDialog.newInstance(rss))
 

@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 
 import com.arellomobile.mvp.InjectViewState
@@ -62,7 +62,7 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
             when (requestResult.state) {
                 HttpRequestHandler.State.BAD_URL -> {
                     toast(R.string.toast_invalid_url)
-                    viewState.openAddingRssDialog()
+                    viewState.openAddingRssDialog(requestResult.urlString)
                 }
                 HttpRequestHandler.State.PERMISSION_DENIED -> {
                     viewState.openInternetPermissionDialog()
@@ -86,7 +86,6 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
 
         override fun urlToAddRssIsEmpty() {
             toast(R.string.feed_url_to_add_is_empty)
-            viewState.openAddingRssDialog()
         }
 
 

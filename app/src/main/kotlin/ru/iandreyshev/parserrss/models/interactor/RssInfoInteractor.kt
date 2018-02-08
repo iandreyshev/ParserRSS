@@ -1,7 +1,7 @@
 package ru.iandreyshev.parserrss.models.interactor
 
 import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 
