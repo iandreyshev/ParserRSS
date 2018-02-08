@@ -69,6 +69,7 @@ class FeedPageFragment : BaseFragment(),
                 it.resetUpdate()
             }
         }
+        updateImages()
     }
 
     override fun openEmptyContentMessage(isOpen: Boolean) {
