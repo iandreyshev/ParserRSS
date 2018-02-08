@@ -52,7 +52,7 @@ class ArticleActivity : BaseActivity(), IArticleView {
     fun provideArticlePresenter(): ArticlePresenter {
         val articleId = intent.getLongExtra(ARTICLE_BOUND_KEY, DEFAULT_ARTICLE_ID)
 
-        return ArticlePresenter(UseCaseFactory, articleId)
+        return ArticlePresenter(articleId)
     }
 
     override fun closeArticle() = finish()

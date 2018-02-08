@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.interactor
+package ru.iandreyshev.parserrss.models.interactor
 
 import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType

@@ -7,15 +7,20 @@ import io.objectbox.BoxStore
 
 class RssRepository(
         private val mBoxStore: BoxStore,
-        private val mMaxRssCount: Long = MAX_RSS_COUNT) : IRepository {
+        private val mMaxRssCount: Long = MAX_RSS_COUNT,
+        private val mMaxArticlesInRssCount: Int = MAX_ARTICLES_IN_RSS_COUNT) : IRepository {
 
     companion object {
-        const val MAX_RSS_COUNT = 5L
+        private const val MAX_RSS_COUNT = 5L
+        private const val MAX_ARTICLES_IN_RSS_COUNT = 50
     }
 
     private val mRssBox = mBoxStore.boxFor(Rss::class.java)
     private val mArticleBox = mBoxStore.boxFor(Article::class.java)
     private val mArticleImageBox = mBoxStore.boxFor(ArticleImage::class.java)
+
+    override val maxArticlesInRss: Int
+        get() = mMaxArticlesInRssCount
 
     override val isFull: Boolean
         get() = mRssBox.count() == mMaxRssCount
@@ -43,10 +48,10 @@ class RssRepository(
         return !mRssBox.find(Rss_.url, url).isEmpty()
     }
 
-    override fun putNewRss(newRss: Rss): IRepository.PutRssState {
+    override fun putNewRss(newRss: Rss): IRepository.InsertRssResult {
         return mBoxStore.callInTx {
             if (mRssBox.count() == mMaxRssCount) {
-                IRepository.PutRssState.FULL
+                IRepository.InsertRssResult.FULL
             }
 
             val rssWithSameUrl = mRssBox.query()
@@ -57,9 +62,9 @@ class RssRepository(
             if (rssWithSameUrl == null) {
                 mRssBox.put(newRss)
                 putArticles(newRss)
-                IRepository.PutRssState.SUCCESS
+                IRepository.InsertRssResult.SUCCESS
             } else {
-                IRepository.PutRssState.EXIST
+                IRepository.InsertRssResult.EXIST
             }
         }
     }

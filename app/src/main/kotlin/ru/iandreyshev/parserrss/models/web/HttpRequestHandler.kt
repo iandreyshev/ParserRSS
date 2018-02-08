@@ -31,18 +31,19 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
     var connectionTimeoutMs: Long = DEFAULT_MAX_CONNECTION_TIMEOUT_MS
     var writeTimeoutMs: Long = DEFAULT_MAX_WRITE_TIMEOUT_MS
 
-    final override var urlString = urlString
-        private set
-    final override var state: State = State.NOT_SEND
-        private set
-    final override var body: ByteArray? = null
-        private set
-    final override val bodyAsString: String?
+    override var urlString = urlString
+        protected set
+    override var state: State = State.NOT_SEND
+        protected set
+    override var body: ByteArray? = null
+        protected set
+    override var bodyAsString: String? = null
+        protected set
         get() {
             return String(body ?: return null)
         }
 
-    fun send(url: String? = null): State {
+    open fun send(url: String? = null): State {
         url?.let { urlString = url }
         val httpUrl = parseUrl(url ?: urlString)
 

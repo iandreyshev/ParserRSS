@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.models.useCase
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.rss.RssParser
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
@@ -11,8 +12,15 @@ class InsertRssUseCase(
         private val mRepository: IRepository,
         requestHandler: HttpRequestHandler,
         url: String,
+        parser: RssParser,
         private val mArticlesFilter: IArticlesFilter,
-        private val mListener: IListener) : DownloadRssUseCase(requestHandler, url, mListener) {
+        private val mListener: IListener)
+    : DownloadRssUseCase(
+        requestHandler,
+        url,
+        parser,
+        mRepository.maxArticlesInRss,
+        mListener) {
 
     interface IListener : IUseCaseListener {
         fun urlToAddRssIsEmpty()
@@ -41,12 +49,12 @@ class InsertRssUseCase(
         return !mRepository.isRssWithUrlExist(url)
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
+    override fun onStartProcessAsync(): Boolean {
         return if (mRepository.isFull) {
             mResultEvent = mListener::rssCountIsMax
-            null
+            false
         } else {
-            super.doInBackground(*params)
+            true
         }
     }
 
@@ -57,7 +65,7 @@ class InsertRssUseCase(
             mListener::rssAlreadyExist
     }
 
-    override fun onNetErrorAsync(requestResult: IHttpRequestResult) {
+    override fun onConnectionErrorAsync(requestResult: IHttpRequestResult) {
         mResultEvent = { mListener.connectionError(requestResult) }
     }
 
@@ -67,12 +75,12 @@ class InsertRssUseCase(
 
     override fun onSuccessAsync(rss: Rss) {
         mResultEvent = when (mRepository.putNewRss(rss)) {
-            IRepository.PutRssState.SUCCESS -> {
+            IRepository.InsertRssResult.SUCCESS -> {
                 mArticlesFilter.sort(rss.articles)
                 fun() { mListener.insertNewRss(ViewRss(rss), mRepository.isFull) }
             }
-            IRepository.PutRssState.EXIST -> mListener::rssAlreadyExist
-            IRepository.PutRssState.FULL -> mListener::rssCountIsMax
+            IRepository.InsertRssResult.EXIST -> mListener::rssAlreadyExist
+            IRepository.InsertRssResult.FULL -> mListener::rssCountIsMax
         }
     }
 

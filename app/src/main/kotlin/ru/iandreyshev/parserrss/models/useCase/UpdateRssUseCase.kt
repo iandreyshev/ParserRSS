@@ -3,6 +3,7 @@ package ru.iandreyshev.parserrss.models.useCase
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.rss.RssParser
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
@@ -12,8 +13,15 @@ class UpdateRssUseCase(
         private val mRepository: IRepository,
         requestHandler: HttpRequestHandler,
         url: String,
+        parser: RssParser,
         private val mArticlesFilter: IArticlesFilter,
-        private val mListener: IListener) : DownloadRssUseCase(requestHandler, url, mListener) {
+        private val mListener: IListener)
+    : DownloadRssUseCase(
+        requestHandler,
+        url,
+        parser,
+        mRepository.maxArticlesInRss,
+        mListener) {
 
     interface IListener : IUseCaseListener {
         fun connectionError(requestResult: IHttpRequestResult)
@@ -35,7 +43,7 @@ class UpdateRssUseCase(
         mResultEvent = mListener::rssNotExist
     }
 
-    override fun onNetErrorAsync(requestResult: IHttpRequestResult) {
+    override fun onConnectionErrorAsync(requestResult: IHttpRequestResult) {
         mResultEvent = { mListener.connectionError(requestResult) }
     }
 

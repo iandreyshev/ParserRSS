@@ -3,9 +3,9 @@ package ru.iandreyshev.parserrss.presentation.presenter
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 
-import ru.iandreyshev.parserrss.interactor.FeedPageInteractor
+import ru.iandreyshev.parserrss.models.interactor.FeedPageInteractor
 import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadArticlesFirstTimeUseCase
@@ -17,11 +17,11 @@ import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 import ru.iandreyshev.parserrss.presentation.view.IFeedPageView
 
 @InjectViewState
-class FeedPagePresenter(useCaseFactory: IUseCaseFactory, rss: ViewRss) : MvpPresenter<IFeedPageView>() {
+class FeedPagePresenter(rss: ViewRss) : MvpPresenter<IFeedPageView>() {
 
     private val mProcessCounter = ProcessCounter(this::onChangeProcessCount)
 
-    val interactor = FeedPageInteractor(useCaseFactory, UseCaseListener(), rss)
+    val interactor = FeedPageInteractor(UseCaseFactory, UseCaseListener(), rss)
 
     private inner class UseCaseListener : UpdateRssUseCase.IListener,
             LoadArticlesFirstTimeUseCase.IListener {

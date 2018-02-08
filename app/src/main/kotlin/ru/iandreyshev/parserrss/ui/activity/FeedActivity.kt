@@ -51,9 +51,6 @@ class FeedActivity : BaseActivity(), IFeedView, IOnArticleClickListener, AddRssD
     private var mIsDeleteButtonEnabled = true
     private var mOpenedDialog: MvpAppCompatDialogFragment? = null
 
-    @ProvidePresenter
-    fun provideFeedPresenter() = FeedPresenter(UseCaseFactory)
-
     override fun insertRss(rss: ViewRss) {
         mPagesAdapter.insert(rss)
     }

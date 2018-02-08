@@ -1,9 +1,10 @@
 package ru.iandreyshev.parserrss
 
+import com.nhaarman.mockito_kotlin.mock
 import org.apache.commons.io.IOUtils
-import org.mockito.Mockito
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
+import ru.iandreyshev.parserrss.models.rss.RssParser
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 object TestUtils {
@@ -20,7 +21,8 @@ object TestUtils {
 }
 
 class MocksFactory {
-    val repository = Mockito.mock(IRepository::class.java)
-    val requestHandler = Mockito.mock(HttpRequestHandler::class.java)
-    val articleFilter = Mockito.mock(IArticlesFilter::class.java)
+    val repository: IRepository = mock()
+    val requestHandler: HttpRequestHandler = mock()
+    val articleFilter: IArticlesFilter = mock()
+    val parser: RssParser = mock()
 }

@@ -11,7 +11,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import kotlinx.android.synthetic.main.dialog_rss_info.*
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.RssInfoPresenter
 import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
@@ -23,7 +22,7 @@ class RssInfoDialog() : MvpAppCompatDialogFragment(), IRssInfoView {
 
         fun newInstance(rss: ViewRss): RssInfoDialog {
             val dialog = RssInfoDialog()
-            dialog.mPresenter = RssInfoPresenter(UseCaseFactory, rss)
+            dialog.mPresenter = RssInfoPresenter(rss)
 
             return dialog
         }
