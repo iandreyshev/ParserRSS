@@ -1,6 +1,10 @@
 package ru.iandreyshev.parserrss
 
 import org.apache.commons.io.IOUtils
+import org.mockito.Mockito
+import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
+import ru.iandreyshev.parserrss.models.repository.IRepository
+import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 object TestUtils {
     fun readFromFile(filePath: String): String? {
@@ -13,4 +17,10 @@ object TestUtils {
             null
         }
     }
+}
+
+class MocksFactory {
+    val repository = Mockito.mock(IRepository::class.java)
+    val requestHandler = Mockito.mock(HttpRequestHandler::class.java)
+    val articleFilter = Mockito.mock(IArticlesFilter::class.java)
 }

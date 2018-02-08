@@ -14,16 +14,16 @@ object HttpRequestHandlerFactory : IHttpRequestHandlerFactory {
         const val MAX_WRITE_MS = 1500L
     }
 
-    override fun create(type: HttpRequestHandlerType, url: String): HttpRequestHandler {
+    override fun create(type: HttpRequestHandlerType): HttpRequestHandler {
         return when (type) {
             HttpRequestHandlerType.ARTICLE_IMAGE -> {
-                val handler = GetRequestHandler(url)
+                val handler = GetRequestHandler()
                 handler.maxContentBytes = MAX_IMAGE_BYTES_COUNT
 
                 handler
             }
             HttpRequestHandlerType.ARTICLE_FEED_ITEM_IMAGE -> {
-                val handler = GetRequestHandler(url)
+                val handler = GetRequestHandler()
                 handler.connectionTimeoutMs = ArticleFeedItemHandlerProps.MAX_CONNECT_MS
                 handler.readTimeoutMs = ArticleFeedItemHandlerProps.MAX_READ_MS
                 handler.writeTimeoutMs = ArticleFeedItemHandlerProps.MAX_WRITE_MS
@@ -32,12 +32,12 @@ object HttpRequestHandlerFactory : IHttpRequestHandlerFactory {
                 handler
             }
             HttpRequestHandlerType.NEW_RSS -> {
-                val handler = GetRequestHandler(url)
+                val handler = GetRequestHandler()
                 handler.maxContentBytes = MAX_RSS_BYTES_COUNT
                 handler
             }
             HttpRequestHandlerType.UPDATE_RSS -> {
-                val handler = GetRequestHandler(url)
+                val handler = GetRequestHandler()
                 handler.maxContentBytes = MAX_RSS_BYTES_COUNT
                 handler
             }

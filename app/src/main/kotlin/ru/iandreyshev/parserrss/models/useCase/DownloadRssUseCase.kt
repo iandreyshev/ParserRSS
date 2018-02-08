@@ -7,32 +7,25 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 abstract class DownloadRssUseCase(
         private val mRequestHandler: HttpRequestHandler,
+        private var mUrl: String,
         mListener: IUseCaseListener) : BaseUseCase<Any, Any, Any?>(mListener) {
 
     companion object {
         private const val MAX_ARTICLES_COUNT = 64
     }
 
-    protected open fun onUrlErrorAsync() {
-        // Implement in sub-classes if needed
-    }
+    protected abstract fun onUrlErrorAsync()
 
-    protected open fun onNetErrorAsync(requestResult: IHttpRequestResult) {
-        // Implement in sub-classes if needed
-    }
+    protected abstract fun onNetErrorAsync(requestResult: IHttpRequestResult)
 
-    protected open fun onParserErrorAsync() {
-        // Implement in sub-classes if needed
-    }
+    protected abstract fun onParserErrorAsync()
 
-    protected open fun isUrlValidAsync(): Boolean {
-        return mRequestHandler.state != HttpRequestHandler.State.BAD_URL
+    protected open fun isUrlValidAsync(url: String): Boolean {
+        return true
     }
 
     protected open fun getRssFromNetAsync(): Boolean {
-        mRequestHandler.send()
-
-        return mRequestHandler.state == HttpRequestHandler.State.SUCCESS
+        return mRequestHandler.send(mUrl) == HttpRequestHandler.State.SUCCESS
     }
 
     protected open fun parseRssAsync(): Rss? {
@@ -40,7 +33,7 @@ abstract class DownloadRssUseCase(
     }
 
     override fun doInBackground(vararg params: Any?): Any? {
-        if (!isUrlValidAsync()) {
+        if (!isUrlValidAsync(mUrl)) {
             onUrlErrorAsync()
 
             return null

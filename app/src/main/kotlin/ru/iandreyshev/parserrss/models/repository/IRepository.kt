@@ -11,13 +11,13 @@ interface IRepository {
 
     fun getArticleById(id: Long): Article?
 
-    fun getRssTitle(id: Long): String
+    fun getRssTitleByRssId(id: Long): String?
 
-    fun getArticleImage(articleId: Long): ArticleImage?
+    fun getArticleImageByArticleId(id: Long): ArticleImage?
 
-    fun getArticleImageBitmap(articleId: Long): Bitmap?
+    fun getArticleImageBitmapByArticleId(id: Long): Bitmap?
 
-    fun getArticleImageUrl(articleId: Long): String?
+    fun getArticleImageUrlByArticleId(id: Long): String?
 
     fun putNewRss(newRss: Rss): PutRssState
 

@@ -21,18 +21,19 @@ class FeedPagePresenter(useCaseFactory: IUseCaseFactory, rss: ViewRss) : MvpPres
 
     private val mProcessCounter = ProcessCounter(this::onChangeProcessCount)
 
-    val interactor = FeedPageInteractor(useCaseFactory, FeedPageUseCaseListener(), rss)
+    val interactor = FeedPageInteractor(useCaseFactory, UseCaseListener(), rss)
 
-    private inner class FeedPageUseCaseListener : UpdateRssUseCase.IListener,
+    private inner class UseCaseListener : UpdateRssUseCase.IListener,
             LoadArticlesFirstTimeUseCase.IListener {
-
-        override fun invalidUrl() {
-            toast(R.string.toast_invalid_url)
-        }
 
         override fun connectionError(requestResult: IHttpRequestResult) {
             when (requestResult.state) {
-                HttpRequestHandler.State.PERMISSION_DENIED -> viewState.openInternetPermissionDialog()
+                HttpRequestHandler.State.BAD_URL -> {
+                    toast(R.string.toast_invalid_url)
+                }
+                HttpRequestHandler.State.PERMISSION_DENIED -> {
+                    viewState.openInternetPermissionDialog()
+                }
                 else -> toast(R.string.toast_bad_connection)
             }
         }

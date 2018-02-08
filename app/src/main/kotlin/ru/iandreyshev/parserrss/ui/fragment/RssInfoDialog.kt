@@ -2,7 +2,6 @@ package ru.iandreyshev.parserrss.ui.fragment
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 
@@ -17,26 +16,27 @@ import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.RssInfoPresenter
 import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
 
-class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
+class RssInfoDialog() : MvpAppCompatDialogFragment(), IRssInfoView {
 
     companion object {
         const val OPEN_ORIGINAL_BUTTON = AlertDialog.BUTTON_NEUTRAL
 
-        fun show(fragmentManager: FragmentManager, rss: ViewRss) {
+        fun newInstance(rss: ViewRss): RssInfoDialog {
             val dialog = RssInfoDialog()
-            dialog.presenter = RssInfoPresenter(UseCaseFactory, rss)
-            dialog.show(fragmentManager, RssInfoDialog::class.java.name)
+            dialog.mPresenter = RssInfoPresenter(UseCaseFactory, rss)
+
+            return dialog
         }
     }
 
     @InjectPresenter
-    lateinit var presenter: RssInfoPresenter
+    lateinit var mPresenter: RssInfoPresenter
 
     private val mInteractor
-        get() = presenter.interactor
+        get() = mPresenter.interactor
 
     @ProvidePresenter
-    fun provideRssInfoPresenter() = presenter
+    fun provideRssInfoPresenter() = mPresenter
 
     override fun onCreateDialog(savedInstantState: Bundle?): Dialog {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_rss_info, null)

@@ -15,7 +15,7 @@ class FeedPageInteractor(
 
     init {
         mUseCaseFactory
-                .create(UseCaseType.LOAD_ARTICLES_FIRST_TIME, mListener, mRss)
+                .create(UseCaseType.LOAD_ARTICLES_FIRST_TIME, mListener, mRss.articles)
                 .start()
     }
 

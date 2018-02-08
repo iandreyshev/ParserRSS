@@ -10,13 +10,12 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 class UpdateRssUseCase(
         private val mRepository: IRepository,
-        private val mRequestHandler: HttpRequestHandler,
+        requestHandler: HttpRequestHandler,
+        url: String,
         private val mArticlesFilter: IArticlesFilter,
-        private val mListener: IListener) : DownloadRssUseCase(mRequestHandler, mListener) {
+        private val mListener: IListener) : DownloadRssUseCase(requestHandler, url, mListener) {
 
     interface IListener : IUseCaseListener {
-        fun invalidUrl()
-
         fun connectionError(requestResult: IHttpRequestResult)
 
         fun parseError()
@@ -28,17 +27,12 @@ class UpdateRssUseCase(
 
     private var mResultEvent: (() -> Unit)? = null
 
-    override fun isUrlValidAsync(): Boolean {
-        if (!super.isUrlValidAsync()) {
-            mResultEvent = mListener::invalidUrl
-            return false
+    override fun isUrlValidAsync(url: String): Boolean {
+        return mRepository.isRssWithUrlExist(url)
+    }
 
-        } else if (!mRepository.isRssWithUrlExist(mRequestHandler.urlString)) {
-            mResultEvent = mListener::rssNotExist
-            return false
-        }
-
-        return true
+    override fun onUrlErrorAsync() {
+        mResultEvent = mListener::rssNotExist
     }
 
     override fun onNetErrorAsync(requestResult: IHttpRequestResult) {

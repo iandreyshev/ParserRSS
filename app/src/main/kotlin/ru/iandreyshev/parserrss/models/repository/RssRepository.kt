@@ -1,21 +1,16 @@
 package ru.iandreyshev.parserrss.models.repository
 
 import android.graphics.Bitmap
-import java.util.ArrayList
 import java.util.HashSet
 
 import io.objectbox.BoxStore
 
-class RssRepository(private val mBoxStore: BoxStore) : IRepository {
+class RssRepository(
+        private val mBoxStore: BoxStore,
+        private val mMaxRssCount: Long = MAX_RSS_COUNT) : IRepository {
 
     companion object {
         const val MAX_RSS_COUNT = 5L
-        internal val INVALID_IDS: MutableList<Long> = ArrayList()
-
-        init {
-            INVALID_IDS.add(-1L)
-            INVALID_IDS.add(0L)
-        }
     }
 
     private val mRssBox = mBoxStore.boxFor(Rss::class.java)
@@ -23,7 +18,7 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
     private val mArticleImageBox = mBoxStore.boxFor(ArticleImage::class.java)
 
     override val isFull: Boolean
-        get() = mRssBox.count() == MAX_RSS_COUNT
+        get() = mRssBox.count() == mMaxRssCount
 
     override val rssIdList: LongArray
         get() = mBoxStore.callInTx {
@@ -40,13 +35,17 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         return rss
     }
 
-    override fun getArticleById(id: Long): Article? = getArticle(id)
+    override fun getArticleById(id: Long): Article? {
+        return mArticleBox.get(id)
+    }
 
-    override fun isRssWithUrlExist(url: String): Boolean = !mRssBox.find(Rss_.url, url).isEmpty()
+    override fun isRssWithUrlExist(url: String): Boolean {
+        return !mRssBox.find(Rss_.url, url).isEmpty()
+    }
 
     override fun putNewRss(newRss: Rss): IRepository.PutRssState {
         return mBoxStore.callInTx {
-            if (mRssBox.count() == MAX_RSS_COUNT) {
+            if (mRssBox.count() == mMaxRssCount) {
                 IRepository.PutRssState.FULL
             }
 
@@ -83,14 +82,16 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         }
     }
 
-    override fun getRssTitle(id: Long): String = mRssBox.get(id).title
+    override fun getRssTitleByRssId(id: Long): String? {
+        return mRssBox.get(id)?.title
+    }
 
     override fun removeRssById(id: Long): Boolean {
-        if (id in INVALID_IDS) {
-            return false
-        }
-
         return mBoxStore.callInTx {
+            if (mRssBox.find(Rss_.id, id) == null) {
+                return@callInTx false
+            }
+
             mRssBox.remove(id)
             mArticleBox.query()
                     .equal(Article_.rssId, id)
@@ -102,9 +103,9 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         }
     }
 
-    override fun getArticleImage(articleId: Long): ArticleImage? {
+    override fun getArticleImageByArticleId(id: Long): ArticleImage? {
         return mArticleImageBox.query()
-                .equal(ArticleImage_.articleId, articleId)
+                .equal(ArticleImage_.articleId, id)
                 .build()
                 .findFirst()
     }
@@ -125,12 +126,12 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         }
     }
 
-    override fun getArticleImageBitmap(articleId: Long): Bitmap? {
-        return getArticleImage(articleId)?.bitmap
+    override fun getArticleImageBitmapByArticleId(id: Long): Bitmap? {
+        return getArticleImageByArticleId(id)?.bitmap
     }
 
-    override fun getArticleImageUrl(articleId: Long): String? {
-        return getArticle(articleId)?.imageUrl
+    override fun getArticleImageUrlByArticleId(id: Long): String? {
+        return getArticleById(id)?.imageUrl
     }
 
     private fun putArticles(rss: Rss) {
@@ -150,25 +151,19 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         rss.articles = getArticlesByRssId(rss.id)
     }
 
-    private fun bindArticles(rss: Rss) = rss.articles.forEach { it.rssId = rss.id }
+    private fun bindArticles(rss: Rss) {
+        rss.articles.forEach { it.rssId = rss.id }
+    }
 
     private fun getArticlesByRssId(id: Long): MutableList<Article> {
-        return if (id in INVALID_IDS) {
-            ArrayList()
-        } else {
-            mArticleBox.query()
-                    .equal(Article_.rssId, id)
-                    .build()
-                    .find()
-        }
+        return mArticleBox.query()
+                .equal(Article_.rssId, id)
+                .build()
+                .find()
     }
 
     private fun getRss(id: Long): Rss? {
-        return if (id in INVALID_IDS) null else mRssBox.get(id)
-    }
-
-    private fun getArticle(id: Long): Article? {
-        return if (id in INVALID_IDS) null else mArticleBox.get(id)
+        return mRssBox.get(id)
     }
 
     private fun removeArticle(id: Long) {

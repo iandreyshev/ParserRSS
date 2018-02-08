@@ -58,14 +58,15 @@ class FeedPresenter(useCaseFactory: IUseCaseFactory) : MvpPresenter<IFeedView>()
             toast(R.string.toast_rss_already_exist)
         }
 
-        override fun invalidRssUrl() {
-            toast(R.string.toast_invalid_url)
-            viewState.openAddingRssDialog()
-        }
-
         override fun connectionError(requestResult: IHttpRequestResult) {
             when (requestResult.state) {
-                HttpRequestHandler.State.PERMISSION_DENIED -> viewState.openInternetPermissionDialog()
+                HttpRequestHandler.State.BAD_URL -> {
+                    toast(R.string.toast_invalid_url)
+                    viewState.openAddingRssDialog()
+                }
+                HttpRequestHandler.State.PERMISSION_DENIED -> {
+                    viewState.openInternetPermissionDialog()
+                }
                 else -> toast(R.string.toast_bad_connection)
             }
         }
@@ -79,7 +80,17 @@ class FeedPresenter(useCaseFactory: IUseCaseFactory) : MvpPresenter<IFeedView>()
             onChangeCapacityStatus(isFull)
         }
 
-        override fun openRssInfo(rss: ViewRss) = viewState.openRssInfo(rss)
+        override fun removingRssFailed() {
+            toast(R.string.feed_deleting_error)
+        }
+
+        override fun urlToAddRssIsEmpty() {
+            toast(R.string.feed_url_to_add_is_empty)
+            viewState.openAddingRssDialog()
+        }
+
+
+        override fun openRssInfo(rss: ViewRss) = viewState.openRssInfoDialog(rss)
 
         override fun processStart() = mProcessCounter.add()
 

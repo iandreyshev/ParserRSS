@@ -43,6 +43,7 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
         }
 
     fun send(url: String? = null): State {
+        url?.let { urlString = url }
         val httpUrl = parseUrl(url ?: urlString)
 
         state = if (httpUrl == null) {
@@ -59,14 +60,17 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
     private fun send(client: OkHttpClient, request: Request): State {
         return try {
             client.newCall(request).execute().use { response ->
+
+                if (response.code() != OK_RESPONSE_CODE) {
+                    return State.BAD_CONNECTION
+                }
+
                 response.body().use { body ->
                     when {
-                        (response.code() != OK_RESPONSE_CODE || body == null || body.contentLength() > maxContentBytes) ->
+                        (body == null || body.contentLength() > maxContentBytes) ->
                             State.BAD_CONNECTION
                         else -> {
-                            val source = body.source()
-                            source.request(maxContentBytes)
-                            this.body = source.buffer().snapshot().toByteArray()
+                            this.body = body.source().readByteArray()
                             State.SUCCESS
                         }
                     }

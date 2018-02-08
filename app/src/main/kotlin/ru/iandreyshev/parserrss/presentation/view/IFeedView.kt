@@ -27,7 +27,7 @@ interface IFeedView : IBaseView {
     fun startProgressBar(isStart: Boolean)
 
     @StateStrategyType(SkipStrategy::class)
-    fun openRssInfo(rss: ViewRss)
+    fun openRssInfoDialog(rss: ViewRss)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun openEmptyContentMessage(isOpen: Boolean)

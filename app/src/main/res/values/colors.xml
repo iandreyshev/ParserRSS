@@ -6,10 +6,10 @@
 
     <color name="tabsIndicator">#FFF</color>
 
-    <color name="primaryLightText">#FFF</color>
+    <color name="primaryLightText">#ffffff</color>
     <color name="secondaryLightText">#aaaaaa</color>
 
     <color name="primaryDarkText">#000000</color>
     <color name="secondaryDarkText">#555555</color>
-    <color name="accentDark">#2980b9</color>
+    <color name="accentDark">#1e6391</color>
 </resources>

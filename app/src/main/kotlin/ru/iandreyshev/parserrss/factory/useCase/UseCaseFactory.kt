@@ -9,6 +9,7 @@ import ru.iandreyshev.parserrss.models.imageProps.FeedListIconProps
 import ru.iandreyshev.parserrss.models.rss.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.*
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType.*
+import ru.iandreyshev.parserrss.models.rss.ViewArticle
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 
@@ -40,18 +41,20 @@ object UseCaseFactory : IUseCaseFactory {
                     mListener as OpenArticleOriginalUseCase.IListener
             )
             LOAD_ARTICLES_FIRST_TIME -> LoadArticlesFirstTimeUseCase(
-                    data as ViewRss,
+                    data as MutableList<ViewArticle>,
                     mListener as LoadArticlesFirstTimeUseCase.IListener
             )
             UPDATE_RSS -> UpdateRssUseCase(
                     App.repository,
-                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.UPDATE_RSS, data as String),
+                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.UPDATE_RSS),
+                    data as String,
                     ArticlesFilterByDate,
                     mListener as UpdateRssUseCase.IListener
             )
             INSERT_RSS -> InsertRssUseCase(
                     App.repository,
-                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.NEW_RSS, data as String),
+                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.NEW_RSS),
+                    data as String,
                     ArticlesFilterByDate,
                     mListener as InsertRssUseCase.IListener
             )

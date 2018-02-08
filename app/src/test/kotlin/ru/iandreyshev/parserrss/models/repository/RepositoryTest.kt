@@ -30,7 +30,6 @@ class RepositoryTest {
     private lateinit var mRss: Rss
 
     @Before
-    @Throws(Exception::class)
     fun setup() {
         val tempFile = File.createTempFile("object-store-test", "")
 
@@ -52,39 +51,23 @@ class RepositoryTest {
     }
 
     @Test
-    fun noThrowExceptionIfTryToGetItemByInvalidId() {
-        try {
-            RssRepository.INVALID_IDS.forEach {
-                mRepository.getArticleById(it)
-                mRepository.getRssById(it)
-                mRepository.removeRssById(it)
-            }
-        } catch (ex: Exception) {
-            fail()
-        }
-    }
-
-    @Test
     fun returnNullIfGetRssByInvalidId() {
         assertNull(mRepository.getRssById(-2))
     }
 
     @Test
-    @Throws(Exception::class)
     fun returnTrueIfRssWithSameUrlExist() {
         mRepository.putNewRss(mRss)
         assertTrue(mRepository.isRssWithUrlExist(RSS_URL))
     }
 
     @Test
-    @Throws(Exception::class)
     fun returnFalseIfRssWithSameUrlNotExist() {
         mRepository.putNewRss(mRss)
         assertFalse(mRepository.isRssWithUrlExist(NOT_USE_RSS_URL))
     }
 
     @Test
-    @Throws(Exception::class)
     fun returnArticlesById() {
         mRepository.putNewRss(mRss)
 
@@ -94,27 +77,25 @@ class RepositoryTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun updateRssIdAfterPut() {
         mRepository.putNewRss(mRss)
 
-        assertEquals(mRepository.getRssById(mRss.id), mRss)
+        assertEquals(mRss, mRepository.getRssById(mRss.id))
     }
 
     @Test
-    @Throws(Exception::class)
     fun returnTrueWhenUpdatingRssExist() {
         val newRss = Rss(title = "Title", origin = "Origin")
         newRss.description = "Description"
         newRss.url = mRss.url
 
-        assertNotEquals(newRss.title, mRss.title)
-        assertNotEquals(newRss.description, mRss.description)
-        assertNotEquals(newRss.articles.size.toLong(), mRss.articles.size.toLong())
+        assertNotEquals(mRss.title, newRss.title)
+        assertNotEquals(mRss.description, newRss.description)
+        assertNotEquals(mRss.articles.size.toLong(), newRss.articles.size.toLong())
 
-        assertEquals(newRss.url, mRss.url)
+        assertEquals(mRss.url, newRss.url)
 
-        assertEquals(mRepository.putNewRss(newRss), IRepository.PutRssState.SUCCESS)
+        assertEquals(IRepository.PutRssState.SUCCESS, mRepository.putNewRss(newRss))
         assertTrue(mRepository.updateRssWithSameUrl(mRss))
 
         assertNotEquals(newRss.title, mRss.title)
@@ -122,33 +103,29 @@ class RepositoryTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun returnFalseWhenUpdatingNotExistRss() {
         val newRss = Rss(title = "", origin = "", url = NOT_USE_RSS_URL)
 
-        assertEquals(mRepository.putNewRss(newRss), IRepository.PutRssState.SUCCESS)
+        assertEquals(IRepository.PutRssState.SUCCESS, mRepository.putNewRss(newRss))
         assertFalse(mRepository.updateRssWithSameUrl(mRss))
     }
 
     @Test
-    @Throws(Exception::class)
     fun removeRss() {
-        assertEquals(mRepository.putNewRss(mRss), IRepository.PutRssState.SUCCESS)
+        assertEquals(IRepository.PutRssState.SUCCESS, mRepository.putNewRss(mRss))
         mRepository.removeRssById(mRss.id)
         assertNull(mRepository.getRssById(mRss.id))
     }
 
     @Test
-    @Throws(Exception::class)
     fun returnExistStateAfterPutRssWithSameUrl() {
         mRepository.putNewRss(mRss)
         val rssWithSameUrl = Rss(title = "", origin = "", url = RSS_URL)
         rssWithSameUrl.url = mRss.url
-        assertEquals(mRepository.putNewRss(rssWithSameUrl), IRepository.PutRssState.EXIST)
+        assertEquals(IRepository.PutRssState.EXIST, mRepository.putNewRss(rssWithSameUrl))
     }
 
     @Test
-    @Throws(Exception::class)
     fun updateRssArticlesIdAfterPut() {
         mRepository.putNewRss(mRss)
 
@@ -158,7 +135,6 @@ class RepositoryTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun returnRssWithSameArticles() {
         val articles = HashSet(mRss.articles)
 

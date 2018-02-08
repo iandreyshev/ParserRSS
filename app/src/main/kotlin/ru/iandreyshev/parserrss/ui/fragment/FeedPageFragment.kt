@@ -30,6 +30,7 @@ class FeedPageFragment : BaseFragment(),
         IItemsListView {
 
     companion object {
+        private val TAG = FeedPagePresenter::class.java.name
         private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15
 
         fun newInstance(rss: ViewRss): FeedPageFragment {
@@ -93,7 +94,7 @@ class FeedPageFragment : BaseFragment(),
     }
 
     override fun openInternetPermissionDialog() {
-        InternetPermissionDialog.show(fragmentManager ?: return)
+        InternetPermissionDialog().show(fragmentManager, TAG)
     }
 
     private fun initListView() {
