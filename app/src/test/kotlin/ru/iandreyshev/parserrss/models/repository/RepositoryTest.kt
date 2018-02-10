@@ -16,7 +16,6 @@ import java.util.ArrayList
 import java.util.HashSet
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = "src/main/AndroidManifest.xml")
 class RepositoryTest {
 
     companion object {

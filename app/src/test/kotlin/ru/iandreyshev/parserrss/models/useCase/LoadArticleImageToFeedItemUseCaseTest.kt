@@ -6,11 +6,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
+import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = "src/main/AndroidManifest.xml")
 class LoadArticleImageToFeedItemUseCaseTest {
 
     companion object {
@@ -47,6 +46,55 @@ class LoadArticleImageToFeedItemUseCaseTest {
 
         verify(mFactory.itemIcon).updateImage(IMAGE)
         verify(mFactory.imageProps).configureToView(IMAGE)
+    }
+
+    @Test
+    fun notCallUpdateIfRepositoryDoNotHaveImageUrl() {
+        whenever(mFactory.itemIcon.id).thenReturn(ARTICLE_ID)
+        whenever(mFactory.itemIcon.isUpdateStart).thenReturn(false)
+        whenever(mFactory.repository.getArticleImageBitmapByArticleId(ARTICLE_ID)).thenReturn(null)
+        whenever(mFactory.repository.getArticleImageUrlByArticleId(ARTICLE_ID)).thenReturn(null)
+
+        createUseCase().execute().get()
+
+        verifyNoMoreInteractions(mListener)
+    }
+
+    @Test
+    fun notCallUpdateIfHandlerReturnWrongStatement() {
+        val imageUrl = "Image url"
+        val responseBody = byteArrayOf()
+
+        whenever(mFactory.itemIcon.id).thenReturn(ARTICLE_ID)
+        whenever(mFactory.itemIcon.isUpdateStart).thenReturn(false)
+        whenever(mFactory.repository.getArticleImageBitmapByArticleId(ARTICLE_ID)).thenReturn(null)
+        whenever(mFactory.repository.getArticleImageUrlByArticleId(ARTICLE_ID)).thenReturn(imageUrl)
+        whenever(mFactory.requestHandler.send(imageUrl)).thenReturn(HttpRequestHandler.State.SUCCESS)
+        whenever(mFactory.requestHandler.body).thenReturn(responseBody)
+        whenever(mFactory.imageProps.configureToMemory(any())).thenReturn(IMAGE)
+        whenever(mFactory.repository.putArticleImageIfArticleExist(ARTICLE_ID, IMAGE)).thenReturn(true)
+        whenever(mFactory.imageProps.configureToView(IMAGE)).thenReturn(IMAGE)
+
+        createUseCase().execute().get()
+
+        verify(mFactory.itemIcon).updateImage(IMAGE)
+    }
+
+    @Test
+    fun notCallUpdateIfRepositoryNotContainImageAndHandlerReturnWrongResult() {
+        val imageUrl = "Image url"
+
+        whenever(mFactory.itemIcon.id).thenReturn(ARTICLE_ID)
+        whenever(mFactory.itemIcon.isUpdateStart).thenReturn(false)
+        whenever(mFactory.repository.getArticleImageBitmapByArticleId(ARTICLE_ID)).thenReturn(null)
+        whenever(mFactory.repository.getArticleImageUrlByArticleId(ARTICLE_ID)).thenReturn(imageUrl)
+        whenever(mFactory.requestHandler.send(imageUrl)).thenReturn(HttpRequestHandler.State.BAD_URL)
+        whenever(mFactory.requestHandler.body).thenReturn(null)
+
+        createUseCase().execute().get()
+
+        verify(mFactory.itemIcon, times(2)).id
+        verifyNoMoreInteractions(mFactory.itemIcon)
     }
 
     private fun createUseCase(): LoadArticleImageToFeedItemUseCase {

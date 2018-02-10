@@ -9,10 +9,8 @@ import org.robolectric.RobolectricTestRunner
 import java.util.Date
 
 import org.junit.Assert.*
-import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = "src/main/AndroidManifest.xml")
 class ArticleTest {
 
     companion object {

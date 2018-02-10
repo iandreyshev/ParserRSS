@@ -1,7 +1,6 @@
 package ru.iandreyshev.parserrss.models.useCase
 
 import android.graphics.Bitmap
-import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.models.extention.bitmap
 import ru.iandreyshev.parserrss.models.imageProps.IImageProps
 import ru.iandreyshev.parserrss.models.repository.IRepository
@@ -26,10 +25,12 @@ abstract class GetArticleImageUseCase(
         var imageBitmap = mRequestHandler.body?.bitmap
 
         if (requestResult == HttpRequestHandler.State.SUCCESS && imageBitmap != null) {
-            App.repository.putArticleImageIfArticleExist(mArticleId, mImageProps.configureToMemory(imageBitmap))
-            imageBitmap = mImageProps.configureToView(imageBitmap)
+            imageBitmap = mImageProps.configureToMemory(imageBitmap)
+            mRepository.putArticleImageIfArticleExist(mArticleId, imageBitmap)
+
+            return mImageProps.configureToView(imageBitmap)
         }
 
-        return imageBitmap
+        return null
     }
 }
