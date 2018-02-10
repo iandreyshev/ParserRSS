@@ -12,15 +12,14 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPagePresenter
 import ru.iandreyshev.parserrss.presentation.view.IFeedPageView
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.view_feed_list.*
-import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.presentation.view.IItemsListView
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import java.lang.ref.WeakReference
@@ -30,11 +29,12 @@ class FeedPageFragment : BaseFragment(),
         IItemsListView {
 
     companion object {
+        private val TAG = FeedPagePresenter::class.java.name
         private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15
 
         fun newInstance(rss: ViewRss): FeedPageFragment {
             val fragment = FeedPageFragment()
-            fragment.presenter = FeedPagePresenter(UseCaseFactory, rss)
+            fragment.presenter = FeedPagePresenter(rss)
 
             return fragment
         }
@@ -69,6 +69,7 @@ class FeedPageFragment : BaseFragment(),
                 it.resetUpdate()
             }
         }
+        updateImages()
     }
 
     override fun openEmptyContentMessage(isOpen: Boolean) {
@@ -93,7 +94,7 @@ class FeedPageFragment : BaseFragment(),
     }
 
     override fun openInternetPermissionDialog() {
-        InternetPermissionDialog.show(fragmentManager ?: return)
+        InternetPermissionDialog().show(fragmentManager, TAG)
     }
 
     private fun initListView() {

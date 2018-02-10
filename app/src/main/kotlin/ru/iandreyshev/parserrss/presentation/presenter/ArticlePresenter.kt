@@ -7,10 +7,10 @@ import ru.iandreyshev.parserrss.presentation.view.IArticleView
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
-import ru.iandreyshev.parserrss.interactor.ArticleInteractor
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
+import ru.iandreyshev.parserrss.models.interactor.ArticleInteractor
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadArticleUseCase
 import ru.iandreyshev.parserrss.models.useCase.LoadArticleImageUseCase
 import ru.iandreyshev.parserrss.models.useCase.OpenArticleOriginalUseCase
@@ -19,10 +19,10 @@ import ru.iandreyshev.parserrss.presentation.presenter.extention.openInBrowser
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 
 @InjectViewState
-class ArticlePresenter(useCaseFactory: IUseCaseFactory, articleId: Long) : MvpPresenter<IArticleView>() {
+class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>() {
 
     private val mProcessCounter = ProcessCounter(this::onProcessCountChange)
-    val interactor = ArticleInteractor(useCaseFactory, UseCasesListener(), articleId)
+    val interactor = ArticleInteractor(UseCaseFactory, UseCasesListener(), articleId)
 
     private inner class UseCasesListener : LoadArticleImageUseCase.IListener,
             LoadArticleUseCase.IListener,

@@ -3,11 +3,11 @@ package ru.iandreyshev.parserrss.presentation.presenter
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 
-import ru.iandreyshev.parserrss.interactor.FeedPageInteractor
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.interactor.FeedPageInteractor
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.models.useCase.LoadArticlesFirstTimeUseCase
 import ru.iandreyshev.parserrss.models.useCase.UpdateRssUseCase
 import ru.iandreyshev.parserrss.models.counter.ProcessCounter
@@ -17,22 +17,23 @@ import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 import ru.iandreyshev.parserrss.presentation.view.IFeedPageView
 
 @InjectViewState
-class FeedPagePresenter(useCaseFactory: IUseCaseFactory, rss: ViewRss) : MvpPresenter<IFeedPageView>() {
+class FeedPagePresenter(rss: ViewRss) : MvpPresenter<IFeedPageView>() {
 
     private val mProcessCounter = ProcessCounter(this::onChangeProcessCount)
 
-    val interactor = FeedPageInteractor(useCaseFactory, FeedPageUseCaseListener(), rss)
+    val interactor = FeedPageInteractor(UseCaseFactory, UseCaseListener(), rss)
 
-    private inner class FeedPageUseCaseListener : UpdateRssUseCase.IListener,
+    private inner class UseCaseListener : UpdateRssUseCase.IListener,
             LoadArticlesFirstTimeUseCase.IListener {
-
-        override fun invalidUrl() {
-            toast(R.string.toast_invalid_url)
-        }
 
         override fun connectionError(requestResult: IHttpRequestResult) {
             when (requestResult.state) {
-                HttpRequestHandler.State.PERMISSION_DENIED -> viewState.openInternetPermissionDialog()
+                HttpRequestHandler.State.BAD_URL -> {
+                    toast(R.string.toast_invalid_url)
+                }
+                HttpRequestHandler.State.PERMISSION_DENIED -> {
+                    viewState.openInternetPermissionDialog()
+                }
                 else -> toast(R.string.toast_bad_connection)
             }
         }
@@ -45,14 +46,14 @@ class FeedPagePresenter(useCaseFactory: IUseCaseFactory, rss: ViewRss) : MvpPres
             toast(R.string.toast_rss_not_exist)
         }
 
-        override fun updateSuccess(articles: MutableList<ViewArticle>) {
+        override fun updateRss(articles: MutableList<ViewArticle>) {
             viewState.setArticles(articles)
             viewState.openEmptyContentMessage(articles.isEmpty())
             viewState.updateImages()
         }
 
         override fun insertArticlesFirstTime(articles: MutableList<ViewArticle>) {
-            updateSuccess(articles)
+            updateRss(articles)
         }
 
         override fun processStart() = mProcessCounter.add()

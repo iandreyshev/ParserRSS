@@ -1,13 +1,13 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
-import ru.iandreyshev.parserrss.interactor.FeedInteractor
+import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
+import ru.iandreyshev.parserrss.models.interactor.FeedInteractor
 import ru.iandreyshev.parserrss.models.useCase.*
 import ru.iandreyshev.parserrss.models.counter.ProcessCounter
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
@@ -15,12 +15,12 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 
 @InjectViewState
-class FeedPresenter(useCaseFactory: IUseCaseFactory) : MvpPresenter<IFeedView>() {
+class FeedPresenter : MvpPresenter<IFeedView>() {
 
     private val mProcessCounter = ProcessCounter(this::onChangeProcessCount)
     private val mRssCounter = ProcessCounter(this::onChangeRssCount)
 
-    val interactor = FeedInteractor(useCaseFactory, UseCaseListener())
+    val interactor = FeedInteractor(UseCaseFactory, UseCaseListener())
 
     private inner class UseCaseListener : LoadAllRssUseCase.IListener,
             DeleteRssUseCase.IListener,
@@ -58,28 +58,41 @@ class FeedPresenter(useCaseFactory: IUseCaseFactory) : MvpPresenter<IFeedView>()
             toast(R.string.toast_rss_already_exist)
         }
 
-        override fun invalidRssUrl() {
-            toast(R.string.toast_invalid_url)
-            viewState.openAddingRssDialog()
-        }
-
         override fun connectionError(requestResult: IHttpRequestResult) {
             when (requestResult.state) {
-                HttpRequestHandler.State.PERMISSION_DENIED -> viewState.openInternetPermissionDialog()
-                else -> toast(R.string.toast_bad_connection)
+                HttpRequestHandler.State.BAD_URL -> {
+                    toast(R.string.toast_invalid_url)
+                    viewState.openAddingRssDialog(requestResult.urlString)
+                }
+                HttpRequestHandler.State.PERMISSION_DENIED -> {
+                    viewState.openInternetPermissionDialog()
+                }
+                else -> {
+                    toast(R.string.toast_bad_connection)
+                    viewState.openAddingRssDialog(requestResult.urlString)
+                }
             }
         }
 
-        override fun invalidRssFormat() {
+        override fun invalidRssFormat(url: String) {
             toast(R.string.toast_invalid_rss_format)
-            viewState.openAddingRssDialog()
+            viewState.openAddingRssDialog(url)
         }
 
-        override fun updateCapacityBeforeLoad(isFull: Boolean) {
+        override fun updateCapacityAfterLoad(isFull: Boolean) {
             onChangeCapacityStatus(isFull)
         }
 
-        override fun openRssInfo(rss: ViewRss) = viewState.openRssInfo(rss)
+        override fun removingRssFailed() {
+            toast(R.string.feed_deleting_error)
+        }
+
+        override fun urlToAddRssIsEmpty() {
+            toast(R.string.feed_url_to_add_is_empty)
+        }
+
+
+        override fun openRssInfo(rss: ViewRss) = viewState.openRssInfoDialog(rss)
 
         override fun processStart() = mProcessCounter.add()
 

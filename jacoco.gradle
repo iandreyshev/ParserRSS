@@ -19,13 +19,22 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
     def excludes = [
             '**/R.class',
             '**/R$*.class',
+            '**/*$$*.*',
+            '**/*$$$*.*',
+            '**/*Moxy*.*',
+            '**/*Cursor.*',
+            '**/*_*.*',
             '**/*$ViewInjector*.*',
             '**/BuildConfig.*',
             '**/Manifest*.*',
             '**/*Test*.*',
             'android/**/*.*',
             '**/*Fragment.*',
-            '**/*Activity.*'
+            '**/*Activity.*',
+            '**/*View*.*',
+            '**/**.java',
+            '**/ui/fragment/*.*',
+            '**/ui/animation/*.*'
     ]
     // generated classes
     classDirectories = fileTree(

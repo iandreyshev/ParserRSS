@@ -1,29 +1,39 @@
 package ru.iandreyshev.parserrss.models.repository
 
 import android.graphics.Bitmap
-import java.util.ArrayList
 import java.util.HashSet
 
 import io.objectbox.BoxStore
 
-class RssRepository(private val mBoxStore: BoxStore) : IRepository {
+class RssRepository(
+        private val mBoxStore: BoxStore,
+        private var mMaxRssCount: Int = MAX_RSS_COUNT,
+        private var mMaxArticlesInRssCount: Int = MAX_ARTICLES_IN_RSS_COUNT) : IRepository {
 
     companion object {
-        const val MAX_RSS_COUNT = 5L
-        internal val INVALID_IDS: MutableList<Long> = ArrayList()
-
-        init {
-            INVALID_IDS.add(-1L)
-            INVALID_IDS.add(0L)
-        }
+        private const val MAX_RSS_COUNT = 5
+        private const val MAX_ARTICLES_IN_RSS_COUNT = 50
+        private const val MIN_RSS_COUNT = 0
+        private const val MIN_ARTICLES_COUNT = 0
     }
 
     private val mRssBox = mBoxStore.boxFor(Rss::class.java)
     private val mArticleBox = mBoxStore.boxFor(Article::class.java)
     private val mArticleImageBox = mBoxStore.boxFor(ArticleImage::class.java)
 
+    init {
+        mMaxRssCount = Math.max(mMaxRssCount, MIN_RSS_COUNT)
+        mMaxArticlesInRssCount = Math.max(mMaxArticlesInRssCount, MIN_ARTICLES_COUNT)
+    }
+
+    override val maxRssCount: Int
+        get() = mMaxRssCount
+
+    override val maxArticlesInRssCount: Int
+        get() = mMaxArticlesInRssCount
+
     override val isFull: Boolean
-        get() = mRssBox.count() == MAX_RSS_COUNT
+        get() = mRssBox.count() == mMaxRssCount.toLong()
 
     override val rssIdList: LongArray
         get() = mBoxStore.callInTx {
@@ -40,14 +50,18 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         return rss
     }
 
-    override fun getArticleById(id: Long): Article? = getArticle(id)
+    override fun getArticleById(id: Long): Article? {
+        return mArticleBox.get(id)
+    }
 
-    override fun isRssWithUrlExist(url: String): Boolean = !mRssBox.find(Rss_.url, url).isEmpty()
+    override fun isRssWithUrlExist(url: String): Boolean {
+        return !mRssBox.find(Rss_.url, url).isEmpty()
+    }
 
-    override fun putNewRss(newRss: Rss): IRepository.PutRssState {
+    override fun putNewRss(newRss: Rss): IRepository.InsertRssResult {
         return mBoxStore.callInTx {
-            if (mRssBox.count() == MAX_RSS_COUNT) {
-                IRepository.PutRssState.FULL
+            if (mRssBox.count() == mMaxRssCount.toLong()) {
+                return@callInTx IRepository.InsertRssResult.FULL
             }
 
             val rssWithSameUrl = mRssBox.query()
@@ -55,12 +69,12 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
                     .build()
                     .findFirst()
 
-            if (rssWithSameUrl == null) {
+            return@callInTx if (rssWithSameUrl == null) {
                 mRssBox.put(newRss)
                 putArticles(newRss)
-                IRepository.PutRssState.SUCCESS
+                IRepository.InsertRssResult.SUCCESS
             } else {
-                IRepository.PutRssState.EXIST
+                IRepository.InsertRssResult.EXIST
             }
         }
     }
@@ -83,28 +97,30 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         }
     }
 
-    override fun getRssTitle(id: Long): String = mRssBox.get(id).title
+    override fun getRssTitleByRssId(id: Long): String? {
+        return mRssBox.get(id)?.title
+    }
 
     override fun removeRssById(id: Long): Boolean {
-        if (id in INVALID_IDS) {
-            return false
-        }
-
         return mBoxStore.callInTx {
-            mRssBox.remove(id)
-            mArticleBox.query()
-                    .equal(Article_.rssId, id)
-                    .build()
-                    .findIds()
-                    .forEach { removeArticle(it) }
+            if (mRssBox.get(id) == null) {
+                false
+            } else {
+                mRssBox.remove(id)
+                mArticleBox.query()
+                        .equal(Article_.rssId, id)
+                        .build()
+                        .findIds()
+                        .forEach { removeArticle(it) }
 
-            true
+                true
+            }
         }
     }
 
-    override fun getArticleImage(articleId: Long): ArticleImage? {
+    override fun getArticleImageByArticleId(id: Long): ArticleImage? {
         return mArticleImageBox.query()
-                .equal(ArticleImage_.articleId, articleId)
+                .equal(ArticleImage_.articleId, id)
                 .build()
                 .findFirst()
     }
@@ -112,28 +128,31 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
     override fun putArticleImageIfArticleExist(articleId: Long, imageBitmap: Bitmap): Boolean {
         return mBoxStore.callInTx {
             val record = ArticleImage(articleId = articleId, bitmap = imageBitmap)
-            val isArticleExist = mArticleBox.query()
+            val article = mArticleBox.query()
                     .equal(Article_.id, articleId)
                     .build()
                     .findFirst()
 
-            if (isArticleExist != null) {
+            if (article != null) {
                 mArticleImageBox.put(record)
             }
 
-            isArticleExist != null
+            article != null
         }
     }
 
-    override fun getArticleImageBitmap(articleId: Long): Bitmap? {
-        return getArticleImage(articleId)?.bitmap
+    override fun getArticleImageBitmapByArticleId(id: Long): Bitmap? {
+        return getArticleImageByArticleId(id)?.bitmap
     }
 
-    override fun getArticleImageUrl(articleId: Long): String? {
-        return getArticle(articleId)?.imageUrl
+    override fun getArticleImageUrlByArticleId(id: Long): String? {
+        return getArticleById(id)?.imageUrl
     }
 
     private fun putArticles(rss: Rss) {
+        val maxCount = Math.min(mMaxArticlesInRssCount, rss.articles.count())
+        rss.articles = ArrayList(rss.articles.take(maxCount))
+
         bindArticles(rss)
 
         val newArticles = HashSet(rss.articles)
@@ -150,25 +169,19 @@ class RssRepository(private val mBoxStore: BoxStore) : IRepository {
         rss.articles = getArticlesByRssId(rss.id)
     }
 
-    private fun bindArticles(rss: Rss) = rss.articles.forEach { it.rssId = rss.id }
+    private fun bindArticles(rss: Rss) {
+        rss.articles.forEach { it.rssId = rss.id }
+    }
 
     private fun getArticlesByRssId(id: Long): MutableList<Article> {
-        return if (id in INVALID_IDS) {
-            ArrayList()
-        } else {
-            mArticleBox.query()
-                    .equal(Article_.rssId, id)
-                    .build()
-                    .find()
-        }
+        return mArticleBox.query()
+                .equal(Article_.rssId, id)
+                .build()
+                .find()
     }
 
     private fun getRss(id: Long): Rss? {
-        return if (id in INVALID_IDS) null else mRssBox.get(id)
-    }
-
-    private fun getArticle(id: Long): Article? {
-        return if (id in INVALID_IDS) null else mArticleBox.get(id)
+        return mRssBox.get(id)
     }
 
     private fun removeArticle(id: Long) {

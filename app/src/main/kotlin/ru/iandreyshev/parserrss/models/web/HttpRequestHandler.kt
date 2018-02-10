@@ -31,18 +31,20 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
     var connectionTimeoutMs: Long = DEFAULT_MAX_CONNECTION_TIMEOUT_MS
     var writeTimeoutMs: Long = DEFAULT_MAX_WRITE_TIMEOUT_MS
 
-    final override var urlString = urlString
-        private set
-    final override var state: State = State.NOT_SEND
-        private set
-    final override var body: ByteArray? = null
-        private set
-    final override val bodyAsString: String?
+    override var urlString = urlString
+        protected set
+    override var state: State = State.NOT_SEND
+        protected set
+    override var body: ByteArray? = null
+        protected set
+    override var bodyAsString: String? = null
+        protected set
         get() {
             return String(body ?: return null)
         }
 
-    fun send(url: String? = null): State {
+    open fun send(url: String? = null): State {
+        url?.let { urlString = url }
         val httpUrl = parseUrl(url ?: urlString)
 
         state = if (httpUrl == null) {
@@ -59,14 +61,17 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
     private fun send(client: OkHttpClient, request: Request): State {
         return try {
             client.newCall(request).execute().use { response ->
+
+                if (response.code() != OK_RESPONSE_CODE) {
+                    return State.BAD_CONNECTION
+                }
+
                 response.body().use { body ->
                     when {
-                        (response.code() != OK_RESPONSE_CODE || body == null || body.contentLength() > maxContentBytes) ->
+                        (body == null || body.contentLength() > maxContentBytes) ->
                             State.BAD_CONNECTION
                         else -> {
-                            val source = body.source()
-                            source.request(maxContentBytes)
-                            this.body = source.buffer().snapshot().toByteArray()
+                            this.body = body.source().readByteArray()
                             State.SUCCESS
                         }
                     }

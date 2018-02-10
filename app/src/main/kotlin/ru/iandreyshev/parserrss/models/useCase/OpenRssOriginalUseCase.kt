@@ -2,7 +2,7 @@ package ru.iandreyshev.parserrss.models.useCase
 
 import android.net.Uri
 import ru.iandreyshev.parserrss.models.extention.uri
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class OpenRssOriginalUseCase(
         private val mRss: ViewRss,

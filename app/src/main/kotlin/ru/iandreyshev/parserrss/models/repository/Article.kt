@@ -2,11 +2,12 @@ package ru.iandreyshev.parserrss.models.repository
 
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
+import io.objectbox.annotation.Index
 
 @Entity
 data class Article (
         @Id var id: Long = 0,
-        var rssId: Long = 0,
+        @Index var rssId: Long = 0,
         var title: String = "",
         var description: String = "",
         var originUrl: String = "",

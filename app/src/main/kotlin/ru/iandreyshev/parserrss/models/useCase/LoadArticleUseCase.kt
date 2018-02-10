@@ -1,13 +1,13 @@
 package ru.iandreyshev.parserrss.models.useCase
 
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class LoadArticleUseCase(
         private val mRepository: IRepository,
-        private val mPresenter: IListener,
-        private val mArticleId: Long) : BaseUseCase<Any?, Any?, Any?>(mPresenter) {
+        private val mArticleId: Long,
+        private val mListener: IListener) : BaseUseCase<Any?, Any?, Any?>(mListener) {
 
     interface IListener : IUseCaseListener {
         fun loadArticle(rss: ViewRss?, article: ViewArticle?)
@@ -29,6 +29,6 @@ class LoadArticleUseCase(
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        mPresenter.loadArticle(mRss, mArticle)
+        mListener.loadArticle(mRss, mArticle)
     }
 }

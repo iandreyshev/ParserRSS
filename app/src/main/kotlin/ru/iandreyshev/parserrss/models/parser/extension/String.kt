@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.rss.extension
+package ru.iandreyshev.parserrss.models.parser.extension
 
 import org.jdom2.Document
 import org.jdom2.input.SAXBuilder

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import kotlinx.android.synthetic.main.view_feed_item.view.*
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 import ru.iandreyshev.parserrss.ui.animation.ImageFadeChangeAnimation
 import ru.iandreyshev.parserrss.ui.extention.dateString
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener

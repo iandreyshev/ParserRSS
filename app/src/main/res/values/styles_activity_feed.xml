@@ -7,7 +7,16 @@
     </style>
 
     <style name="ActivityFeed.ContentMessage">
+        <item name="android:textSize">@dimen/FontSize.Large</item>
+    </style>
+
+    <style name="ActivityFeed.ContentButton" parent="Base.Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:textSize">@dimen/FontSize.Normal</item>
+        <item name="colorButtonNormal">@color/primaryLightText</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
     </style>
 
 </resources>

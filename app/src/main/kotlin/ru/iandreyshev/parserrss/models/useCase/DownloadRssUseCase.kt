@@ -1,52 +1,53 @@
 package ru.iandreyshev.parserrss.models.useCase
 
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.rss.ParserEngine
+import ru.iandreyshev.parserrss.models.parser.RssParser
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 abstract class DownloadRssUseCase(
         private val mRequestHandler: HttpRequestHandler,
+        private val mParser: RssParser,
+        private var mUrl: String,
+        private val mMaxArticlesCount: Int,
         mListener: IUseCaseListener) : BaseUseCase<Any, Any, Any?>(mListener) {
 
-    companion object {
-        private const val MAX_ARTICLES_COUNT = 64
+    protected abstract fun onUrlErrorAsync()
+
+    protected abstract fun onConnectionErrorAsync(requestResult: IHttpRequestResult)
+
+    protected abstract fun onParserErrorAsync()
+
+    protected abstract fun onSuccessAsync(rss: Rss)
+
+    protected open fun onStartProcessAsync(): Boolean {
+        return true
     }
 
-    protected open fun onUrlErrorAsync() {
-        // Implement in sub-classes if needed
-    }
-
-    protected open fun onNetErrorAsync(requestResult: IHttpRequestResult) {
-        // Implement in sub-classes if needed
-    }
-
-    protected open fun onParserErrorAsync() {
-        // Implement in sub-classes if needed
-    }
-
-    protected open fun isUrlValidAsync(): Boolean {
-        return mRequestHandler.state != HttpRequestHandler.State.BAD_URL
+    protected open fun isUrlValidAsync(url: String): Boolean {
+        return true
     }
 
     protected open fun getRssFromNetAsync(): Boolean {
-        mRequestHandler.send()
-
-        return mRequestHandler.state == HttpRequestHandler.State.SUCCESS
+        return mRequestHandler.send(mUrl) == HttpRequestHandler.State.SUCCESS
     }
 
     protected open fun parseRssAsync(): Rss? {
-        return ParserEngine.parse(mRequestHandler.bodyAsString, MAX_ARTICLES_COUNT)
+        return mParser.parse(mRequestHandler.bodyAsString, mMaxArticlesCount)
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
-        if (!isUrlValidAsync()) {
+    final override fun doInBackground(vararg params: Any?): Any? {
+        if (!onStartProcessAsync()) {
+
+            return null
+
+        } else if (!isUrlValidAsync(mUrl)) {
             onUrlErrorAsync()
 
             return null
 
         } else if (!getRssFromNetAsync()) {
-            onNetErrorAsync(mRequestHandler)
+            onConnectionErrorAsync(mRequestHandler)
 
             return null
         }
@@ -63,6 +64,4 @@ abstract class DownloadRssUseCase(
 
         return null
     }
-
-    protected abstract fun onSuccessAsync(rss: Rss)
 }

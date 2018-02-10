@@ -1,30 +1,14 @@
-package ru.iandreyshev.parserrss.models.rss
+package ru.iandreyshev.parserrss.models.parser
 
 import org.jdom2.Element
 
-import java.util.ArrayList
-
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.repository.Article
-import ru.iandreyshev.parserrss.models.rss.extension.toDocument
+import ru.iandreyshev.parserrss.models.parser.extension.toDocument
 
-abstract class ParserEngine {
+abstract class RssParser {
 
-    companion object {
-        private val PARSERS = ArrayList<ParserEngine>()
-
-        init {
-            PARSERS.add(ParserV2())
-        }
-
-        fun parse(rssText: String?, maxArticlesCount: Int): Rss? {
-            PARSERS.forEach { it.parse(rssText, maxArticlesCount)?.let { return it } }
-
-            return null
-        }
-    }
-
-    fun parse(rssText: String?, maxArticlesCount: Int = Int.MAX_VALUE): Rss? {
+    open fun parse(rssText: String?, maxArticlesCount: Int = Int.MAX_VALUE): Rss? {
         return try {
             val root = rssText?.toDocument()?.rootElement ?: return null
             val rss = parseRss(root) ?: return null

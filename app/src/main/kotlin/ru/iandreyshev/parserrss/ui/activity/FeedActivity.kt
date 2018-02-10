@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.view.Menu
 import android.view.MenuItem
+import com.arellomobile.mvp.MvpAppCompatDialogFragment
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter
 import ru.iandreyshev.parserrss.R
@@ -17,17 +18,13 @@ import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 import kotlinx.android.synthetic.main.activity_feed.*
 
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.ProvidePresenter
-import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import ru.iandreyshev.parserrss.ui.fragment.InternetPermissionDialog
 
-class FeedActivity : BaseActivity(),
-        IFeedView,
-        IOnArticleClickListener,
-        AddRssDialog.IOnSubmitListener {
+class FeedActivity : BaseActivity(), IFeedView, IOnArticleClickListener, AddRssDialog.IListener {
 
     companion object {
+        private val TAG: String = FeedActivity::class.java.name
         private const val ADD_BUTTON = R.id.feed_options_add
         private const val INFO_BUTTON = R.id.feed_options_info
         private const val DELETE_BUTTON = R.id.feed_options_delete
@@ -49,9 +46,7 @@ class FeedActivity : BaseActivity(),
     private var mIsAddButtonEnabled = true
     private var mIsInfoButtonEnabled = true
     private var mIsDeleteButtonEnabled = true
-
-    @ProvidePresenter
-    fun provideFeedPresenter() = FeedPresenter(UseCaseFactory)
+    private var mOpenedDialog: MvpAppCompatDialogFragment? = null
 
     override fun insertRss(rss: ViewRss) {
         mPagesAdapter.insert(rss)
@@ -76,19 +71,22 @@ class FeedActivity : BaseActivity(),
         startActivity(intent)
     }
 
-    override fun openAddingRssDialog() = AddRssDialog.show(supportFragmentManager)
+    override fun openAddingRssDialog(url: String) {
+        openDialog(AddRssDialog.newInstance(url))
+    }
 
-    override fun openRssInfo(rss: ViewRss) = RssInfoDialog.show(supportFragmentManager, rss)
+    override fun openRssInfoDialog(rss: ViewRss) = openDialog(RssInfoDialog.newInstance(rss))
+
+    override fun openInternetPermissionDialog() = openDialog(InternetPermissionDialog())
 
     override fun startProgressBar(isStart: Boolean) = progressBar.setVisibility(isStart)
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_feed_options, menu)
-
-        this.mMenu = menu
         menu.findItem(ADD_BUTTON).isEnabled = mIsAddButtonEnabled
         menu.findItem(INFO_BUTTON).isEnabled = mIsInfoButtonEnabled
         menu.findItem(DELETE_BUTTON).isEnabled = mIsDeleteButtonEnabled
+        mMenu = menu
 
         return true
     }
@@ -105,7 +103,9 @@ class FeedActivity : BaseActivity(),
 
     override fun onArticleClick(articleId: Long) = mInteractor.onOpenArticle(articleId)
 
-    override fun addRss(url: String) = mInteractor.onAddNewRss(url)
+    override fun onAddRss(url: String) {
+        mInteractor.onAddNewRss(url)
+    }
 
     override fun enableAddButton(isEnabled: Boolean) {
         mIsAddButtonEnabled = isEnabled
@@ -140,15 +140,12 @@ class FeedActivity : BaseActivity(),
 
         initToolbar()
         initTabsView()
+        intContentView()
     }
 
     override fun setToolbarScrollable(isScrollable: Boolean) {
         val params = toolbar.layoutParams as AppBarLayout.LayoutParams
         params.scrollFlags = if (isScrollable) TOOLBAR_SCROLL_ON else TOOLBAR_SCROLL_OFF
-    }
-
-    override fun openInternetPermissionDialog() {
-        InternetPermissionDialog.show(supportFragmentManager)
     }
 
     private fun initToolbar() {
@@ -161,5 +158,15 @@ class FeedActivity : BaseActivity(),
         mPagesAdapter = FeedPagesAdapter(supportFragmentManager)
         pagerLayout.adapter = mPagesAdapter
         tabsLayout.setupWithViewPager(pagerLayout)
+    }
+
+    private fun intContentView() {
+        insertButton.setOnClickListener { openAddingRssDialog() }
+    }
+
+    private fun openDialog(dialog: MvpAppCompatDialogFragment) {
+        mOpenedDialog?.dismiss()
+        mOpenedDialog = dialog
+        mOpenedDialog?.show(supportFragmentManager ?: return, TAG)
     }
 }

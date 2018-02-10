@@ -5,21 +5,25 @@ import android.graphics.Bitmap
 interface IRepository {
     val isFull: Boolean
 
+    val maxRssCount: Int
+
+    val maxArticlesInRssCount: Int
+
     val rssIdList: LongArray
 
     fun getRssById(id: Long): Rss?
 
     fun getArticleById(id: Long): Article?
 
-    fun getRssTitle(id: Long): String
+    fun getRssTitleByRssId(id: Long): String?
 
-    fun getArticleImage(articleId: Long): ArticleImage?
+    fun getArticleImageByArticleId(id: Long): ArticleImage?
 
-    fun getArticleImageBitmap(articleId: Long): Bitmap?
+    fun getArticleImageBitmapByArticleId(id: Long): Bitmap?
 
-    fun getArticleImageUrl(articleId: Long): String?
+    fun getArticleImageUrlByArticleId(id: Long): String?
 
-    fun putNewRss(newRss: Rss): PutRssState
+    fun putNewRss(newRss: Rss): InsertRssResult
 
     fun putArticleImageIfArticleExist(articleId: Long, imageBitmap: Bitmap): Boolean
 
@@ -29,7 +33,7 @@ interface IRepository {
 
     fun removeRssById(id: Long): Boolean
 
-    enum class PutRssState {
+    enum class InsertRssResult {
         SUCCESS,
         EXIST,
         FULL

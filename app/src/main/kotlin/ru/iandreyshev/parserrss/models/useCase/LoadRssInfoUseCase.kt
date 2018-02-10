@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class LoadRssInfoUseCase(
         private val mRss: ViewRss,

@@ -9,7 +9,7 @@ import java.util.ArrayList
 import java.util.HashSet
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 

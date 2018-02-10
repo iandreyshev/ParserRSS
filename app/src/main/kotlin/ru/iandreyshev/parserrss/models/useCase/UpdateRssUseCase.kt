@@ -3,45 +3,47 @@ package ru.iandreyshev.parserrss.models.useCase
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.rss.ViewArticle
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.parser.RssParser
+import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
 class UpdateRssUseCase(
         private val mRepository: IRepository,
-        private val mRequestHandler: HttpRequestHandler,
+        requestHandler: HttpRequestHandler,
+        parser: RssParser,
+        url: String,
         private val mArticlesFilter: IArticlesFilter,
-        private val mListener: IListener) : DownloadRssUseCase(mRequestHandler, mListener) {
+        private val mListener: IListener)
+    : DownloadRssUseCase(
+        requestHandler,
+        parser,
+        url,
+        mRepository.maxArticlesInRssCount,
+        mListener) {
 
     interface IListener : IUseCaseListener {
-        fun invalidUrl()
-
         fun connectionError(requestResult: IHttpRequestResult)
 
         fun parseError()
 
         fun rssNotExist()
 
-        fun updateSuccess(articles: MutableList<ViewArticle>)
+        fun updateRss(articles: MutableList<ViewArticle>)
     }
 
     private var mResultEvent: (() -> Unit)? = null
 
-    override fun isUrlValidAsync(): Boolean {
-        if (!super.isUrlValidAsync()) {
-            mResultEvent = mListener::invalidUrl
-            return false
-
-        } else if (!mRepository.isRssWithUrlExist(mRequestHandler.urlString)) {
-            mResultEvent = mListener::rssNotExist
-            return false
-        }
-
-        return true
+    override fun isUrlValidAsync(url: String): Boolean {
+        return mRepository.isRssWithUrlExist(url)
     }
 
-    override fun onNetErrorAsync(requestResult: IHttpRequestResult) {
+    override fun onUrlErrorAsync() {
+        mResultEvent = mListener::rssNotExist
+    }
+
+    override fun onConnectionErrorAsync(requestResult: IHttpRequestResult) {
         mResultEvent = { mListener.connectionError(requestResult) }
     }
 
@@ -52,7 +54,7 @@ class UpdateRssUseCase(
     override fun onSuccessAsync(rss: Rss) {
         mResultEvent = if (mRepository.updateRssWithSameUrl(rss)) {
             mArticlesFilter.sort(rss.articles)
-            fun() { mListener.updateSuccess(ViewRss(rss).articles) }
+            fun() { mListener.updateRss(ViewRss(rss).articles) }
         } else {
             mListener::rssNotExist
         }

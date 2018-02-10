@@ -9,7 +9,7 @@ import ru.iandreyshev.parserrss.app.App
 
 import java.util.ArrayList
 
-import ru.iandreyshev.parserrss.models.rss.ViewRss
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.ui.extention.tabTitle
 import ru.iandreyshev.parserrss.ui.fragment.FeedPageFragment
 

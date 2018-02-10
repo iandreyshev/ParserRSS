@@ -1,6 +1,7 @@
 package ru.iandreyshev.parserrss.ui.fragment
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
@@ -15,9 +16,7 @@ import android.provider.Settings
 class InternetPermissionDialog : MvpAppCompatDialogFragment() {
 
     companion object {
-        private val TAG = InternetPermissionDialog::class.java.name
         private const val PACKAGE_NAME_KEY = "package"
-        fun show(fragmentManager: FragmentManager) = InternetPermissionDialog().show(fragmentManager, TAG)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

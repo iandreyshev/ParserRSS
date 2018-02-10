@@ -3,15 +3,16 @@
 
     <string name="feed_list_empty">Feed is empty</string>
     <string name="feed_content_message_title">Feed is empty</string>
-    <string name="feed_content_message_link"><u>Append new rss</u></string>
+    <string name="feed_content_add_button">Add RSS</string>
     <string name="feed_is_full">Feed is full</string>
     <string name="feed_tab_title">News</string>
+    <string name="feed_url_to_add_is_empty">Url is empty</string>
 
     <string name="article_toolbar_title">Article</string>
     <string name="article_error_load">Load article error</string>
     <string name="article_option_open_in_browser">Open in browser</string>
 
-    <string name="feed_options_add">Add</string>
+    <string name="feed_options_add">Add RSS</string>
     <string name="feed_options_info">Info</string>
     <string name="feed_options_delete">Delete</string>
     <string name="feed_toolbar_title">Feed</string>

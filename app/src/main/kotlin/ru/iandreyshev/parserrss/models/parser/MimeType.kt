@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.rss
+package ru.iandreyshev.parserrss.models.parser
 
 object MimeType {
     const val PNG = "image/png"

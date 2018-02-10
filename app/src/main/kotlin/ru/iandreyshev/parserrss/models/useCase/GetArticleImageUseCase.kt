@@ -1,7 +1,6 @@
 package ru.iandreyshev.parserrss.models.useCase
 
 import android.graphics.Bitmap
-import ru.iandreyshev.parserrss.app.App
 import ru.iandreyshev.parserrss.models.extention.bitmap
 import ru.iandreyshev.parserrss.models.imageProps.IImageProps
 import ru.iandreyshev.parserrss.models.repository.IRepository
@@ -15,21 +14,23 @@ abstract class GetArticleImageUseCase(
         mListener: IUseCaseListener) : BaseUseCase<Any, Any, Bitmap?>(mListener) {
 
     final override fun doInBackground(vararg params: Any?): Bitmap? {
-        val bitmapFromRepo = mRepository.getArticleImageBitmap(mArticleId)
+        val bitmapFromRepo = mRepository.getArticleImageBitmapByArticleId(mArticleId)
 
         if (bitmapFromRepo != null) {
             return mImageProps.configureToView(bitmapFromRepo)
         }
 
-        val imageUrl = mRepository.getArticleImageUrl(mArticleId) ?: return null
+        val imageUrl = mRepository.getArticleImageUrlByArticleId(mArticleId) ?: return null
         val requestResult = mRequestHandler.send(imageUrl)
         var imageBitmap = mRequestHandler.body?.bitmap
 
         if (requestResult == HttpRequestHandler.State.SUCCESS && imageBitmap != null) {
-            App.repository.putArticleImageIfArticleExist(mArticleId, mImageProps.configureToMemory(imageBitmap))
-            imageBitmap = mImageProps.configureToView(imageBitmap)
+            imageBitmap = mImageProps.configureToMemory(imageBitmap)
+            mRepository.putArticleImageIfArticleExist(mArticleId, imageBitmap)
+
+            return mImageProps.configureToView(imageBitmap)
         }
 
-        return imageBitmap
+        return null
     }
 }
