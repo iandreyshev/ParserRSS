@@ -1,7 +1,6 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
@@ -60,12 +59,9 @@ class FeedPagePresenter(rssId: Long) : MvpPresenter<IFeedPageView>() {
             updateRss(articles)
         }
 
-        override fun insertImage(icon: IItemIcon, idOnStart: Long, imageBitmap: Bitmap) {
-            uiThread {
-                if (idOnStart == icon.id) {
-                    Log.e("FeedPagePresenter", "Load icon " + icon.id.toString())
-                    icon.updateImage(imageBitmap)
-                }
+        override fun insertImage(icon: IItemIcon, idOnStart: Long, imageBitmap: Bitmap) = uiThread {
+            if (idOnStart == icon.id) {
+                icon.updateImage(imageBitmap)
             }
         }
 

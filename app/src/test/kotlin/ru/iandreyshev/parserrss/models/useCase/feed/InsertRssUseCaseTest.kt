@@ -1,22 +1,23 @@
-package ru.iandreyshev.parserrss.models.useCase
+package ru.iandreyshev.parserrss.models.useCase.feed
 
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.useCase.feed.InsertRssUseCase
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class InsertRssUseCaseTest {
 
     companion object {
         private const val EMPTY_URL = ""
-        private const val VALID_URL = "lenta.ru"
+        private const val VALID_URL = "valid.url"
         private const val EMPTY_RSS_STRING = ""
         private const val MAX_RSS_ARTICLES = 10
     }
@@ -106,7 +107,7 @@ class InsertRssUseCaseTest {
             whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)
             whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
             whenever(mFactory.requestHandler.bodyAsString).thenReturn(EMPTY_RSS_STRING)
-            whenever(mFactory.parser.parse(EMPTY_RSS_STRING, mFactory.repository.maxArticlesInRssCount)).thenReturn(mEmptyRss)
+            whenever(mFactory.parser.parse(EMPTY_RSS_STRING)).thenReturn(mEmptyRss)
             whenever(mFactory.repository.putNewRss(mEmptyRss)).thenReturn(insertState)
 
             createUseCase(VALID_URL).start()

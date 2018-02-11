@@ -2,6 +2,7 @@ package ru.iandreyshev.parserrss
 
 import com.nhaarman.mockito_kotlin.mock
 import org.apache.commons.io.IOUtils
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository

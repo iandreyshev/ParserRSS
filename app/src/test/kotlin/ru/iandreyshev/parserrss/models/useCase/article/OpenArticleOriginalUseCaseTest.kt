@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.useCase
+package ru.iandreyshev.parserrss.models.useCase.article
 
 import com.nhaarman.mockito_kotlin.argThat
 import com.nhaarman.mockito_kotlin.mock
@@ -8,11 +8,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Article
-import ru.iandreyshev.parserrss.models.useCase.article.OpenArticleOriginalUseCase
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = "app/src/main/AndroidManifest.xml")
 class OpenArticleOriginalUseCaseTest {
 
     companion object {

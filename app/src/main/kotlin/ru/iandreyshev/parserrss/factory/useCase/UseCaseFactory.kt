@@ -16,6 +16,7 @@ import ru.iandreyshev.parserrss.models.useCase.article.OpenArticleOriginalUseCas
 import ru.iandreyshev.parserrss.models.useCase.feed.OpenArticleUseCase
 import ru.iandreyshev.parserrss.models.useCase.feed.*
 import ru.iandreyshev.parserrss.models.useCase.rssInfo.LoadRssInfoUseCase
+import ru.iandreyshev.parserrss.models.useCase.rssInfo.OpenRssOriginalUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssList.LoadArticleImageToFeedItemUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssList.LoadArticlesListUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssList.UpdateRssUseCase

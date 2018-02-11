@@ -48,7 +48,15 @@ class RssRepository(
     }
 
     override fun getRssById(id: Long): Rss? {
-        return mRssBox.get(id)
+        return mBoxStore.callInReadTx {
+            val rss = mRssBox.get(id)
+
+            if (rss != null) {
+                rss.articles = getArticlesByRssId(rss.id)
+            }
+
+            rss
+        }
     }
 
     override fun getArticleById(id: Long): Article? {

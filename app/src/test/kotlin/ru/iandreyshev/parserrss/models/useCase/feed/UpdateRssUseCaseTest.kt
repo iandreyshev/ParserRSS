@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.useCase
+package ru.iandreyshev.parserrss.models.useCase.feed
 
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Before
@@ -8,7 +8,6 @@ import org.robolectric.RobolectricTestRunner
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.useCase.rssList.UpdateRssUseCase
-import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
@@ -30,7 +29,10 @@ class UpdateRssUseCaseTest {
 
     @Test
     fun callConnectionErrorIfHandlerReturnNotSuccess() {
+        val rss = Rss(url = VALID_URL)
+
         fun verify(state: HttpRequestHandler.State) {
+            whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
             whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
             whenever(mFactory.requestHandler.send()).thenReturn(state)
 
@@ -61,7 +63,10 @@ class UpdateRssUseCaseTest {
     @Test
     fun callParseErrorIfParserReturnNull() {
         val rssString = ""
+        val rss = Rss(url = VALID_URL)
 
+
+        whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
         whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(rssString)
@@ -74,30 +79,23 @@ class UpdateRssUseCaseTest {
     }
 
     @Test
-    fun sortAndUpdateRssIfRepositorySaveIt() {
-        val rss = Rss()
+    fun sortAndUpdateRssIfRepositoryContainIt() {
+        val rss = Rss(url = VALID_URL)
         val rssString = ""
 
+        whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
         whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
         whenever(mFactory.repository.updateRssWithSameUrl(rss)).thenReturn(true)
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(rssString)
         whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)
-        whenever(mFactory.parser.parse(rssString, mFactory.repository.maxArticlesInRssCount)).thenReturn(rss)
+        whenever(mFactory.parser.parse(rssString)).thenReturn(rss)
 
         createUseCase(RSS_ID).start()
 
         verifyProcessMethods()
         verify(mFactory.articleFilter).sort(rss.articles)
-        verify(mListener).updateRss(argThat {
-            var isEqual = true
-            forEachIndexed { index: Int, article: ViewArticle ->
-                if (rss.articles[index].id != article.id) {
-                    isEqual = false
-                }
-            }
-            return@argThat isEqual
-        })
+        verify(mListener).updateRss(argThat { true })
     }
 
     private fun createUseCase(id: Long): UpdateRssUseCase {

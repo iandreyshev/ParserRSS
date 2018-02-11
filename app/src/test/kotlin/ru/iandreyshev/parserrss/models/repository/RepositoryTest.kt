@@ -57,9 +57,7 @@ class RepositoryTest {
 
     @Test
     fun returnNullIfGetRssByInvalidId() {
-        mRepository.getRssById(-2) {
-            assertNull(it)
-        }
+        assertNull(mRepository.getRssById(-2))
     }
 
     @Test
@@ -86,10 +84,7 @@ class RepositoryTest {
     @Test
     fun updateRssIdAfterPut() {
         mRepository.putNewRss(mRss)
-
-        mRepository.getRssById(mRss.id) {
-            assertEquals(mRss, it)
-        }
+        assertEquals(mRss, mRepository.getRssById(mRss.id))
     }
 
     @Test
@@ -128,16 +123,14 @@ class RepositoryTest {
         }
 
         assertTrue(mRepository.updateRssWithSameUrl(updatedRss))
+        val rssFromRepository = mRepository.getRssById(updatedRss.id)
+        repeat(articlesCount) { index ->
+            val articleWithCurrentUrl = rssFromRepository?.articles?.find { article ->
+                article.originUrl == index.toString()
+            }
 
-        mRepository.getRssById(updatedRss.id) {
-            repeat(articlesCount) { index ->
-                val articleWithCurrentUrl = it?.articles?.find { article ->
-                    article.originUrl == index.toString()
-                }
-
-                if (articleWithCurrentUrl != null && index > newCount) {
-                    fail()
-                }
+            if (articleWithCurrentUrl != null && index > newCount) {
+                fail()
             }
         }
     }
@@ -159,9 +152,7 @@ class RepositoryTest {
     fun removeRss() {
         assertEquals(IRepository.InsertRssResult.SUCCESS, mRepository.putNewRss(mRss))
         mRepository.removeRssById(mRss.id)
-        mRepository.getRssById(mRss.id) {
-            assertNull(it)
-        }
+        assertNull(mRepository.getRssById(mRss.id))
     }
 
     @Test
@@ -186,14 +177,13 @@ class RepositoryTest {
         val articles = HashSet(mRss.articles)
 
         mRepository.putNewRss(mRss)
-        mRepository.getRssById(mRss.id) { rss ->
-            if (rss == null) {
-                fail()
-            }
+        val rss = mRepository.getRssById(mRss.id)
+        if (rss == null) {
+            fail()
+        }
 
-            rss?.articles?.forEach { article ->
-                assertTrue(article in articles)
-            }
+        rss?.articles?.forEach { article ->
+            assertTrue(article in articles)
         }
     }
 
@@ -221,10 +211,11 @@ class RepositoryTest {
             createArticle(it)
         })
 
+        assertEquals(maxArticlesCount * 2, rss.articles.count())
         assertEquals(IRepository.InsertRssResult.SUCCESS, repository.putNewRss(rss))
-        repository.getRssById(rss.id) {
-            assertEquals(maxArticlesCount, it?.articles?.count())
-        }
+
+        val rssFromRepository = repository.getRssById(rss.id)
+        assertEquals(maxArticlesCount, rssFromRepository?.articles?.count())
     }
 
     @Test
@@ -270,9 +261,7 @@ class RepositoryTest {
         rss.articles.add(Article(imageUrl = imageUrl))
 
         assertEquals(IRepository.InsertRssResult.SUCCESS, mRepository.putNewRss(rss))
-        mRepository.getRssById(rss.id) {
-            assertNotNull(it)
-        }
+        assertNotNull(mRepository.getRssById(rss.id))
 
         val articleId = rss.articles[0].id
         val putImageResult = mRepository.putArticleImageIfArticleExist(articleId, bitmap)
@@ -282,10 +271,7 @@ class RepositoryTest {
         assertNotNull(mRepository.getArticleImageByArticleId(articleId))
 
         assertTrue(mRepository.removeRssById(rss.id))
-
-        mRepository.getRssById(rss.id) {
-            assertNull(it)
-        }
+        assertNull(mRepository.getRssById(rss.id))
         assertNull(mRepository.getArticleById(articleId))
         assertNull(mRepository.getArticleImageByArticleId(articleId))
     }

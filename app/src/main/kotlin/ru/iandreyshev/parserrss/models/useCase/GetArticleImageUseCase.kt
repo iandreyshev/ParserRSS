@@ -6,7 +6,7 @@ import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
-abstract class GetArticleImageUseCase(
+abstract class GetArticleImageUseCase   (
         private val mRepository: IRepository,
         private val mRequestHandler: HttpRequestHandler,
         private val mProperties: IImageProperties,

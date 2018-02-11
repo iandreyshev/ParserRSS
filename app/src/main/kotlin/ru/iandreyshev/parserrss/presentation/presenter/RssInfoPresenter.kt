@@ -7,7 +7,7 @@ import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.models.interactor.RssInfoInteractor
 import ru.iandreyshev.parserrss.models.viewModels.ViewRss
-import ru.iandreyshev.parserrss.models.useCase.feed.OpenRssOriginalUseCase
+import ru.iandreyshev.parserrss.models.useCase.rssInfo.OpenRssOriginalUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssInfo.LoadRssInfoUseCase
 import ru.iandreyshev.parserrss.presentation.presenter.extention.openInBrowser
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast

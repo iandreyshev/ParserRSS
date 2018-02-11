@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.useCase
+package ru.iandreyshev.parserrss.models.useCase.feed
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -7,10 +7,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.useCase.feed.DeleteRssUseCase
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class DeleteRssUseCaseTest {
 
     companion object {

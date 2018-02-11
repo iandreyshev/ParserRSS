@@ -1,4 +1,4 @@
-package ru.iandreyshev.parserrss.models.useCase.feed
+package ru.iandreyshev.parserrss.models.useCase.rssInfo
 
 import android.net.Uri
 import ru.iandreyshev.parserrss.models.extention.uri

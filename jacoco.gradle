@@ -34,7 +34,8 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
             '**/*View*.*',
             '**/**.java',
             '**/ui/fragment/*.*',
-            '**/ui/animation/*.*'
+            '**/ui/animation/*.*',
+            '**/DefaultImpls.*'
     ]
     // generated classes
     classDirectories = fileTree(
