@@ -1,25 +1,17 @@
 package ru.iandreyshev.parserrss.models.viewModels
 
-import java.util.ArrayList
-
 import ru.iandreyshev.parserrss.models.repository.Rss
 
-class ViewRss(
+data class ViewRss(
         var id: Long = 0,
         var title: String? = null,
-        var url: String? = null,
         var description: String? = null,
-        var origin: String? = null) {
+        var originUrl: String? = null) {
 
     constructor(rss: Rss) : this() {
         id = rss.id
         title = rss.title
-        url = rss.url
         description = rss.description
-        origin = rss.origin
-
-        rss.articles.forEach { article -> articles.add(ViewArticle(article)) }
+        originUrl = rss.originUrl
     }
-
-    var articles: MutableList<ViewArticle> = ArrayList()
 }

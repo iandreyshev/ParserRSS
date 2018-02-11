@@ -45,7 +45,7 @@ class ParserV2 : RssParser() {
 
         val rss = Rss(
                 title = clearHtml(title),
-                origin = origin)
+                originUrl = origin)
 
         val description = channel.getChildText(FEED_DESCRIPTION)
 

@@ -12,7 +12,7 @@ data class Rss(
         @Id var id: Long = 0,
         var title: String = "",
         @Index var url: String = "",
-        var origin: String = "",
+        var originUrl: String? = null,
         var description: String? = null,
         @Transient var articles: MutableList<Article> = ArrayList()) {
 

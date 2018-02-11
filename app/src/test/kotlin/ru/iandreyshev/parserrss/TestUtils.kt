@@ -3,7 +3,7 @@ package ru.iandreyshev.parserrss
 import com.nhaarman.mockito_kotlin.mock
 import org.apache.commons.io.IOUtils
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
-import ru.iandreyshev.parserrss.models.imageProps.IImageProps
+import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.parser.RssParser
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
@@ -28,5 +28,5 @@ class MocksFactory {
     val articleFilter: IArticlesFilter = mock()
     val parser: RssParser = mock()
     val itemIcon: IItemIcon = mock()
-    val imageProps: IImageProps = mock()
+    val imageProps: IImageProperties = mock()
 }

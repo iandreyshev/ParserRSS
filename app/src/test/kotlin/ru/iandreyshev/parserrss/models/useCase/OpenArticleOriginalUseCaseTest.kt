@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Article
+import ru.iandreyshev.parserrss.models.useCase.article.OpenArticleOriginalUseCase
 
 @RunWith(RobolectricTestRunner::class)
 class OpenArticleOriginalUseCaseTest {
@@ -29,7 +30,7 @@ class OpenArticleOriginalUseCaseTest {
 
     @Test
     fun callProcessMethods() {
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verify(mListener).processStart()
         verify(mListener).processEnd()
@@ -42,7 +43,7 @@ class OpenArticleOriginalUseCaseTest {
 
         whenever(mFactory.repository.getArticleById(ARTICLE_ID)).thenReturn(article)
 
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verify(mListener).openOriginal(argThat { path.toString() == validUrl })
     }
@@ -51,7 +52,7 @@ class OpenArticleOriginalUseCaseTest {
     fun returnNullIfArticleNotFound() {
         whenever(mFactory.repository.getArticleById(ARTICLE_ID)).thenReturn(null)
 
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verify(mListener).openOriginal(null)
     }

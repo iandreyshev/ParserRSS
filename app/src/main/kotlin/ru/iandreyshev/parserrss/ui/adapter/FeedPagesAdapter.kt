@@ -36,7 +36,7 @@ class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter
 
         when (rss) {
             null -> throw IllegalArgumentException("Invalid item position")
-            else -> return FeedPageFragment.newInstance(rss)
+            else -> return FeedPageFragment.newInstance(rss.id)
         }
     }
 

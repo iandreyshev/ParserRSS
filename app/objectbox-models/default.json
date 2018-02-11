@@ -63,7 +63,7 @@
     },
     {
       "id": "3:1804771424348771313",
-      "lastPropertyId": "5:6121912654518476775",
+      "lastPropertyId": "6:7790029910307772015",
       "name": "Rss",
       "properties": [
         {
@@ -80,12 +80,12 @@
           "name": "url"
         },
         {
-          "id": "4:8459190374189809122",
-          "name": "origin"
-        },
-        {
           "id": "5:6121912654518476775",
           "name": "description"
+        },
+        {
+          "id": "6:7790029910307772015",
+          "name": "originUrl"
         }
       ],
       "relations": []
@@ -99,7 +99,9 @@
   "modelVersionParserMinimum": 4,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    8459190374189809122
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

@@ -1,18 +1,24 @@
 package ru.iandreyshev.parserrss.factory.useCase
 
 enum class UseCaseType {
-    LOAD_ARTICLE_IMAGE,
-    LOAD_ARTICLE_IMAGE_TO_FEED_ITEM,
-    LOAD_ALL_RSS,
-    LOAD_ARTICLE,
-    LOAD_ARTICLES_FIRST_TIME,
-    LOAD_RSS_INFO,
-    INSERT_RSS,
-    UPDATE_RSS,
-    DELETE_RSS,
-    OPEN_ARTICLE,
-    OPEN_ARTICLE_ORIGINAL,
-    OPEN_RSS_ORIGINAL,
-    OPEN_RSS_INFO,
-    MESSAGE
+    // Feed activity
+    FEED_INSERT_RSS,
+    FEED_UPDATE_RSS,
+    FEED_DELETE_RSS,
+    FEED_LOAD_ALL_RSS,
+    FEED_OPEN_RSS_INFO,
+
+    // Article activity
+    ARTICLE_LOAD_DATA,
+    ARTICLE_LOAD_IMAGE,
+    ARTICLE_OPEN_ORIGINAL,
+
+    // Rss page
+    RSS_PAGE_LOAD_ARTICLES_LIST,
+    RSS_PAGE_LOAD_ICON,
+    RSS_PAGE_OPEN_ARTICLE,
+
+    // Rss info dialog
+    RSS_INFO_LOAD_DATA,
+    RSS_INFO_OPEN_ORIGINAL
 }

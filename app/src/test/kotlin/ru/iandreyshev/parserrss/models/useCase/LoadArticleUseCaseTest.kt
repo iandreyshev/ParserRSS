@@ -11,6 +11,7 @@ import org.robolectric.RobolectricTestRunner
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Article
 import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.useCase.article.LoadArticleUseCase
 
 @RunWith(RobolectricTestRunner::class)
 class LoadArticleUseCaseTest {
@@ -51,7 +52,7 @@ class LoadArticleUseCaseTest {
         whenever(mFactory.repository.getArticleById(ARTICLE_ID)).thenReturn(mArticle)
         whenever(mFactory.repository.getRssById(RSS_ID)).thenReturn(mRss)
 
-        LoadArticleUseCase(mFactory.repository, ARTICLE_ID, mListener).execute().get()
+        LoadArticleUseCase(mFactory.repository, ARTICLE_ID, mListener).start()
 
         verify(mListener).loadArticle(
                 argThat { id == mRss.id || title == mRss.title || description == mRss.description },
@@ -63,7 +64,7 @@ class LoadArticleUseCaseTest {
         whenever(mFactory.repository.getArticleById(ARTICLE_ID)).thenReturn(mArticle)
         whenever(mFactory.repository.getRssById(RSS_ID)).thenReturn(mRss)
 
-        LoadArticleUseCase(mFactory.repository, ARTICLE_ID, mListener).execute().get()
+        LoadArticleUseCase(mFactory.repository, ARTICLE_ID, mListener).start()
 
         verify(mListener).processStart()
         verify(mListener).processEnd()

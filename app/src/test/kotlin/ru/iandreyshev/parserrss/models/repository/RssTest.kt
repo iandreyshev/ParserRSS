@@ -26,8 +26,8 @@ class RssTest {
 
     @Before
     fun setup() {
-        mRss = Rss(title = TITLE, origin = ORIGIN)
-        mDefaultRss = Rss(title = "", origin = "")
+        mRss = Rss(title = TITLE, originUrl = ORIGIN)
+        mDefaultRss = Rss(title = "", originUrl = "")
     }
 
     @Test
@@ -61,7 +61,7 @@ class RssTest {
 
     @Test
     fun haveEmptyOriginByDefault() {
-        assertEquals(mDefaultRss.origin, "")
+        assertEquals(mDefaultRss.originUrl, "")
     }
 
     @Test
@@ -100,7 +100,7 @@ class RssTest {
     @Test
     fun equalsWithObjectIfEqualsItsUrls() {
         mRss.url = URL
-        val otherRss = Rss(title = "", origin = "")
+        val otherRss = Rss(title = "", originUrl = "")
 
         assertFalse(mRss == otherRss)
 

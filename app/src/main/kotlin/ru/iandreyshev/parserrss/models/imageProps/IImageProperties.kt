@@ -2,7 +2,7 @@ package ru.iandreyshev.parserrss.models.imageProps
 
 import android.graphics.Bitmap
 
-interface IImageProps {
+interface IImageProperties {
     companion object {
         const val MAX_IMAGE_SIZE = 480
     }

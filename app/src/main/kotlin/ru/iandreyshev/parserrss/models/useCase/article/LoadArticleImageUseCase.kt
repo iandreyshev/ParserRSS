@@ -1,15 +1,17 @@
-package ru.iandreyshev.parserrss.models.useCase
+package ru.iandreyshev.parserrss.models.useCase.article
 
 import android.graphics.Bitmap
 
-import ru.iandreyshev.parserrss.models.imageProps.IImageProps
+import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository
+import ru.iandreyshev.parserrss.models.useCase.GetArticleImageUseCase
+import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 open class LoadArticleImageUseCase(
         repository: IRepository,
         requestHandler: HttpRequestHandler,
-        imageProps: IImageProps,
+        imageProps: IImageProperties,
         articleId: Long,
         private val mListener: IListener)
     : GetArticleImageUseCase(
@@ -23,10 +25,5 @@ open class LoadArticleImageUseCase(
         fun insertImage(imageBitmap: Bitmap)
     }
 
-    override fun onPostExecute(result: Bitmap?) {
-        super.onPostExecute(result)
-        if (result != null) {
-            mListener.insertImage(result)
-        }
-    }
+    override fun onFoundImage(imageBitmap: Bitmap) = mListener.insertImage(imageBitmap)
 }

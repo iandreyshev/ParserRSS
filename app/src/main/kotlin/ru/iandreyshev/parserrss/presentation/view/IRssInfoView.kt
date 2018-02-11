@@ -6,7 +6,7 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
 interface IRssInfoView : IBaseView {
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun setInfo(title: String?, description: String?)
+    fun loadData(title: String, description: String?)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun setOpenOriginalEnabled(isEnabled: Boolean)

@@ -8,6 +8,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import ru.iandreyshev.parserrss.models.repository.IRepository
+import ru.iandreyshev.parserrss.models.useCase.feed.DeleteRssUseCase
 
 @RunWith(RobolectricTestRunner::class)
 class DeleteRssUseCaseTest {
@@ -30,14 +31,14 @@ class DeleteRssUseCaseTest {
     @Test
     fun callFailedIfRepositoryReturnFalse() {
         whenever(mRepository.removeRssById(ID)).thenReturn(false)
-        mUseCase.execute().get()
+        mUseCase.start()
         verify(mListener).removingRssFailed()
     }
 
     @Test
     fun callRemoveRssIfRepositoryReturnTrue() {
         whenever(mRepository.removeRssById(ID)).thenReturn(true)
-        mUseCase.execute().get()
+        mUseCase.start()
         verify(mListener).removeRss(ID)
     }
 }

@@ -13,42 +13,38 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPagePresenter
 import ru.iandreyshev.parserrss.presentation.view.IFeedPageView
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 import kotlinx.android.synthetic.main.view_feed_list.*
-import ru.iandreyshev.parserrss.presentation.view.IItemsListView
 import ru.iandreyshev.parserrss.ui.extention.setVisibility
 import java.lang.ref.WeakReference
 
-class FeedPageFragment : BaseFragment(),
-        IFeedPageView,
-        IItemsListView {
+class FeedPageFragment : BaseFragment(), IFeedPageView {
 
     companion object {
         private val TAG = FeedPagePresenter::class.java.name
         private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15
 
-        fun newInstance(rss: ViewRss): FeedPageFragment {
+        fun newInstance(rssId: Long): FeedPageFragment {
             val fragment = FeedPageFragment()
-            fragment.presenter = FeedPagePresenter(rss)
+            fragment.mPresenter = FeedPagePresenter(rssId)
 
             return fragment
         }
     }
 
     @InjectPresenter
-    lateinit var presenter: FeedPagePresenter
+    lateinit var mPresenter: FeedPagePresenter
 
     private val mInteractor
-        get() = presenter.interactor
+        get() = mPresenter.interactor
     private val mListAdapter: FeedListAdapter = FeedListAdapter()
 
     @ProvidePresenter
-    fun provideFeedPagePresenter() = presenter
+    fun provideFeedPagePresenter() = mPresenter
 
     override fun onCreateView(inflater: LayoutInflater, viewGroup: ViewGroup?, savedInstantState: Bundle?): View? {
         return inflater.inflate(R.layout.view_feed_list, viewGroup, false)
@@ -67,9 +63,10 @@ class FeedPageFragment : BaseFragment(),
         mListAdapter.itemsOnWindowForEach {
             if (!it.isUpdateEnd) {
                 it.resetUpdate()
+                it.onStartUpdate()
+                mInteractor.updateImage(it)
             }
         }
-        updateImages()
     }
 
     override fun openEmptyContentMessage(isOpen: Boolean) {
@@ -81,7 +78,7 @@ class FeedPageFragment : BaseFragment(),
         refreshLayout.isRefreshing = isStart
     }
 
-    override fun setArticles(newArticles: List<ViewArticle>) {
+    override fun setArticles(newArticles: ArrayList<ViewArticle>) {
         mListAdapter.setArticles(newArticles)
         itemsList.adapter = null
         itemsList.adapter = mListAdapter
@@ -89,7 +86,10 @@ class FeedPageFragment : BaseFragment(),
 
     override fun updateImages() {
         mListAdapter.itemsOnWindowForEach {
-            mInteractor.updateImage(it)
+            if (!it.isUpdateStart) {
+                it.onStartUpdate()
+                mInteractor.updateImage(it)
+            }
         }
     }
 

@@ -24,8 +24,7 @@
     <string name="add_feed_dialog_submit_button">OK</string>
     <string name="add_feed_dialog_cancel_button">Cancel</string>
 
-    <string name="rss_info_dialog_default_title">News RSS</string>
-    <string name="rss_info_dialog_default_description">News…</string>
+    <string name="rss_info_dialog_default_description">Description not exist</string>
     <string name="rss_info_dialog_ok_button">OK</string>
     <string name="rss_info_open_original_button">OPEN ORIGINAL</string>
 
@@ -36,6 +35,7 @@
     <string name="internet_permission_denied_dialog_title">Internet permission denied</string>
     <string name="internet_permission_denied_dialog_description">The application does not have internet access. You can enable access in the settings.</string>
 
+    <string name="toast_open_info_fail">Can not open info</string>
     <string name="toast_invalid_url">Invalid url</string>
     <string name="toast_bad_connection">Connection error</string>
     <string name="toast_internet_permission_denied">Internet permission denied</string>

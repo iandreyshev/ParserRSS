@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.interactor
 
+import org.jetbrains.anko.doAsync
 import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
@@ -9,19 +10,21 @@ class ArticleInteractor(
         private val mListener: IUseCaseListener,
         private val mArticleId: Long) {
 
-    init {
-        mUseCaseFactory
-                .create(UseCaseType.LOAD_ARTICLE, mListener, mArticleId)
-                .start()
+    private val mOpenOriginalUseCase = mUseCaseFactory
+            .create(UseCaseType.ARTICLE_OPEN_ORIGINAL, mArticleId, mListener)
 
-        mUseCaseFactory
-                .create(UseCaseType.LOAD_ARTICLE_IMAGE, mListener, mArticleId)
-                .start()
+    init {
+        doAsync {
+            mUseCaseFactory
+                    .create(UseCaseType.ARTICLE_LOAD_DATA, mArticleId, mListener)
+                    .start()
+            mUseCaseFactory
+                    .create(UseCaseType.ARTICLE_LOAD_IMAGE, mArticleId, mListener)
+                    .start()
+        }
     }
 
-    fun onOpenOriginal() {
-        mUseCaseFactory
-                .create(UseCaseType.OPEN_ARTICLE_ORIGINAL, mListener, mArticleId)
-                .start()
+    fun onOpenOriginal() = doAsync {
+        mOpenOriginalUseCase.start()
     }
 }

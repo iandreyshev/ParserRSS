@@ -1,24 +1,27 @@
 package ru.iandreyshev.parserrss.models.interactor
 
+import org.jetbrains.anko.doAsync
 import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
+import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class RssInfoInteractor(
         private val mUseCaseFactory: IUseCaseFactory,
-        private val mRss: ViewRss,
+        private val mRss: ViewRss?,
         private val mListener: IUseCaseListener) {
 
     init {
-        mUseCaseFactory
-                .create(UseCaseType.LOAD_RSS_INFO, mListener, mRss)
-                .start()
+        doAsync {
+            mUseCaseFactory
+                    .create(UseCaseType.RSS_INFO_LOAD_DATA, mRss, mListener)
+                    .start()
+        }
     }
 
-    fun onOpenOriginal() {
+    fun onOpenOriginal() = doAsync {
         mUseCaseFactory
-                .create(UseCaseType.OPEN_RSS_ORIGINAL, mListener, mRss)
+                .create(UseCaseType.RSS_INFO_OPEN_ORIGINAL, mRss?.originUrl, mListener)
                 .start()
     }
 }

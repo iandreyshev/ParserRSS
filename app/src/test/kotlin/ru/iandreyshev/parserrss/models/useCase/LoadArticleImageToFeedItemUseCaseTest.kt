@@ -7,6 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import ru.iandreyshev.parserrss.MocksFactory
+import ru.iandreyshev.parserrss.models.useCase.rssList.LoadArticleImageToFeedItemUseCase
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
@@ -18,7 +19,7 @@ class LoadArticleImageToFeedItemUseCaseTest {
     }
 
     private lateinit var mFactory: MocksFactory
-    private lateinit var mListener: IUseCaseListener
+    private lateinit var mListener: LoadArticleImageToFeedItemUseCase.IListener
 
     @Before
     fun setup() {
@@ -30,7 +31,7 @@ class LoadArticleImageToFeedItemUseCaseTest {
     fun notCallProcessMethods() {
         whenever(mFactory.itemIcon.isUpdateStart).thenReturn(true)
 
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verifyZeroInteractions(mListener)
     }
@@ -42,7 +43,7 @@ class LoadArticleImageToFeedItemUseCaseTest {
         whenever(mFactory.repository.getArticleImageBitmapByArticleId(ARTICLE_ID)).thenReturn(IMAGE)
         whenever(mFactory.imageProps.configureToView(IMAGE)).thenReturn(IMAGE)
 
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verify(mFactory.itemIcon).updateImage(IMAGE)
         verify(mFactory.imageProps).configureToView(IMAGE)
@@ -55,7 +56,7 @@ class LoadArticleImageToFeedItemUseCaseTest {
         whenever(mFactory.repository.getArticleImageBitmapByArticleId(ARTICLE_ID)).thenReturn(null)
         whenever(mFactory.repository.getArticleImageUrlByArticleId(ARTICLE_ID)).thenReturn(null)
 
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verifyNoMoreInteractions(mListener)
     }
@@ -75,7 +76,7 @@ class LoadArticleImageToFeedItemUseCaseTest {
         whenever(mFactory.repository.putArticleImageIfArticleExist(ARTICLE_ID, IMAGE)).thenReturn(true)
         whenever(mFactory.imageProps.configureToView(IMAGE)).thenReturn(IMAGE)
 
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verify(mFactory.itemIcon).updateImage(IMAGE)
     }
@@ -91,7 +92,7 @@ class LoadArticleImageToFeedItemUseCaseTest {
         whenever(mFactory.requestHandler.send(imageUrl)).thenReturn(HttpRequestHandler.State.BAD_URL)
         whenever(mFactory.requestHandler.body).thenReturn(null)
 
-        createUseCase().execute().get()
+        createUseCase().start()
 
         verify(mFactory.itemIcon, times(2)).id
         verifyNoMoreInteractions(mFactory.itemIcon)

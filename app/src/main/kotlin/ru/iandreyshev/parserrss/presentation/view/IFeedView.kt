@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.presentation.view
 
+import android.support.v7.app.AppCompatDialogFragment
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
@@ -20,14 +21,8 @@ interface IFeedView : IBaseView {
     @StateStrategyType(SkipStrategy::class)
     fun openArticle(articleId: Long)
 
-    @StateStrategyType(SkipStrategy::class)
-    fun openAddingRssDialog(url: String = "")
-
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun startProgressBar(isStart: Boolean)
-
-    @StateStrategyType(SkipStrategy::class)
-    fun openRssInfoDialog(rss: ViewRss)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun openEmptyContentMessage(isOpen: Boolean)
@@ -44,9 +39,12 @@ interface IFeedView : IBaseView {
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun enableDeleteButton(isEnabled: Boolean)
 
-    @StateStrategyType(SkipStrategy::class)
-    fun openInternetPermissionDialog()
-
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun openToolbarTitle(isOpen: Boolean)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun openDialog(newDialog: AppCompatDialogFragment, isSingleOnly: Boolean = true)
+
+    @StateStrategyType(SkipStrategy::class)
+    fun closeDialog()
 }

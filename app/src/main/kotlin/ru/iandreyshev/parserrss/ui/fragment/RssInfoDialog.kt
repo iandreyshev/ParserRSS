@@ -9,16 +9,17 @@ import com.arellomobile.mvp.MvpAppCompatDialogFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import kotlinx.android.synthetic.main.dialog_rss_info.*
+import org.jetbrains.anko.toast
 
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.presentation.presenter.RssInfoPresenter
 import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
 
-class RssInfoDialog() : MvpAppCompatDialogFragment(), IRssInfoView {
+class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
 
     companion object {
-        const val OPEN_ORIGINAL_BUTTON = AlertDialog.BUTTON_NEUTRAL
+        private const val OPEN_ORIGINAL_BUTTON = AlertDialog.BUTTON_NEUTRAL
 
         fun newInstance(rss: ViewRss): RssInfoDialog {
             val dialog = RssInfoDialog()
@@ -47,8 +48,8 @@ class RssInfoDialog() : MvpAppCompatDialogFragment(), IRssInfoView {
                 .create()
     }
 
-    override fun setInfo(title: String?, description: String?) {
-        dialog.titleView.text = title ?: getString(R.string.rss_info_dialog_default_title)
+    override fun loadData(title: String, description: String?) {
+        dialog.titleView.text = title
         dialog.descriptionView.text = description ?: getString(R.string.rss_info_dialog_default_description)
     }
 
@@ -58,5 +59,7 @@ class RssInfoDialog() : MvpAppCompatDialogFragment(), IRssInfoView {
 
     override fun close() = dialog.cancel()
 
-    override fun showToast(message: String) {}
+    override fun showToast(message: String) {
+        context?.toast(message)
+    }
 }

@@ -11,25 +11,23 @@ interface IRepository {
 
     val rssIdList: LongArray
 
+    fun runInTx(callback: () -> Unit)
+
     fun getRssById(id: Long): Rss?
 
     fun getArticleById(id: Long): Article?
 
-    fun getRssTitleByRssId(id: Long): String?
-
     fun getArticleImageByArticleId(id: Long): ArticleImage?
 
-    fun getArticleImageBitmapByArticleId(id: Long): Bitmap?
+    fun getArticlesByRssId(id: Long): MutableList<Article>
 
-    fun getArticleImageUrlByArticleId(id: Long): String?
-
-    fun putNewRss(newRss: Rss): InsertRssResult
+    fun isRssWithUrlExist(url: String): Boolean
 
     fun putArticleImageIfArticleExist(articleId: Long, imageBitmap: Bitmap): Boolean
 
-    fun updateRssWithSameUrl(newRss: Rss): Boolean
+    fun putNewRss(newRss: Rss): InsertRssResult
 
-    fun isRssWithUrlExist(url: String): Boolean
+    fun updateRssWithSameUrl(newRss: Rss): Boolean
 
     fun removeRssById(id: Long): Boolean
 

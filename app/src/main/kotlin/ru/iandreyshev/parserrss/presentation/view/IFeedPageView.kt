@@ -11,7 +11,7 @@ interface IFeedPageView : IBaseView {
     fun startUpdate(isStart: Boolean)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun setArticles(newArticles: List<ViewArticle>)
+    fun setArticles(newArticles: ArrayList<ViewArticle>)
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun updateImages()

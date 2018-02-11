@@ -12,16 +12,14 @@ import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
-
 class FeedListAdapter : RecyclerView.Adapter<FeedListItem>() {
 
     private val mItemsOnWindow: HashSet<FeedListItem> = HashSet()
-    private val mArticles = ArrayList<ViewArticle>()
+    private var mArticles = ArrayList<ViewArticle>()
     private var mArticleClickListener: WeakReference<IOnArticleClickListener>? = null
 
-    fun setArticles(newItems: List<ViewArticle>) {
-        mArticles.clear()
-        mArticles.addAll(newItems)
+    fun setArticles(newItems: ArrayList<ViewArticle>) {
+        mArticles = newItems
         notifyDataSetChanged()
     }
 

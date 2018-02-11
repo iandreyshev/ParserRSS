@@ -31,7 +31,7 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
     var connectionTimeoutMs: Long = DEFAULT_MAX_CONNECTION_TIMEOUT_MS
     var writeTimeoutMs: Long = DEFAULT_MAX_WRITE_TIMEOUT_MS
 
-    override var urlString = urlString
+    override var urlString: String = urlString
         protected set
     override var state: State = State.NOT_SEND
         protected set
@@ -44,15 +44,20 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
         }
 
     open fun send(url: String? = null): State {
-        url?.let { urlString = url }
         val httpUrl = parseUrl(url ?: urlString)
+        urlString = url ?: urlString
 
         state = if (httpUrl == null) {
             State.BAD_URL
         } else {
             val client = createClient(getClientBuilder())
             val request = createRequest(httpUrl)
-            send(client, request)
+
+            try {
+                send(client, request)
+            } catch (ex: Exception) {
+                State.BAD_URL
+            }
         }
 
         return state

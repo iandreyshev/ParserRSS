@@ -20,7 +20,7 @@ class FeedListItem constructor(view: View) : RecyclerView.ViewHolder(view), IIte
 
     override val id: Long
         get() = mId
-    override val isUpdateStart: Boolean
+    val isUpdateStart: Boolean
         get() = mIsUpdateStart
     val isUpdateEnd: Boolean
         get() = mIsUpdateEnd
@@ -40,7 +40,7 @@ class FeedListItem constructor(view: View) : RecyclerView.ViewHolder(view), IIte
         mClickListener?.get()?.onArticleClick(mId)
     }
 
-    override fun onStartUpdate() {
+    fun onStartUpdate() {
         mIsUpdateStart = true
     }
 

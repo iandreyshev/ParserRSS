@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.useCase.rssList.UpdateRssUseCase
 import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
@@ -14,6 +15,7 @@ import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 class UpdateRssUseCaseTest {
 
     companion object {
+        private const val RSS_ID = 0L
         private const val VALID_URL = "valid.url"
     }
 
@@ -32,7 +34,7 @@ class UpdateRssUseCaseTest {
             whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
             whenever(mFactory.requestHandler.send()).thenReturn(state)
 
-            createUseCase(VALID_URL).execute().get()
+            createUseCase(RSS_ID).start()
 
             verifyProcessMethods()
             verify(mListener).connectionError(mFactory.requestHandler)
@@ -49,7 +51,7 @@ class UpdateRssUseCaseTest {
     fun callRssNotExistIfRepositoryNotContainThisUrlBeforeRequest() {
         whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(false)
 
-        createUseCase(VALID_URL).execute().get()
+        createUseCase(RSS_ID).start()
 
         verifyProcessMethods()
         verify(mListener).rssNotExist()
@@ -65,7 +67,7 @@ class UpdateRssUseCaseTest {
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(rssString)
         whenever(mFactory.parser.parse(rssString, mFactory.repository.maxArticlesInRssCount)).thenReturn(null)
 
-        createUseCase(VALID_URL).execute().get()
+        createUseCase(RSS_ID).start()
 
         verifyProcessMethods()
         verify(mListener).parseError()
@@ -83,7 +85,7 @@ class UpdateRssUseCaseTest {
         whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)
         whenever(mFactory.parser.parse(rssString, mFactory.repository.maxArticlesInRssCount)).thenReturn(rss)
 
-        createUseCase(VALID_URL).execute().get()
+        createUseCase(RSS_ID).start()
 
         verifyProcessMethods()
         verify(mFactory.articleFilter).sort(rss.articles)
@@ -98,12 +100,12 @@ class UpdateRssUseCaseTest {
         })
     }
 
-    private fun createUseCase(url: String): UpdateRssUseCase {
+    private fun createUseCase(id: Long): UpdateRssUseCase {
         return UpdateRssUseCase(
                 mFactory.repository,
                 mFactory.requestHandler,
                 mFactory.parser,
-                url,
+                id,
                 mFactory.articleFilter,
                 mListener
         )

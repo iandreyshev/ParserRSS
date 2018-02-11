@@ -8,60 +8,54 @@ import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 abstract class DownloadRssUseCase(
         private val mRequestHandler: HttpRequestHandler,
         private val mParser: RssParser,
-        private var mUrl: String,
-        private val mMaxArticlesCount: Int,
-        mListener: IUseCaseListener) : BaseUseCase<Any, Any, Any?>(mListener) {
+        mListener: IUseCaseListener) : UseCase(mListener) {
 
-    protected abstract fun onUrlErrorAsync()
+    private var mUrl: String = ""
 
-    protected abstract fun onConnectionErrorAsync(requestResult: IHttpRequestResult)
+    protected abstract fun getRssUrl(): String?
 
-    protected abstract fun onParserErrorAsync()
+    protected abstract fun onUrlError()
 
-    protected abstract fun onSuccessAsync(rss: Rss)
+    protected abstract fun onConnectionError(requestResult: IHttpRequestResult)
 
-    protected open fun onStartProcessAsync(): Boolean {
+    protected abstract fun onParserError()
+
+    protected abstract fun onSuccess(rss: Rss)
+
+    protected open fun isUrlValid(url: String): Boolean {
         return true
     }
 
-    protected open fun isUrlValidAsync(url: String): Boolean {
-        return true
-    }
-
-    protected open fun getRssFromNetAsync(): Boolean {
+    protected open fun getRssFromNet(): Boolean {
         return mRequestHandler.send(mUrl) == HttpRequestHandler.State.SUCCESS
     }
 
-    protected open fun parseRssAsync(): Rss? {
-        return mParser.parse(mRequestHandler.bodyAsString, mMaxArticlesCount)
+    protected open fun parseRss(): Rss? {
+        return mParser.parse(mRequestHandler.bodyAsString)
     }
 
-    final override fun doInBackground(vararg params: Any?): Any? {
-        if (!onStartProcessAsync()) {
+    final override fun onProcess() {
+        mUrl = getRssUrl() ?: mUrl
 
-            return null
+        if (!isUrlValid(mUrl)) {
+            onUrlError()
 
-        } else if (!isUrlValidAsync(mUrl)) {
-            onUrlErrorAsync()
+            return
 
-            return null
+        } else if (!getRssFromNet()) {
+            onConnectionError(mRequestHandler)
 
-        } else if (!getRssFromNetAsync()) {
-            onConnectionErrorAsync(mRequestHandler)
-
-            return null
+            return
         }
 
-        parseRssAsync().let {
+        parseRss().let {
             when (it) {
-                null -> onParserErrorAsync()
+                null -> onParserError()
                 else -> {
                     it.url = mRequestHandler.urlString
-                    onSuccessAsync(it)
+                    onSuccess(it)
                 }
             }
         }
-
-        return null
     }
 }

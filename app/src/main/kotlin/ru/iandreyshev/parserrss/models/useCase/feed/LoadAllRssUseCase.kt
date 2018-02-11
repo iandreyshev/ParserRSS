@@ -1,13 +1,15 @@
-package ru.iandreyshev.parserrss.models.useCase
+package ru.iandreyshev.parserrss.models.useCase.feed
 
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
+import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
+import ru.iandreyshev.parserrss.models.useCase.UseCase
 import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 
 class LoadAllRssUseCase(
         private val mRepository: IRepository,
         private val mFilter: IArticlesFilter,
-        private val mListener: IListener) : BaseUseCase<Any, ViewRss, Any?>(mListener) {
+        private val mListener: IListener) : UseCase(mListener) {
 
     interface IListener : IUseCaseListener {
         fun updateCapacityAfterLoad(isFull: Boolean)
@@ -15,28 +17,15 @@ class LoadAllRssUseCase(
         fun loadRss(rss: ViewRss)
     }
 
-    private var mIsFeedFull = false
-
-    override fun doInBackground(vararg args: Any): Any? {
+    override fun onProcess() {
         mRepository.rssIdList.forEach { id ->
             val rss = mRepository.getRssById(id)
 
             if (rss != null) {
                 mFilter.sort(rss.articles)
-                publishProgress(ViewRss(rss))
+                mListener.loadRss(ViewRss(rss))
             }
         }
-        mIsFeedFull = mRepository.isFull
-
-        return null
-    }
-
-    override fun onProgressUpdate(vararg values: ViewRss) {
-        mListener.loadRss(values[0])
-    }
-
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
-        mListener.updateCapacityAfterLoad(mIsFeedFull)
+        mListener.updateCapacityAfterLoad(mRepository.isFull)
     }
 }

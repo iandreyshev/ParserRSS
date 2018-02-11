@@ -43,11 +43,12 @@ class RssRepository(
                     .findIds()
         }
 
-    override fun getRssById(id: Long): Rss? {
-        val rss = getRss(id) ?: return null
-        rss.articles = getArticlesByRssId(rss.id)
+    override fun runInTx(callback: () -> Unit) {
+        mBoxStore.runInTx(callback)
+    }
 
-        return rss
+    override fun getRssById(id: Long): Rss? {
+        return mRssBox.get(id)
     }
 
     override fun getArticleById(id: Long): Article? {
@@ -97,10 +98,6 @@ class RssRepository(
         }
     }
 
-    override fun getRssTitleByRssId(id: Long): String? {
-        return mRssBox.get(id)?.title
-    }
-
     override fun removeRssById(id: Long): Boolean {
         return mBoxStore.callInTx {
             if (mRssBox.get(id) == null) {
@@ -141,12 +138,11 @@ class RssRepository(
         }
     }
 
-    override fun getArticleImageBitmapByArticleId(id: Long): Bitmap? {
-        return getArticleImageByArticleId(id)?.bitmap
-    }
-
-    override fun getArticleImageUrlByArticleId(id: Long): String? {
-        return getArticleById(id)?.imageUrl
+    override fun getArticlesByRssId(id: Long): MutableList<Article> {
+        return mArticleBox.query()
+                .equal(Article_.rssId, id)
+                .build()
+                .find()
     }
 
     private fun putArticles(rss: Rss) {
@@ -171,17 +167,6 @@ class RssRepository(
 
     private fun bindArticles(rss: Rss) {
         rss.articles.forEach { it.rssId = rss.id }
-    }
-
-    private fun getArticlesByRssId(id: Long): MutableList<Article> {
-        return mArticleBox.query()
-                .equal(Article_.rssId, id)
-                .build()
-                .find()
-    }
-
-    private fun getRss(id: Long): Rss? {
-        return mRssBox.get(id)
     }
 
     private fun removeArticle(id: Long) {
