@@ -3,11 +3,10 @@ package ru.iandreyshev.parserrss
 import com.nhaarman.mockito_kotlin.mock
 import org.apache.commons.io.IOUtils
 import org.mockito.invocation.InvocationOnMock
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
-import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.parser.RssParser
+import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 

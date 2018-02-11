@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.app.App
-import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter
 import ru.iandreyshev.parserrss.presentation.view.IBaseView
 import ru.iandreyshev.parserrss.ui.fragment.AddRssDialog
 
@@ -22,6 +21,6 @@ internal fun uiThread(func: () -> Unit) {
     Handler(Looper.getMainLooper()).post(func)
 }
 
-internal fun FeedPresenter.addRssDialog(url: String = ""): AddRssDialog {
+internal fun createRssDialog(url: String = ""): AddRssDialog {
     return AddRssDialog.newInstance(url)
 }

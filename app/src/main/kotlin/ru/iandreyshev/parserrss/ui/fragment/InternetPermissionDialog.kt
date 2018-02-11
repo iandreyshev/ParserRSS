@@ -1,17 +1,15 @@
 package ru.iandreyshev.parserrss.ui.fragment
 
 import android.app.Dialog
-import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import com.arellomobile.mvp.MvpAppCompatDialogFragment
 import kotlinx.android.synthetic.main.dialog_rss_info.view.*
 import ru.iandreyshev.parserrss.R
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 
 class InternetPermissionDialog : MvpAppCompatDialogFragment() {
 

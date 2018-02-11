@@ -5,7 +5,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.firstArgAsFun
 import ru.iandreyshev.parserrss.models.repository.IRepository

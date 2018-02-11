@@ -16,7 +16,7 @@ import ru.iandreyshev.parserrss.models.useCase.feed.LoadAllRssUseCase
 import ru.iandreyshev.parserrss.models.useCase.feed.OpenRssInfoUseCase
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
-import ru.iandreyshev.parserrss.presentation.presenter.extention.addRssDialog
+import ru.iandreyshev.parserrss.presentation.presenter.extention.createRssDialog
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 import ru.iandreyshev.parserrss.presentation.presenter.extention.uiThread
 import ru.iandreyshev.parserrss.ui.fragment.InternetPermissionDialog
@@ -70,7 +70,7 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
             when (requestResult.state) {
                 HttpRequestHandler.State.BAD_URL -> {
                     toast(R.string.toast_invalid_url)
-                    viewState.openDialog(addRssDialog(requestResult.urlString))
+                    viewState.openDialog(createRssDialog(requestResult.urlString))
                 }
                 HttpRequestHandler.State.PERMISSION_DENIED -> {
                     toast(R.string.toast_internet_permission_denied)
@@ -78,14 +78,14 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
                 }
                 else -> {
                     toast(R.string.toast_bad_connection)
-                    viewState.openDialog(addRssDialog(requestResult.urlString))
+                    viewState.openDialog(createRssDialog(requestResult.urlString))
                 }
             }
         }
 
         override fun invalidRssFormat(url: String) = uiThread {
             toast(R.string.toast_invalid_rss_format)
-            viewState.openDialog(addRssDialog(url))
+            viewState.openDialog(createRssDialog(url))
         }
 
         override fun updateCapacity(isFull: Boolean) = uiThread {
