@@ -17,7 +17,7 @@ import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
 @InjectViewState
 class RssInfoPresenter(rss: ViewRss) : MvpPresenter<IRssInfoView>() {
 
-    val interactor = RssInfoInteractor(UseCaseFactory(), rss, UseCaseListener())
+    val interactor = RssInfoInteractor(UseCaseFactory, rss, UseCaseListener())
 
     private inner class UseCaseListener : OpenRssOriginalUseCase.IListener,
             LoadRssInfoUseCase.IListener {

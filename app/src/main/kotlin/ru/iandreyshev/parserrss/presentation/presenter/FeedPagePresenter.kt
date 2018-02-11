@@ -23,7 +23,7 @@ import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 class FeedPagePresenter(rssId: Long) : MvpPresenter<IFeedPageView>() {
 
     private val mProcessCounter = ProcessCounter(this::onChangeProcessCount)
-    val interactor = FeedPageInteractor(UseCaseFactory(), UseCaseListener(), rssId)
+    val interactor = FeedPageInteractor(UseCaseFactory, UseCaseListener(), rssId)
 
     private inner class UseCaseListener : UpdateRssUseCase.IListener,
             LoadArticleImageToFeedItemUseCase.IListener,

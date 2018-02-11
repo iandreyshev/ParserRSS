@@ -1,14 +1,13 @@
 package ru.iandreyshev.parserrss.models.web
 
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import okhttp3.*
-import okio.BufferedSource
 import org.junit.Test
 
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -16,9 +15,7 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class GetRequestHandlerTest {
     companion object {
-        private const val VALID_URL_WITH_PROTOCOL = "http://domain.com"
-        private const val VALID_URL_WITHOUT_PROTOCOL = "domain.com"
-        private const val INVALID_URL = ""
+        private const val VALID_URL_WITH_PROTOCOL = "http://domain.com/"
         private const val BAD_RESPONSE_CODE = 0
         private const val GOOD_RESPONSE_CODE = 200
         private const val MAX_BODY_SIZE = 5242880 // 5MB
@@ -26,6 +23,14 @@ class GetRequestHandlerTest {
 
     private lateinit var mRequestBuilder: Request.Builder
     private lateinit var mResponseBuilder: Response.Builder
+    private val mBadConnectionHandler: HttpRequestHandler
+        get() {
+            val request = mRequestBuilder.build()
+            val response = mResponseBuilder.build()
+            val client = getMockedClient(request, response)
+            whenever(client.newCall(request)).thenThrow(Exception::class.java)
+            return getHandler(client, request)
+        }
 
     @Before
     fun setup() {
@@ -36,45 +41,27 @@ class GetRequestHandlerTest {
                 .protocol(Protocol.HTTP_1_0)
                 .body(ResponseBody.create(null, "content"))
                 .request(mRequestBuilder.build())
+
+
     }
 
     @Test
-    fun returnNotSendAfterCreateWithValidUrl() {
-        val handler = GetRequestHandler(VALID_URL_WITH_PROTOCOL)
+    fun returnNotSendAfterCreate() {
+        val handler = GetRequestHandler()
         assertEquals(HttpRequestHandler.State.NOT_SEND, handler.state)
     }
 
     @Test
-    fun returnNotSendAfterCreateWithValidUrlWithoutProtocol() {
-        val handler = GetRequestHandler(VALID_URL_WITHOUT_PROTOCOL)
-        assertEquals(HttpRequestHandler.State.NOT_SEND, handler.state)
-    }
-
-    @Test
-    fun returnBadUrlAfterCreateWithInvalidUrl() {
-        val handler = GetRequestHandler(INVALID_URL)
-        assertEquals(handler.state, HttpRequestHandler.State.NOT_SEND)
-    }
-
-    @Test
-    fun returnUrlStringAfterCreate() {
-        val handler = GetRequestHandler(VALID_URL_WITH_PROTOCOL)
-        assertEquals(VALID_URL_WITH_PROTOCOL, handler.urlString)
+    fun returnEmptyUrlStringAfterCreate() {
+        val handler = GetRequestHandler()
+        assertEquals("", handler.urlString)
     }
 
     @Test
     fun returnNullBodyBeforeSendRequest() {
-        val handler = GetRequestHandler(VALID_URL_WITH_PROTOCOL)
+        val handler = GetRequestHandler()
         assertNull(handler.body)
         assertNull(handler.bodyAsString)
-    }
-
-    @Test
-    fun resetStateAfterResetUrl() {
-        val handler = GetRequestHandler(VALID_URL_WITH_PROTOCOL)
-        assertEquals(HttpRequestHandler.State.NOT_SEND, handler.state)
-        handler.send(INVALID_URL)
-        assertEquals(HttpRequestHandler.State.BAD_URL, handler.state)
     }
 
     @Test
@@ -85,7 +72,7 @@ class GetRequestHandlerTest {
                 .build()
         val handler = getHandler(getMockedClient(request, response), request)
 
-        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send())
+        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send(VALID_URL_WITH_PROTOCOL))
     }
 
     @Test
@@ -96,7 +83,7 @@ class GetRequestHandlerTest {
                 .build()
         val handler = getHandler(getMockedClient(request, response), request)
 
-        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send())
+        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send(VALID_URL_WITH_PROTOCOL))
     }
 
     @Test
@@ -105,12 +92,12 @@ class GetRequestHandlerTest {
         val bodyBytesCount = 16L
         val request = mRequestBuilder.build()
         val response = mResponseBuilder
-                .body(ResponseBody.create(null, bodyBytesCount, mock(BufferedSource::class.java)))
+                .body(ResponseBody.create(null, bodyBytesCount, mock()))
                 .build()
         val handler = getHandler(getMockedClient(request, response), request)
         handler.maxContentBytes = maxBytesCount
 
-        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send())
+        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send(VALID_URL_WITH_PROTOCOL))
     }
 
     @Test
@@ -118,10 +105,10 @@ class GetRequestHandlerTest {
         val request = mRequestBuilder.build()
         val response = mResponseBuilder.build()
         val client = getMockedClient(request, response)
-        `when`(client.newCall(request)).thenThrow(SecurityException::class.java)
+        whenever(client.newCall(request)).thenThrow(SecurityException::class.java)
         val handler = getHandler(client, request)
 
-        assertEquals(HttpRequestHandler.State.PERMISSION_DENIED, handler.send())
+        assertEquals(HttpRequestHandler.State.PERMISSION_DENIED, handler.send(VALID_URL_WITH_PROTOCOL))
     }
 
     @Test
@@ -132,7 +119,7 @@ class GetRequestHandlerTest {
                 .build()
         val handler = getHandler(getMockedClient(request, response), request)
 
-        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send())
+        assertEquals(HttpRequestHandler.State.BAD_CONNECTION, handler.send(VALID_URL_WITH_PROTOCOL))
     }
 
     @Test
@@ -143,21 +130,70 @@ class GetRequestHandlerTest {
                 .build()
         val handler = getHandler(getMockedClient(request, response), request)
 
-        assertEquals(HttpRequestHandler.State.SUCCESS, handler.send())
+        assertEquals(HttpRequestHandler.State.SUCCESS, handler.send(VALID_URL_WITH_PROTOCOL))
+    }
+
+    @Test
+    fun trimUrlStringAfterSend() {
+        val url = "http://url.com/"
+        val notTrimUrl = "   $url   "
+        val handler = mBadConnectionHandler
+        handler.send(notTrimUrl)
+
+        assertEquals(url, handler.urlString)
+    }
+
+    @Test
+    fun removeBackSlashFromUrlAfterSend() {
+        val urlWithoutEndSlash = "http://valid.url/path"
+        val handler = mBadConnectionHandler
+        handler.send(urlWithoutEndSlash + "/")
+
+        assertEquals(urlWithoutEndSlash, handler.urlString)
+    }
+
+    @Test
+    fun urlsWithRelativePartsEqualsWithoutBackSlash() {
+        val firstHandler = mBadConnectionHandler
+        val secondHandler = mBadConnectionHandler
+
+        firstHandler.send("domain.com/first/second/../..")
+        secondHandler.send("domain.com")
+
+        assertEquals(firstHandler.urlString, secondHandler.urlString)
+    }
+
+    @Test
+    fun urlsWithRelativePartsEqualsWithBackSlash() {
+        val firstHandler = mBadConnectionHandler
+        val secondHandler = mBadConnectionHandler
+
+        firstHandler.send("domain.com/first/second/../../")
+        secondHandler.send("domain.com/")
+
+        assertEquals(firstHandler.urlString, secondHandler.urlString)
+    }
+
+    @Test
+    fun replaceBackSlashesInUrlAfterSend() {
+        val handler = mBadConnectionHandler
+        handler.send("http://valid.url\\path\\")
+
+        assertEquals("http://valid.url/path", handler.urlString)
     }
 
     private fun getMockedClient(request: Request, response: Response): OkHttpClient {
-        val call = mock(Call::class.java)
-        `when`(call.execute()).thenReturn(response)
+        val call: Call = mock()
+        whenever(call.execute()).thenReturn(response)
 
-        val client = mock(OkHttpClient::class.java)
-        `when`(client.newCall(request)).thenReturn(call)
+        val client: OkHttpClient = mock()
+        whenever(client.newCall(request)).thenReturn(call)
 
         return client
     }
 
     private fun getHandler(client: OkHttpClient, request: Request): HttpRequestHandler {
-        return object : HttpRequestHandler(VALID_URL_WITH_PROTOCOL) {
+        return object : HttpRequestHandler() {
             override fun createClient(clientBuilder: OkHttpClient.Builder): OkHttpClient {
                 return client
             }

@@ -23,7 +23,7 @@ import ru.iandreyshev.parserrss.presentation.presenter.extention.uiThread
 class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>() {
 
     private val mProcessCounter = ProcessCounter(this::onProcessCountChange)
-    val interactor = ArticleInteractor(UseCaseFactory(), UseCasesListener(), articleId)
+    val interactor = ArticleInteractor(UseCaseFactory, UseCasesListener(), articleId)
 
     private inner class UseCasesListener : LoadArticleImageUseCase.IListener,
             LoadArticleUseCase.IListener,

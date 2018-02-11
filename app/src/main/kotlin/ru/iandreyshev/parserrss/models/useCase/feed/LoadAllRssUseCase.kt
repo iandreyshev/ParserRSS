@@ -12,12 +12,12 @@ class LoadAllRssUseCase(
         private val mListener: IListener) : UseCase(mListener) {
 
     interface IListener : IUseCaseListener {
-        fun updateCapacityAfterLoad(isFull: Boolean)
+        fun updateCapacity(isFull: Boolean)
 
         fun loadRss(rss: ViewRss)
     }
 
-    override fun onProcess() {
+    override fun onProcess() = mRepository.runInTx {
         mRepository.rssIdList.forEach { id ->
             val rss = mRepository.getRssById(id)
 
@@ -26,6 +26,6 @@ class LoadAllRssUseCase(
                 mListener.loadRss(ViewRss(rss))
             }
         }
-        mListener.updateCapacityAfterLoad(mRepository.isFull)
+        mListener.updateCapacity(mRepository.isFull)
     }
 }

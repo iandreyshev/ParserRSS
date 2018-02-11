@@ -21,10 +21,12 @@ class DeleteRssUseCase(
             return
         }
 
-        if (mRepository.removeRssById(mRssId)) {
-            mListener.removeRss(mRssId)
-        } else {
-            mListener.removingRssFailed()
+        mRepository.runInTx {
+            if (mRepository.removeRssById(mRssId)) {
+                mListener.removeRss(mRssId)
+            } else {
+                mListener.removingRssFailed()
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package ru.iandreyshev.parserrss.models.useCase.feed
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
@@ -8,6 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import ru.iandreyshev.parserrss.firstArgAsFun
 import ru.iandreyshev.parserrss.models.repository.IRepository
 
 @RunWith(RobolectricTestRunner::class)
@@ -31,15 +33,21 @@ class DeleteRssUseCaseTest {
 
     @Test
     fun callFailedIfRepositoryReturnFalse() {
+        whenever(mRepository.runInTx(any())).then { it.firstArgAsFun.invoke() }
         whenever(mRepository.removeRssById(ID)).thenReturn(false)
+
         mUseCase.start()
+
         verify(mListener).removingRssFailed()
     }
 
     @Test
     fun callRemoveRssIfRepositoryReturnTrue() {
+        whenever(mRepository.runInTx(any())).then { it.firstArgAsFun.invoke() }
         whenever(mRepository.removeRssById(ID)).thenReturn(true)
+
         mUseCase.start()
+
         verify(mListener).removeRss(ID)
     }
 }

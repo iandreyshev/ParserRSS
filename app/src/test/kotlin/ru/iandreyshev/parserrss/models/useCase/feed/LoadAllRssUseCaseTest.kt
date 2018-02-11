@@ -7,8 +7,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
+import ru.iandreyshev.parserrss.firstArgAsFun
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.useCase.feed.LoadAllRssUseCase
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
@@ -30,6 +30,7 @@ class LoadAllRssUseCaseTest {
         fun verify(rssCount: Int) {
             whenever(mFactory.repository.rssIdList).thenReturn(LongArray(rssCount))
             whenever(mFactory.repository.getRssById(any())).thenReturn(Rss())
+            whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke() }
 
             createUseCase().start()
 
@@ -48,10 +49,11 @@ class LoadAllRssUseCaseTest {
             whenever(mFactory.repository.isFull).thenReturn(isFull)
             whenever(mFactory.repository.rssIdList).thenReturn(LongArray(rssCount))
             whenever(mFactory.repository.getRssById(any())).thenReturn(null)
+            whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke() }
 
             createUseCase().start()
 
-            verify(mListener).updateCapacityAfterLoad(isFull)
+            verify(mListener).updateCapacity(isFull)
             clearInvocations(mListener)
         }
 
@@ -67,6 +69,7 @@ class LoadAllRssUseCaseTest {
         whenever(mFactory.repository.isFull).thenReturn(false)
         whenever(mFactory.repository.rssIdList).thenReturn(LongArray(rssCount))
         whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
+        whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke() }
 
         mUseCase.start()
 

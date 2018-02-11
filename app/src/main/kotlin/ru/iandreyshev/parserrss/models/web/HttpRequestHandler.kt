@@ -5,12 +5,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
 
-abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
+abstract class HttpRequestHandler : IHttpRequestResult {
 
     companion object {
         internal const val DEFAULT_MAX_CONTENT_BYTES = 5242880L // 5MB
 
         private const val OK_RESPONSE_CODE = 200
+        private const val EMPTY_URL = ""
         private const val DEFAULT_PROTOCOL = "http://"
 
         private const val DEFAULT_MAX_READ_TIMEOUT_MS = 3000L
@@ -31,7 +32,7 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
     var connectionTimeoutMs: Long = DEFAULT_MAX_CONNECTION_TIMEOUT_MS
     var writeTimeoutMs: Long = DEFAULT_MAX_WRITE_TIMEOUT_MS
 
-    override var urlString: String = urlString
+    override var urlString: String = EMPTY_URL
         protected set
     override var state: State = State.NOT_SEND
         protected set
@@ -43,9 +44,8 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
             return String(body ?: return null)
         }
 
-    open fun send(url: String? = null): State {
+    open fun send(url: String?): State {
         val httpUrl = parseUrl(url ?: urlString)
-        urlString = url ?: urlString
 
         state = if (httpUrl == null) {
             State.BAD_URL
@@ -103,6 +103,18 @@ abstract class HttpRequestHandler(urlString: String) : IHttpRequestResult {
     }
 
     private fun parseUrl(url: String): HttpUrl? {
-        return HttpUrl.parse(url) ?: HttpUrl.parse(DEFAULT_PROTOCOL + url)
+        var resultUrlString = url
+                .trim()
+                .replace('\\', '/')
+
+        if (!resultUrlString.isEmpty() && resultUrlString.last() == '/') {
+            resultUrlString = resultUrlString.dropLast(1)
+        }
+
+        val result = HttpUrl.parse(resultUrlString)
+                ?: HttpUrl.parse(DEFAULT_PROTOCOL + resultUrlString)
+        urlString = result.toString()
+
+        return result
     }
 }

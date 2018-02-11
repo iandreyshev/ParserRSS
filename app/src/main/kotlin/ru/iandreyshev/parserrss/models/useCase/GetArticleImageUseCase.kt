@@ -1,6 +1,7 @@
 package ru.iandreyshev.parserrss.models.useCase
 
 import android.graphics.Bitmap
+import android.util.Log
 import ru.iandreyshev.parserrss.models.extention.bitmap
 import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository

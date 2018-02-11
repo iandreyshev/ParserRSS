@@ -1,16 +1,18 @@
-package ru.iandreyshev.parserrss.models.useCase.feed
+package ru.iandreyshev.parserrss.models.useCase.rssList
 
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
+import ru.iandreyshev.parserrss.firstArgAsFun
 import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.useCase.rssList.UpdateRssUseCase
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class UpdateRssUseCaseTest {
 
     companion object {
@@ -34,7 +36,7 @@ class UpdateRssUseCaseTest {
         fun verify(state: HttpRequestHandler.State) {
             whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
             whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
-            whenever(mFactory.requestHandler.send()).thenReturn(state)
+            whenever(mFactory.requestHandler.send(any())).thenReturn(state)
 
             createUseCase(RSS_ID).start()
 
@@ -86,6 +88,7 @@ class UpdateRssUseCaseTest {
         whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
         whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
         whenever(mFactory.repository.updateRssWithSameUrl(rss)).thenReturn(true)
+        whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke()  }
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(rssString)
         whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)

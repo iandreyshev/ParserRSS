@@ -17,7 +17,7 @@ class LoadArticlesListUseCase(
         fun loadArticles(articles: ArrayList<ViewArticle>)
     }
 
-    override fun onProcess() {
+    override fun onProcess() = mRepository.runInTx {
         val articles = mRepository.getArticlesByRssId(mRssId)
         mFilter.sort(articles)
         mListener.loadArticles(ArrayList(articles.map { it.viewModel }))

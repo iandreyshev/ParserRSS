@@ -1,6 +1,7 @@
 package ru.iandreyshev.parserrss.models.useCase.article
 
 import android.graphics.Bitmap
+import android.util.Log
 
 import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository
@@ -25,5 +26,8 @@ open class LoadArticleImageUseCase(
         fun insertImage(imageBitmap: Bitmap)
     }
 
-    override fun onFoundImage(imageBitmap: Bitmap) = mListener.insertImage(imageBitmap)
+    override fun onFoundImage(imageBitmap: Bitmap) {
+        Log.e(this.javaClass.name, "Image load")
+        mListener.insertImage(imageBitmap)
+    }
 }

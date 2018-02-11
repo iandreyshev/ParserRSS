@@ -2,6 +2,7 @@ package ru.iandreyshev.parserrss
 
 import com.nhaarman.mockito_kotlin.mock
 import org.apache.commons.io.IOUtils
+import org.mockito.invocation.InvocationOnMock
 import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
@@ -31,3 +32,6 @@ class MocksFactory {
     val itemIcon: IItemIcon = mock()
     val imageProps: IImageProperties = mock()
 }
+
+val InvocationOnMock.firstArgAsFun: () -> Unit
+    get() = this.getArgument(0) as () -> Unit

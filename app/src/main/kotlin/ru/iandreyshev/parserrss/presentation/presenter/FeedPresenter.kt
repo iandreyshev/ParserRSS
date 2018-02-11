@@ -28,7 +28,7 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
     private val mProcessCounter = ProcessCounter(this::onChangeProcessCount)
     private val mRssCounter = ProcessCounter(this::onChangeRssCount)
 
-    val interactor = FeedInteractor(UseCaseFactory(), UseCaseListener())
+    val interactor = FeedInteractor(UseCaseFactory, UseCaseListener())
 
     private inner class UseCaseListener : LoadAllRssUseCase.IListener,
             DeleteRssUseCase.IListener,
@@ -88,7 +88,7 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
             viewState.openDialog(addRssDialog(url))
         }
 
-        override fun updateCapacityAfterLoad(isFull: Boolean) = uiThread {
+        override fun updateCapacity(isFull: Boolean) = uiThread {
             onChangeCapacityStatus(isFull)
         }
 

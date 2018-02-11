@@ -53,7 +53,7 @@ class UpdateRssUseCase(
         mListener.parseError()
     }
 
-    override fun onSuccess(rss: Rss) {
+    override fun onSuccess(rss: Rss) = mRepository.runInTx {
         if (mRepository.updateRssWithSameUrl(rss)) {
             mArticlesFilter.sort(rss.articles)
             val resultArticles = ArrayList(rss.articles.map { it.viewModel })

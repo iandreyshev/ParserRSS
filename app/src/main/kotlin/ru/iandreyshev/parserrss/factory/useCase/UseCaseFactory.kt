@@ -23,7 +23,7 @@ import ru.iandreyshev.parserrss.models.useCase.rssList.UpdateRssUseCase
 import ru.iandreyshev.parserrss.models.viewModels.ViewRss
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 
-class UseCaseFactory : IUseCaseFactory {
+object UseCaseFactory : IUseCaseFactory {
     override fun create(type: UseCaseType, data: Any?, listener: IUseCaseListener): UseCase {
         return when (type) {
             ARTICLE_LOAD_IMAGE -> LoadArticleImageUseCase(
@@ -52,7 +52,7 @@ class UseCaseFactory : IUseCaseFactory {
             )
             FEED_UPDATE_RSS -> UpdateRssUseCase(
                     App.repository,
-                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.UPDATE_RSS),
+                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.RSS_UPDATE),
                     ParserV2(),
                     data as Long,
                     ArticlesFilterByDate(),
@@ -60,7 +60,7 @@ class UseCaseFactory : IUseCaseFactory {
             )
             FEED_INSERT_RSS -> InsertRssUseCase(
                     App.repository,
-                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.NEW_RSS),
+                    HttpRequestHandlerFactory.create(HttpRequestHandlerType.RSS_NEW),
                     ParserV2(),
                     data as String,
                     listener as InsertRssUseCase.IListener

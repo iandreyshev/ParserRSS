@@ -73,7 +73,7 @@ class InsertRssUseCase(
         mListener.invalidRssFormat(mUrl)
     }
 
-    override fun onSuccess(rss: Rss) {
+    override fun onSuccess(rss: Rss) = mRepository.runInTx {
         when (mRepository.putNewRss(rss)) {
             IRepository.InsertRssResult.SUCCESS -> {
                 mListener.insertNewRss(ViewRss(rss), mRepository.isFull)

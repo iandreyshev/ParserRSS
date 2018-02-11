@@ -31,12 +31,12 @@ object HttpRequestHandlerFactory : IHttpRequestHandlerFactory {
 
                 handler
             }
-            HttpRequestHandlerType.NEW_RSS -> {
+            HttpRequestHandlerType.RSS_NEW -> {
                 val handler = GetRequestHandler()
                 handler.maxContentBytes = MAX_RSS_BYTES_COUNT
                 handler
             }
-            HttpRequestHandlerType.UPDATE_RSS -> {
+            HttpRequestHandlerType.RSS_UPDATE -> {
                 val handler = GetRequestHandler()
                 handler.maxContentBytes = MAX_RSS_BYTES_COUNT
                 handler
