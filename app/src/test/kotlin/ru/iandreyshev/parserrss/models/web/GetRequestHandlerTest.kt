@@ -153,24 +153,24 @@ class GetRequestHandlerTest {
     }
 
     @Test
-    fun urlsWithRelativePartsEqualsWithoutBackSlash() {
+    fun urlsWithRelativePartsEquals() {
         val firstHandler = mBadConnectionHandler
         val secondHandler = mBadConnectionHandler
 
-        firstHandler.send("domain.com/first/second/../..")
-        secondHandler.send("domain.com")
-
+        firstHandler.send("domain.com/zero/first/..")
+        secondHandler.send("domain.com/zero")
         assertEquals(firstHandler.urlString, secondHandler.urlString)
-    }
 
-    @Test
-    fun urlsWithRelativePartsEqualsWithBackSlash() {
-        val firstHandler = mBadConnectionHandler
-        val secondHandler = mBadConnectionHandler
+        firstHandler.send("domain.com/zero/first/../")
+        secondHandler.send("domain.com/zero")
+        assertEquals(firstHandler.urlString, secondHandler.urlString)
 
-        firstHandler.send("domain.com/first/second/../../")
-        secondHandler.send("domain.com/")
+        firstHandler.send("domain.com/zero/first/..")
+        secondHandler.send("domain.com/zero/")
+        assertEquals(firstHandler.urlString, secondHandler.urlString)
 
+        firstHandler.send("domain.com/zero/first/../")
+        secondHandler.send("domain.com/zero/")
         assertEquals(firstHandler.urlString, secondHandler.urlString)
     }
 

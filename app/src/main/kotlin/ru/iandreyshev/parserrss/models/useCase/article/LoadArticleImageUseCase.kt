@@ -27,7 +27,6 @@ open class LoadArticleImageUseCase(
     }
 
     override fun onFoundImage(imageBitmap: Bitmap) {
-        Log.e(this.javaClass.name, "Image load")
         mListener.insertImage(imageBitmap)
     }
 }
