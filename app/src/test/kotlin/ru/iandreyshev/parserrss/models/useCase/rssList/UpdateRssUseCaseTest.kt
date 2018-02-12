@@ -3,16 +3,11 @@ package ru.iandreyshev.parserrss.models.useCase.rssList
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.firstArgAsFun
-import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class UpdateRssUseCaseTest {
 
     companion object {

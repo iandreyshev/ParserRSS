@@ -1,23 +1,19 @@
 package ru.iandreyshev.parserrss.models.repository
 
-import android.graphics.Bitmap
 import io.objectbox.BoxStore
 import io.objectbox.kotlin.boxFor
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 
 import org.junit.Assert.*
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.ArticleImage
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 import java.io.File
 import java.util.ArrayList
-import java.util.HashSet
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
-class RepositoryTest {
+class ObjectBoxRepositoryTest {
 
     companion object {
         private const val RSS_TITLE = "TITLE"
@@ -33,8 +29,9 @@ class RepositoryTest {
     }
 
     private lateinit var mBoxStore: BoxStore
-    private lateinit var mRepository: RssRepository
+    private lateinit var mRepository: ObjectBoxRepository
     private lateinit var mRss: Rss
+    private lateinit var mImageBytes: ByteArray
 
     @Before
     fun setup() {
@@ -43,13 +40,14 @@ class RepositoryTest {
         assertTrue(tempFile.delete())
 
         mBoxStore = MyObjectBox.builder().directory(tempFile).build()
-        mRepository = RssRepository(mBoxStore)
+        mRepository = ObjectBoxRepository(mBoxStore)
         val articleList = ArrayList<Article>()
 
         repeat(ARTICLES_COUNT) {
             articleList.add(createArticle(it))
         }
 
+        mImageBytes = byteArrayOf()
         mRss = Rss(
                 title = RSS_TITLE,
                 originUrl = RSS_ORIGIN,
@@ -86,7 +84,8 @@ class RepositoryTest {
     @Test
     fun updateRssIdAfterPut() {
         mRepository.putNewRss(mRss)
-        assertEquals(mRss, mRepository.getRssById(mRss.id))
+
+        assertEquals(mRss.id, mRepository.getRssById(mRss.id)?.id)
     }
 
     @Test
@@ -166,32 +165,23 @@ class RepositoryTest {
     }
 
     @Test
-    fun updateRssArticlesIdAfterPut() {
+    fun updateArticlesRssIdAfterPut() {
         mRepository.putNewRss(mRss)
-
-        for ((_, rssId) in mRss.articles) {
-            assertTrue(rssId == mRss.id)
-        }
+        mRss.articles.forEach { assertTrue(it.rssId == mRss.id) }
     }
 
     @Test
     fun returnRssWithSameArticles() {
-        val articles = HashSet(mRss.articles)
-
         mRepository.putNewRss(mRss)
         val rss = mRepository.getRssById(mRss.id)
-        if (rss == null) {
-            fail()
-        }
 
-        rss?.articles?.forEach { article ->
-            assertTrue(article in articles)
-        }
+        assertNotNull(rss)
+        rss?.articles?.forEach { assertTrue(it in mRss.articles) }
     }
 
     @Test
     fun setZeroMaxValuesIfTryToSetLessThanZero() {
-        val repository = RssRepository(mBoxStore, -1, -1)
+        val repository = ObjectBoxRepository(mBoxStore, -1, -1)
 
         assertEquals(0, repository.maxRssCount)
         assertEquals(0, repository.maxArticlesInRssCount)
@@ -199,7 +189,7 @@ class RepositoryTest {
 
     @Test
     fun returnFullStateIfTryToAddRssToFullRepository() {
-        val repository = RssRepository(mBoxStore, 0, 0)
+        val repository = ObjectBoxRepository(mBoxStore, 0, 0)
 
         assertEquals(IRepository.InsertRssResult.FULL, repository.putNewRss(mRss))
     }
@@ -207,7 +197,7 @@ class RepositoryTest {
     @Test
     fun takeOnlyMaxArticlesCountFromRss() {
         val maxArticlesCount = 10
-        val repository = RssRepository(mBoxStore, 1, maxArticlesCount)
+        val repository = ObjectBoxRepository(mBoxStore, 1, maxArticlesCount)
         val rss = Rss()
         rss.articles.addAll(Array(maxArticlesCount * 2) {
             createArticle(it)
@@ -222,12 +212,12 @@ class RepositoryTest {
 
     @Test
     fun returnTrueIfRssCountIsMax() {
-        val alwaysFullRepository = RssRepository(mBoxStore, 0, 0)
+        val alwaysFullRepository = ObjectBoxRepository(mBoxStore, 0, 0)
 
         assertTrue(alwaysFullRepository.isFull)
 
         val count = 10
-        val fullRssRepository = RssRepository(mBoxStore, count, 0)
+        val fullRssRepository = ObjectBoxRepository(mBoxStore, count, 0)
         repeat(count) {
             val rss = Rss(url = it.toString())
 
@@ -257,7 +247,6 @@ class RepositoryTest {
 
     @Test
     fun deleteArticlesAndImagesIfRssWithArticleRemoved() {
-        val bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8)
         val imageUrl = "Image url"
         val rss = Rss()
         rss.articles.add(Article(imageUrl = imageUrl))
@@ -266,7 +255,11 @@ class RepositoryTest {
         assertNotNull(mRepository.getRssById(rss.id))
 
         val articleId = rss.articles[0].id
-        val putImageResult = mRepository.putArticleImageIfArticleExist(articleId, bitmap)
+        val articleImage = ArticleImage(
+                articleId = articleId,
+                bytes = mImageBytes
+        )
+        val putImageResult = mRepository.putArticleImageIfArticleExist(articleImage)
 
         assertTrue(putImageResult)
         assertNotNull(mRepository.getArticleById(articleId))
@@ -280,11 +273,52 @@ class RepositoryTest {
 
     @Test
     fun notPutArticleImageIfArticleNotExist() {
-        val bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8)
-        val insertionResult = mRepository.putArticleImageIfArticleExist(10, bitmap)
+        val notExistArticleId = 10L
+        val articleImage = ArticleImage(
+                articleId = notExistArticleId,
+                bytes = mImageBytes
+        )
+        val insertionResult = mRepository.putArticleImageIfArticleExist(articleImage)
 
         assertFalse(insertionResult)
-        assertEquals(0, mBoxStore.boxFor<ArticleImage>().count())
+        assertEquals(0, mBoxStore.boxFor<ArticleImageEntity>().count())
+    }
+
+    @Test
+    fun canSaveByteArray() {
+        assertEquals(IRepository.InsertRssResult.SUCCESS, mRepository.putNewRss(mRss))
+
+        val articleId = mRss.articles[0].id
+        val bytes = byteArrayOf(0, 1, 2, 3, 4, 5)
+        val articleImage = ArticleImage(
+                articleId = articleId,
+                bytes = bytes
+        )
+
+        assertTrue(mRepository.putArticleImageIfArticleExist(articleImage))
+
+        val imageFromRepo = mRepository.getArticleImageByArticleId(articleId)
+
+        assertTrue(bytes.contentEquals(imageFromRepo?.bytes ?: byteArrayOf()))
+    }
+
+    @Test
+    fun amountOfNewsAfterTheUpdateIsNoMoreThanTheMaximum() {
+        assertEquals(IRepository.InsertRssResult.SUCCESS, mRepository.putNewRss(mRss))
+        assertTrue(mRepository.maxArticlesInRssCount > 0)
+
+        mRss.articles.clear()
+        repeat(mRepository.maxArticlesInRssCount * 2) {
+            mRss.articles.add(createArticle(it))
+        }
+
+        assertTrue(mRepository.maxArticlesInRssCount < mRss.articles.count())
+        assertTrue(mRepository.updateRssWithSameUrl(mRss))
+        assertEquals(mRepository.maxArticlesInRssCount, mRss.articles.count())
+
+        val rssFromRepository = mRepository.getRssById(mRss.id)
+
+        assertEquals(mRepository.maxArticlesInRssCount, rssFromRepository?.articles?.count())
     }
 
     private fun createArticle(number: Int): Article {

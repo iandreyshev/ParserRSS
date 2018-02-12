@@ -2,17 +2,11 @@ package ru.iandreyshev.parserrss.models.repository
 
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-
-import org.robolectric.RobolectricTestRunner
 
 import java.util.Date
 
 import org.junit.Assert.*
-import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class ArticleTest {
 
     companion object {
@@ -24,16 +18,16 @@ class ArticleTest {
         private val POST_DATE = Date()
     }
 
-    private lateinit var mArticle: Article
-    private lateinit var mDefaultArticle: Article
+    private lateinit var mArticle: ArticleEntity
+    private lateinit var mDefaultArticle: ArticleEntity
 
     @Before
     fun setup() {
-        mArticle = Article(
+        mArticle = ArticleEntity(
                 title = TITLE,
                 description = DESCRIPTION,
                 originUrl = ORIGIN)
-        mDefaultArticle = Article(
+        mDefaultArticle = ArticleEntity(
                 title = "",
                 description = "",
                 originUrl = "")
@@ -56,7 +50,7 @@ class ArticleTest {
 
     @Test
     fun haveConstructorWithZeroArgs() {
-        val article = Article(title = "", description = "", originUrl = "")
+        val article = ArticleEntity(title = "", description = "", originUrl = "")
 
         assertNotNull(article)
     }
@@ -89,17 +83,20 @@ class ArticleTest {
 
     @Test
     fun equalWithObjectIfEqualsItsOrigins() {
-        var other = Article(title = TITLE, description = DESCRIPTION, originUrl = "")
+        var other = ArticleEntity(title = TITLE, description = DESCRIPTION, originUrl = "")
 
         assertFalse(other == mArticle)
 
-        other = Article(title = "", description = "", originUrl = mArticle.originUrl)
+        other = ArticleEntity(title = "", description = "", originUrl = mArticle.originUrl)
 
         assertTrue(mArticle == other)
     }
 
     @Test
     fun hashcodeEqualOriginHashcode() {
-        assertEquals(mArticle.hashCode().toLong(), mArticle.originUrl.hashCode().toLong())
+        val originUrlHashCode = mArticle.originUrl?.hashCode()?.toLong()
+        val articleHashCode = mArticle.hashCode().toLong()
+
+        assertEquals(articleHashCode, originUrlHashCode)
     }
 }

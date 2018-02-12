@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
-import android.graphics.Bitmap
 import android.net.Uri
 import ru.iandreyshev.parserrss.presentation.view.IArticleView
 
@@ -9,12 +8,13 @@ import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.models.interactor.ArticleInteractor
-import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.models.useCase.article.LoadArticleUseCase
 import ru.iandreyshev.parserrss.models.useCase.article.LoadArticleImageUseCase
 import ru.iandreyshev.parserrss.models.useCase.article.OpenArticleOriginalUseCase
 import ru.iandreyshev.parserrss.models.counter.ProcessCounter
+import ru.iandreyshev.parserrss.models.extention.bitmap
 import ru.iandreyshev.parserrss.presentation.presenter.extention.openInBrowser
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 import ru.iandreyshev.parserrss.presentation.presenter.extention.uiThread
@@ -29,7 +29,7 @@ class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>() {
             LoadArticleUseCase.IListener,
             OpenArticleOriginalUseCase.IListener {
 
-        override fun loadArticle(rss: ViewRss?, article: ViewArticle?) = uiThread {
+        override fun loadArticle(rss: Rss?, article: Article?) = uiThread {
             if (rss != null && article != null) {
                 viewState.initArticle(rss, article)
             } else {
@@ -46,8 +46,11 @@ class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>() {
             }
         }
 
-        override fun insertImage(imageBitmap: Bitmap) = uiThread {
-            viewState.setImage(imageBitmap)
+        override fun insertImage(imageBytes: ByteArray) {
+            val imageBitmap = imageBytes.bitmap
+            uiThread {
+                viewState.setImage(imageBitmap)
+            }
         }
 
         override fun processStart() = uiThread {

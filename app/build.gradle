@@ -58,6 +58,7 @@ dependencies {
     implementation "org.jetbrains.anko:anko-coroutines:$ankoVersion"
     implementation "org.jetbrains.anko:anko-commons:$ankoVersion"
     implementation "eu.inloop:pageradapter:0.1.0"
+    implementation "org.jsoup:jsoup:1.11.2"
 
     kapt "com.arello-mobile:moxy-compiler:$moxyVersion"
     kapt "io.objectbox:objectbox-processor:$objectboxVersion"

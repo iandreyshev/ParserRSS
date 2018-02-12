@@ -1,6 +1,8 @@
 package ru.iandreyshev.parserrss.models.repository
 
-import android.graphics.Bitmap
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.ArticleImage
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 interface IRepository {
     val isFull: Boolean
@@ -9,7 +11,7 @@ interface IRepository {
 
     val maxArticlesInRssCount: Int
 
-    val rssIdList: LongArray
+    val rssIdList: List<Long>
 
     fun runInTx(callback: () -> Unit)
 
@@ -19,11 +21,9 @@ interface IRepository {
 
     fun getArticleImageByArticleId(id: Long): ArticleImage?
 
-    fun getArticlesByRssId(id: Long): MutableList<Article>
-
     fun isRssWithUrlExist(url: String): Boolean
 
-    fun putArticleImageIfArticleExist(articleId: Long, imageBitmap: Bitmap): Boolean
+    fun putArticleImageIfArticleExist(articleImage: ArticleImage): Boolean
 
     fun putNewRss(newRss: Rss): InsertRssResult
 

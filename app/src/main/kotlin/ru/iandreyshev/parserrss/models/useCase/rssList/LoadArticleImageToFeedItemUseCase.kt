@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.models.useCase.rssList
 
-import android.graphics.Bitmap
+import android.util.Log
 import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.useCase.GetArticleImageUseCase
@@ -22,12 +22,12 @@ class LoadArticleImageToFeedItemUseCase(
         mListener) {
 
     interface IListener : IUseCaseListener {
-        fun insertImage(icon: IItemIcon, idOnStart: Long, imageBitmap: Bitmap)
+        fun insertImage(icon: IItemIcon, idOnStart: Long, imageBytes: ByteArray)
     }
 
     private val mIdOnStart = mIcon.id
 
-    override fun onFoundImage(imageBitmap: Bitmap) {
+    override fun onFoundImage(imageBitmap: ByteArray) {
         mListener.insertImage(mIcon, mIdOnStart, imageBitmap)
     }
 

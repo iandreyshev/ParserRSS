@@ -4,13 +4,8 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.models.extention.uri
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class OpenRssOriginalUseCaseTest {
 
     private lateinit var mListener: OpenRssOriginalUseCase.IListener

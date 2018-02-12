@@ -1,6 +1,8 @@
 package ru.iandreyshev.parserrss.models.extention
 
 import android.graphics.Bitmap
+import java.io.ByteArrayOutputStream
+
 
 fun Bitmap.scaleToSize(maxSize: Int): Bitmap {
     if (maxSize <= 0) {
@@ -17,3 +19,10 @@ fun Bitmap.scaleToSize(maxSize: Int): Bitmap {
 
     return Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
 }
+
+val Bitmap.bytes: ByteArray
+    get() {
+        val stream = ByteArrayOutputStream()
+        this.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return stream.toByteArray()
+    }

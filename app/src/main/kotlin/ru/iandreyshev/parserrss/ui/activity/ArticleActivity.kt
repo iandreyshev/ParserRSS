@@ -8,8 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 
-import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.presentation.view.IArticleView
 import ru.iandreyshev.parserrss.presentation.presenter.ArticlePresenter
 
@@ -78,7 +78,7 @@ class ArticleActivity : BaseActivity(), IArticleView {
         return super.onOptionsItemSelected(menuItem)
     }
 
-    override fun initArticle(rss: ViewRss, article: ViewArticle) {
+    override fun initArticle(rss: Rss, article: Article) {
         toolbarTitle.text = rss.title
         titleView.text = article.title
         descriptionView.text = article.description

@@ -3,15 +3,10 @@ package ru.iandreyshev.parserrss.models.useCase.feed
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.firstArgAsFun
-import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.rss.Rss
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class LoadAllRssUseCaseTest {
 
     private lateinit var mFactory: MocksFactory
@@ -28,7 +23,8 @@ class LoadAllRssUseCaseTest {
     @Test
     fun callProcessMethods() {
         fun verify(rssCount: Int) {
-            whenever(mFactory.repository.rssIdList).thenReturn(LongArray(rssCount))
+            val idList = List(rssCount, { 0L })
+            whenever(mFactory.repository.rssIdList).thenReturn(idList)
             whenever(mFactory.repository.getRssById(any())).thenReturn(Rss())
             whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke() }
 
@@ -46,8 +42,9 @@ class LoadAllRssUseCaseTest {
     @Test
     fun callUpdateCapacityMethod() {
         fun verify(rssCount: Int, isFull: Boolean) {
+            val idList = List(rssCount, { 0L })
             whenever(mFactory.repository.isFull).thenReturn(isFull)
-            whenever(mFactory.repository.rssIdList).thenReturn(LongArray(rssCount))
+            whenever(mFactory.repository.rssIdList).thenReturn(idList)
             whenever(mFactory.repository.getRssById(any())).thenReturn(null)
             whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke() }
 
@@ -65,9 +62,10 @@ class LoadAllRssUseCaseTest {
     fun callLoadMethodIfRssExist() {
         val rssCount = 10
         val rss = Rss(id = 10)
+        val idList = List(rssCount, { 0L })
 
         whenever(mFactory.repository.isFull).thenReturn(false)
-        whenever(mFactory.repository.rssIdList).thenReturn(LongArray(rssCount))
+        whenever(mFactory.repository.rssIdList).thenReturn(idList)
         whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
         whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke() }
 

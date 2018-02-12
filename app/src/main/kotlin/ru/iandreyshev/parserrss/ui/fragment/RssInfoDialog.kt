@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.dialog_rss_info.*
 import org.jetbrains.anko.toast
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.presentation.presenter.RssInfoPresenter
 import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
 
@@ -21,7 +21,7 @@ class RssInfoDialog : MvpAppCompatDialogFragment(), IRssInfoView {
     companion object {
         private const val OPEN_ORIGINAL_BUTTON = AlertDialog.BUTTON_NEUTRAL
 
-        fun newInstance(rss: ViewRss): RssInfoDialog {
+        fun newInstance(rss: Rss): RssInfoDialog {
             val dialog = RssInfoDialog()
             dialog.mPresenter = RssInfoPresenter(rss)
 

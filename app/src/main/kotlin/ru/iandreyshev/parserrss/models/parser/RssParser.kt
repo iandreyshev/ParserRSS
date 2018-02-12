@@ -2,9 +2,9 @@ package ru.iandreyshev.parserrss.models.parser
 
 import org.jdom2.Element
 
-import ru.iandreyshev.parserrss.models.repository.Rss
-import ru.iandreyshev.parserrss.models.repository.Article
 import ru.iandreyshev.parserrss.models.parser.extension.toDocument
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 abstract class RssParser {
 

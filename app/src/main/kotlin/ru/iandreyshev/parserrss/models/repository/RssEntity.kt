@@ -1,23 +1,20 @@
 package ru.iandreyshev.parserrss.models.repository
 
+import io.objectbox.annotation.*
 import java.util.ArrayList
-
-import io.objectbox.annotation.Entity
-import io.objectbox.annotation.Id
-import io.objectbox.annotation.Index
-import io.objectbox.annotation.Transient
+import kotlin.jvm.Transient
 
 @Entity
-data class Rss(
+internal data class RssEntity(
         @Id var id: Long = 0,
         var title: String = "",
         @Index var url: String = "",
         var originUrl: String? = null,
         var description: String? = null,
-        @Transient var articles: MutableList<Article> = ArrayList()) {
+        @Transient var articles: MutableList<ArticleEntity> = ArrayList()) {
 
     override fun equals(other: Any?): Boolean {
-        return other is Rss && url == other.url
+        return other is RssEntity && url == other.url
     }
 
     override fun hashCode(): Int {

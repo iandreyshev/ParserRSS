@@ -1,24 +1,17 @@
 package ru.iandreyshev.parserrss.models.useCase.rssList
 
-import android.graphics.Bitmap
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
-import ru.iandreyshev.parserrss.models.repository.Article
-import ru.iandreyshev.parserrss.models.repository.ArticleImage
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.ArticleImage
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class LoadArticleImageToFeedItemUseCaseTest {
 
     companion object {
         private const val ARTICLE_ID = 0L
-        private val IMAGE_BITMAP = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8)
     }
 
     private lateinit var mFactory: MocksFactory
@@ -39,16 +32,20 @@ class LoadArticleImageToFeedItemUseCaseTest {
 
     @Test
     fun configureToViewAndReturnIfFindInRepository() {
-        val image = ArticleImage(bitmap = IMAGE_BITMAP)
+        val imageBytes = byteArrayOf()
+        val image = ArticleImage(
+                articleId = ARTICLE_ID,
+                bytes = imageBytes
+        )
 
         whenever(mFactory.itemIcon.id).thenReturn(ARTICLE_ID)
         whenever(mFactory.repository.getArticleImageByArticleId(ARTICLE_ID)).thenReturn(image)
-        whenever(mFactory.imageProps.configureToView(any())).thenReturn(IMAGE_BITMAP)
+        whenever(mFactory.imageProps.configureToView(any())).thenReturn(imageBytes)
 
         createUseCase().start()
 
-        verify(mFactory.imageProps).configureToView(IMAGE_BITMAP)
-        verify(mListener).insertImage(mFactory.itemIcon, mFactory.itemIcon.id, IMAGE_BITMAP)
+        verify(mFactory.imageProps).configureToView(imageBytes)
+        verify(mListener).insertImage(mFactory.itemIcon, mFactory.itemIcon.id, imageBytes)
     }
 
     @Test

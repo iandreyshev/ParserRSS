@@ -9,15 +9,15 @@ import ru.iandreyshev.parserrss.app.App
 
 import java.util.ArrayList
 
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.ui.extention.tabTitle
 import ru.iandreyshev.parserrss.ui.fragment.FeedPageFragment
 
 class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter(manager) {
 
-    private val mRssList = ArrayList<ViewRss>()
+    private val mRssList = ArrayList<Rss>()
 
-    fun insert(rss: ViewRss) {
+    fun insert(rss: Rss) {
         mRssList.add(rss)
         notifyDataSetChanged()
     }
@@ -27,7 +27,7 @@ class FeedPagesAdapter(manager: FragmentManager) : UpdatableFragmentPagerAdapter
         notifyDataSetChanged()
     }
 
-    fun getRss(position: Int): ViewRss? {
+    fun getRss(position: Int): Rss? {
         return mRssList.getOrNull(position)
     }
 

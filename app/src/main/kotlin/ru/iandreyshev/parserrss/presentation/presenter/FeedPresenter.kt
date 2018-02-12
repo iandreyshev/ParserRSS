@@ -1,6 +1,6 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 
 import com.arellomobile.mvp.InjectViewState
@@ -36,12 +36,12 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
             InsertRssUseCase.IListener,
             OpenRssInfoUseCase.IListener {
 
-        override fun loadRss(rss: ViewRss) = uiThread {
+        override fun loadRss(rss: Rss) = uiThread {
             viewState.insertRss(rss)
             mRssCounter.add()
         }
 
-        override fun insertNewRss(rss: ViewRss, isFull: Boolean) = uiThread {
+        override fun insertNewRss(rss: Rss, isFull: Boolean) = uiThread {
             viewState.insertRss(rss)
             viewState.openRssPage(rss.id)
             mRssCounter.add()
@@ -100,7 +100,7 @@ class FeedPresenter : MvpPresenter<IFeedView>() {
             toast(R.string.feed_url_to_add_is_empty)
         }
 
-        override fun openRssInfo(rss: ViewRss?) = uiThread {
+        override fun openRssInfo(rss: Rss?) = uiThread {
             if (rss != null) {
                 viewState.openDialog(RssInfoDialog.newInstance(rss))
             } else {

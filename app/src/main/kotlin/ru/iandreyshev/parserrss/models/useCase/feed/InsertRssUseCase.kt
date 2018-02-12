@@ -1,11 +1,10 @@
 package ru.iandreyshev.parserrss.models.useCase.feed
 
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.parser.RssParser
 import ru.iandreyshev.parserrss.models.useCase.DownloadRssUseCase
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
@@ -31,7 +30,7 @@ class InsertRssUseCase(
 
         fun invalidRssFormat(url: String)
 
-        fun insertNewRss(rss: ViewRss, isFull: Boolean)
+        fun insertNewRss(rss: Rss, isFull: Boolean)
     }
 
     override fun getRssUrl(): String? {
@@ -76,7 +75,7 @@ class InsertRssUseCase(
     override fun onSuccess(rss: Rss) = mRepository.runInTx {
         when (mRepository.putNewRss(rss)) {
             IRepository.InsertRssResult.SUCCESS -> {
-                mListener.insertNewRss(ViewRss(rss), mRepository.isFull)
+                mListener.insertNewRss(rss, mRepository.isFull)
             }
             IRepository.InsertRssResult.EXIST -> mListener.rssAlreadyExist()
             IRepository.InsertRssResult.FULL -> mListener.rssCountIsMax()

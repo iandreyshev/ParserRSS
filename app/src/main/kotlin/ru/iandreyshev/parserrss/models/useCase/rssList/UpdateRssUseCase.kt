@@ -1,13 +1,12 @@
 package ru.iandreyshev.parserrss.models.useCase.rssList
 
-import ru.iandreyshev.parserrss.models.extention.viewModel
 import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
-import ru.iandreyshev.parserrss.models.repository.Rss
 import ru.iandreyshev.parserrss.models.parser.RssParser
 import ru.iandreyshev.parserrss.models.useCase.DownloadRssUseCase
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
-import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 import ru.iandreyshev.parserrss.models.web.IHttpRequestResult
 
@@ -30,7 +29,7 @@ class UpdateRssUseCase(
 
         fun rssNotExist()
 
-        fun updateRss(articles: ArrayList<ViewArticle>)
+        fun updateRss(articles: MutableList<Article>)
     }
 
     override fun getRssUrl(): String? {
@@ -56,8 +55,7 @@ class UpdateRssUseCase(
     override fun onSuccess(rss: Rss) = mRepository.runInTx {
         if (mRepository.updateRssWithSameUrl(rss)) {
             mArticlesFilter.sort(rss.articles)
-            val resultArticles = ArrayList(rss.articles.map { it.viewModel })
-            mListener.updateRss(resultArticles)
+            mListener.updateRss(rss.articles)
         } else {
             mListener.rssNotExist()
         }

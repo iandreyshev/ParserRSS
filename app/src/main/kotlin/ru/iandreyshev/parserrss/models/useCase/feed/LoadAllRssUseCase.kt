@@ -4,7 +4,7 @@ import ru.iandreyshev.parserrss.models.filters.IArticlesFilter
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 import ru.iandreyshev.parserrss.models.useCase.UseCase
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 class LoadAllRssUseCase(
         private val mRepository: IRepository,
@@ -14,7 +14,7 @@ class LoadAllRssUseCase(
     interface IListener : IUseCaseListener {
         fun updateCapacity(isFull: Boolean)
 
-        fun loadRss(rss: ViewRss)
+        fun loadRss(rss: Rss)
     }
 
     override fun onProcess() = mRepository.runInTx {
@@ -23,7 +23,7 @@ class LoadAllRssUseCase(
 
             if (rss != null) {
                 mFilter.sort(rss.articles)
-                mListener.loadRss(ViewRss(rss))
+                mListener.loadRss(rss)
             }
         }
         mListener.updateCapacity(mRepository.isFull)

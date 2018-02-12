@@ -5,20 +5,20 @@ import io.objectbox.annotation.Id
 import io.objectbox.annotation.Index
 
 @Entity
-data class Article (
+internal data class ArticleEntity(
         @Id var id: Long = 0,
         @Index var rssId: Long = 0,
-        var title: String = "",
-        var description: String = "",
-        var originUrl: String = "",
+        var title: String? = null,
+        var description: String? = null,
+        var originUrl: String? = null,
         var imageUrl: String? = null,
         var date: Long? = null) {
 
     override fun equals(other: Any?): Boolean {
-        return other is Article && originUrl == other.originUrl
+        return other is ArticleEntity && originUrl == other.originUrl
     }
 
     override fun hashCode(): Int {
-        return originUrl.hashCode()
+        return originUrl?.hashCode() ?: 0
     }
 }

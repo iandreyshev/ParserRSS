@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatDialogFragment
 import android.view.Menu
 import android.view.MenuItem
 
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.presentation.view.IFeedView
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPresenter
 import ru.iandreyshev.parserrss.R
@@ -46,7 +46,7 @@ class FeedActivity : BaseActivity(), IFeedView, IOnArticleClickListener, AddRssD
     private var mIsInfoButtonEnabled = true
     private var mIsDeleteButtonEnabled = true
 
-    override fun insertRss(rss: ViewRss) {
+    override fun insertRss(rss: Rss) {
         mPagesAdapter.insert(rss)
     }
 

@@ -1,27 +1,26 @@
 package ru.iandreyshev.parserrss.models.parser
 
-import android.os.Build
-import android.text.Html
 import org.jdom2.Element
+import org.jsoup.Jsoup
 
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-import ru.iandreyshev.parserrss.models.repository.Article
-import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 class ParserV2 : RssParser() {
 
     companion object {
         private const val FEED_NAME = "channel"
         private const val FEED_TITLE = "title"
-        private const val FEED_ORIGIN = "link"
+        private const val FEED_ORIGIN_URL = "link"
         private const val FEED_DESCRIPTION = "description"
 
         private const val ARTICLE_NAME = "item"
         private const val ARTICLE_TITLE = "title"
-        private const val ARTICLE_ORIGIN = "link"
+        private const val ARTICLE_ORIGIN_URL = "link"
         private const val ARTICLE_DESCRIPTION = "description"
 
         private const val DATE_NAME = "pubDate"
@@ -37,15 +36,15 @@ class ParserV2 : RssParser() {
     override fun parseRss(root: Element): Rss? {
         val channel = root.getChild(FEED_NAME)
         val title = channel.getChildText(FEED_TITLE)
-        val origin = channel.getChildText(FEED_ORIGIN)
+        val originUrl = channel.getChildText(FEED_ORIGIN_URL)
 
-        if (title == null || origin == null) {
+        if (title == null || originUrl == null) {
             return null
         }
 
         val rss = Rss(
                 title = clearHtml(title),
-                originUrl = origin)
+                originUrl = originUrl)
 
         val description = channel.getChildText(FEED_DESCRIPTION)
 
@@ -62,17 +61,17 @@ class ParserV2 : RssParser() {
 
     override fun parseArticle(node: Element): Article? {
         val title = node.getChildText(ARTICLE_TITLE)
-        val origin = node.getChildText(ARTICLE_ORIGIN)
+        val originUrl = node.getChildText(ARTICLE_ORIGIN_URL)
         val description = node.getChildText(ARTICLE_DESCRIPTION)
 
-        if (title == null || origin == null || description == null) {
+        if (title == null || originUrl == null || description == null) {
             return null
         }
 
         val article = Article(
                 title = clearHtml(title),
                 description = clearHtml(description),
-                originUrl = origin)
+                originUrl = originUrl)
 
         parseArticleDate(node, article)
         parseArticleImage(node, article)
@@ -106,10 +105,6 @@ class ParserV2 : RssParser() {
     }
 
     private fun clearHtml(html: String): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY).toString()
-        } else {
-            Html.fromHtml(html).toString()
-        }
+        return Jsoup.parse(html)?.text() ?: html
     }
 }

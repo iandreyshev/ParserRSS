@@ -5,20 +5,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 
 import java.lang.ref.WeakReference
-import java.util.ArrayList
 import java.util.HashSet
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.rss.Article
 import ru.iandreyshev.parserrss.ui.listeners.IOnArticleClickListener
 
 class FeedListAdapter : RecyclerView.Adapter<FeedListItem>() {
 
     private val mItemsOnWindow: HashSet<FeedListItem> = HashSet()
-    private var mArticles = ArrayList<ViewArticle>()
+    private var mArticles = mutableListOf<Article>()
     private var mArticleClickListener: WeakReference<IOnArticleClickListener>? = null
 
-    fun setArticles(newItems: ArrayList<ViewArticle>) {
+    fun setArticles(newItems: MutableList<Article>) {
         mArticles = newItems
         notifyDataSetChanged()
     }

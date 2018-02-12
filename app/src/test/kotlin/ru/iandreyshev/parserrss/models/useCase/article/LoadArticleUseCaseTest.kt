@@ -2,29 +2,24 @@ package ru.iandreyshev.parserrss.models.useCase.article
 
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import com.nhaarman.mockito_kotlin.argThat
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
-import ru.iandreyshev.parserrss.models.repository.Article
-import ru.iandreyshev.parserrss.models.repository.Rss
+import ru.iandreyshev.parserrss.models.rss.Article
+import ru.iandreyshev.parserrss.models.rss.Rss
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class LoadArticleUseCaseTest {
 
     companion object {
         private const val RSS_ID: Long = 12
-        private const val RSS_TITLE = "Rss title"
-        private const val RSS_DESCRIPTION = "Rss description"
+        private const val RSS_TITLE = "RssEntity title"
+        private const val RSS_DESCRIPTION = "RssEntity description"
 
         private const val ARTICLE_ID: Long = 15
-        private const val ARTICLE_TITLE = "Article title"
-        private const val ARTICLE_DESCRIPTION = "Article description"
+        private const val ARTICLE_TITLE = "ArticleEntity title"
+        private const val ARTICLE_DESCRIPTION = "ArticleEntity description"
     }
 
     private lateinit var mRss: Rss

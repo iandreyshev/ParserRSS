@@ -12,7 +12,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 
 import ru.iandreyshev.parserrss.R
-import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.rss.Article
 import ru.iandreyshev.parserrss.presentation.presenter.FeedPagePresenter
 import ru.iandreyshev.parserrss.presentation.view.IFeedPageView
 import ru.iandreyshev.parserrss.ui.adapter.FeedListAdapter
@@ -26,7 +26,7 @@ class FeedPageFragment : BaseFragment(), IFeedPageView {
 
     companion object {
         private val TAG = FeedPagePresenter::class.java.name
-        private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 15
+        private const val MAX_SCROLL_SPEED_TO_UPDATE_IMAGES = 50
 
         fun newInstance(rssId: Long): FeedPageFragment {
             val fragment = FeedPageFragment()
@@ -78,7 +78,7 @@ class FeedPageFragment : BaseFragment(), IFeedPageView {
         refreshLayout.isRefreshing = isStart
     }
 
-    override fun setArticles(newArticles: ArrayList<ViewArticle>) {
+    override fun setArticles(newArticles: MutableList<Article>) {
         mListAdapter.setArticles(newArticles)
         itemsList.adapter = null
         itemsList.adapter = mListAdapter

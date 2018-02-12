@@ -1,15 +1,15 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
-import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 
 import ru.iandreyshev.parserrss.models.interactor.FeedPageInteractor
-import ru.iandreyshev.parserrss.models.viewModels.ViewArticle
+import ru.iandreyshev.parserrss.models.rss.Article
 import ru.iandreyshev.parserrss.models.useCase.rssList.UpdateRssUseCase
 import ru.iandreyshev.parserrss.models.counter.ProcessCounter
+import ru.iandreyshev.parserrss.models.extention.bitmap
 import ru.iandreyshev.parserrss.models.useCase.rssList.LoadArticleImageToFeedItemUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssList.LoadArticlesListUseCase
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
@@ -49,19 +49,22 @@ class FeedPagePresenter(rssId: Long) : MvpPresenter<IFeedPageView>() {
             toast(R.string.toast_rss_not_exist)
         }
 
-        override fun updateRss(articles: ArrayList<ViewArticle>) = uiThread {
+        override fun updateRss(articles: MutableList<Article>) = uiThread {
             viewState.setArticles(articles)
             viewState.openEmptyContentMessage(articles.isEmpty())
             viewState.updateImages()
         }
 
-        override fun loadArticles(articles: ArrayList<ViewArticle>) {
+        override fun loadArticles(articles: MutableList<Article>) {
             updateRss(articles)
         }
 
-        override fun insertImage(icon: IItemIcon, idOnStart: Long, imageBitmap: Bitmap) = uiThread {
+        override fun insertImage(icon: IItemIcon, idOnStart: Long, imageBytes: ByteArray) {
             if (idOnStart == icon.id) {
-                icon.updateImage(imageBitmap)
+                val imageBitmap = imageBytes.bitmap
+                uiThread {
+                    icon.updateImage(imageBitmap)
+                }
             }
         }
 

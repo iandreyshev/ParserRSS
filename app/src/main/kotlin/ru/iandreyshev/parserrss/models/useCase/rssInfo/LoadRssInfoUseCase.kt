@@ -2,10 +2,10 @@ package ru.iandreyshev.parserrss.models.useCase.rssInfo
 
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
 import ru.iandreyshev.parserrss.models.useCase.UseCase
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 class LoadRssInfoUseCase(
-        private val mRss: ViewRss?,
+        private val mRss: Rss?,
         private val mListener: IListener) : UseCase(mListener) {
 
     interface IListener : IUseCaseListener {

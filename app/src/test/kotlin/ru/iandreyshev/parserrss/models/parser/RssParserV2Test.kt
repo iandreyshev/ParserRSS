@@ -4,15 +4,10 @@ import org.junit.Before
 import org.junit.Test
 
 import ru.iandreyshev.parserrss.TestUtils
-import ru.iandreyshev.parserrss.models.repository.Rss
 
 import org.junit.Assert.*
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import ru.iandreyshev.parserrss.models.rss.Rss
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class RssParserV2Test {
     companion object {
         private const val RSS_TITLE = "Feed title"
@@ -31,19 +26,19 @@ class RssParserV2Test {
 
     @Test
     fun parseRssWithoutXmlFormat() {
-        val (_, title, _, origin, description) = parseFile("valid_without_xml_format")
+        val rss = parseFile("valid_without_xml_format")
 
-        assertEquals(RSS_TITLE, title)
-        assertEquals(RSS_DESCRIPTION, description)
-        assertNotNull(origin)
+        assertEquals(RSS_TITLE, rss.title)
+        assertEquals(RSS_DESCRIPTION, rss.description)
+        assertNotNull(rss.originUrl)
     }
 
     @Test
     fun parseRssWithFeedTitleAndDescriptionOnly() {
-        val (_, title, _, _, description) = parseFile("valid_minimal")
+        val rss = parseFile("valid_minimal")
 
-        assertEquals(RSS_TITLE, title)
-        assertEquals(RSS_DESCRIPTION, description)
+        assertEquals(RSS_TITLE, rss.title)
+        assertEquals(RSS_DESCRIPTION, rss.description)
     }
 
     @Test
@@ -76,13 +71,10 @@ class RssParserV2Test {
         val rss = parseFile("valid_with_articles")
 
         assertEquals(2, rss.articles.size.toLong())
-
-        for ((_, _, title, description, originUrl) in rss.articles) {
-
-            assertEquals(ARTICLE_TITLE, title)
-            assertEquals(ARTICLE_TEXT, description)
-            assertNotNull(originUrl)
-
+        rss.articles.forEach {
+            assertEquals(ARTICLE_TITLE, it.title)
+            assertEquals(ARTICLE_TEXT, it.description)
+            assertNotNull(it.originUrl)
         }
     }
 
@@ -91,12 +83,7 @@ class RssParserV2Test {
         val rss = parseFile("valid_with_article_image")
 
         assertEquals(2, rss.articles.size.toLong())
-
-        for ((_, _, _, _, _, imageUrl) in rss.articles) {
-
-            assertEquals(ARTICLE_IMG_URL, imageUrl)
-
-        }
+        rss.articles.forEach { assertEquals(ARTICLE_IMG_URL, it.imageUrl) }
     }
 
     @Test
@@ -127,10 +114,7 @@ class RssParserV2Test {
     @Test
     fun notParseArticlesImageIfTheyDoNotHaveUrlOrType() {
         val rss = parseFile("valid_with_articles_enclosure_without_required_element")
-
-        for ((_, _, _, _, _, imageUrl) in rss.articles) {
-            assertNull(imageUrl)
-        }
+        rss.articles.forEach { article -> assertNull(article.imageUrl) }
     }
 
     @Test

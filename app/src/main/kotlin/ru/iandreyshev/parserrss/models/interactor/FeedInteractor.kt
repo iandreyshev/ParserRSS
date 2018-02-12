@@ -4,7 +4,7 @@ import org.jetbrains.anko.doAsync
 import ru.iandreyshev.parserrss.factory.useCase.IUseCaseFactory
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseType
 import ru.iandreyshev.parserrss.models.useCase.IUseCaseListener
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 class FeedInteractor(
         private val mUseCaseFactory: IUseCaseFactory,
@@ -30,7 +30,7 @@ class FeedInteractor(
                 .start()
     }
 
-    fun onOpenRssInfo(rss: ViewRss?) = doAsync {
+    fun onOpenRssInfo(rss: Rss?) = doAsync {
         mUseCaseFactory
                 .create(UseCaseType.FEED_OPEN_RSS_INFO, rss, mListener)
                 .start()

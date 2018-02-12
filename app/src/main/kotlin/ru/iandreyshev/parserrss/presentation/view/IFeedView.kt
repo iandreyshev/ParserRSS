@@ -6,11 +6,11 @@ import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 interface IFeedView : IBaseView {
     @StateStrategyType(AddToEndStrategy::class)
-    fun insertRss(rss: ViewRss)
+    fun insertRss(rss: Rss)
 
     @StateStrategyType(AddToEndStrategy::class)
     fun removeRss(rssId: Long)

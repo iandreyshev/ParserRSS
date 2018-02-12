@@ -6,7 +6,7 @@ import com.arellomobile.mvp.MvpPresenter
 import ru.iandreyshev.parserrss.R
 import ru.iandreyshev.parserrss.factory.useCase.UseCaseFactory
 import ru.iandreyshev.parserrss.models.interactor.RssInfoInteractor
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.models.useCase.rssInfo.OpenRssOriginalUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssInfo.LoadRssInfoUseCase
 import ru.iandreyshev.parserrss.presentation.presenter.extention.openInBrowser
@@ -15,7 +15,7 @@ import ru.iandreyshev.parserrss.presentation.presenter.extention.uiThread
 import ru.iandreyshev.parserrss.presentation.view.IRssInfoView
 
 @InjectViewState
-class RssInfoPresenter(rss: ViewRss) : MvpPresenter<IRssInfoView>() {
+class RssInfoPresenter(rss: Rss) : MvpPresenter<IRssInfoView>() {
 
     val interactor = RssInfoInteractor(UseCaseFactory, rss, UseCaseListener())
 

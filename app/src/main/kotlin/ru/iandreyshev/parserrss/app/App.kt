@@ -15,7 +15,7 @@ class App : Application() {
         private lateinit var mBoxStore: BoxStore
 
         val repository: IRepository
-            get() = RssRepository(mBoxStore)
+            get() = ObjectBoxRepository(mBoxStore)
 
         fun getStr(id: Int): String = mCtxInstance.get()?.getString(id) ?: DEFAULT_STRING
     }

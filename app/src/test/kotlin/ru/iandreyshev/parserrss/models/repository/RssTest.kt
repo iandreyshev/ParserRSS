@@ -6,12 +6,7 @@ import org.junit.Test
 import java.util.ArrayList
 
 import org.junit.Assert.*
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class RssTest {
 
     companion object {
@@ -20,16 +15,16 @@ class RssTest {
         private const val DESCRIPTION = "Description"
         private const val URL = "URL"
         private const val ID: Long = 12
-        private val ARTICLE = Article(title = TITLE, description = DESCRIPTION, originUrl = ORIGIN)
+        private val ARTICLE = ArticleEntity(title = TITLE, description = DESCRIPTION, originUrl = ORIGIN)
     }
 
-    private lateinit var mRss: Rss
-    private lateinit var mDefaultRss: Rss
+    private lateinit var mRss: RssEntity
+    private lateinit var mDefaultRss: RssEntity
 
     @Before
     fun setup() {
-        mRss = Rss(title = TITLE, originUrl = ORIGIN)
-        mDefaultRss = Rss(title = "", originUrl = "")
+        mRss = RssEntity(title = TITLE, originUrl = ORIGIN)
+        mDefaultRss = RssEntity(title = "", originUrl = "")
     }
 
     @Test
@@ -78,7 +73,7 @@ class RssTest {
 
     @Test
     fun haveArticlesGetterAndSetter() {
-        val articles = ArrayList<Article>()
+        val articles = ArrayList<ArticleEntity>()
         articles.add(ARTICLE)
         mRss.articles = articles
 
@@ -102,7 +97,7 @@ class RssTest {
     @Test
     fun equalsWithObjectIfEqualsItsUrls() {
         mRss.url = URL
-        val otherRss = Rss(title = "", originUrl = "")
+        val otherRss = RssEntity(title = "", originUrl = "")
 
         assertFalse(mRss == otherRss)
 

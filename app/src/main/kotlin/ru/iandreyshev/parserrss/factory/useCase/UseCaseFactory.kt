@@ -20,7 +20,7 @@ import ru.iandreyshev.parserrss.models.useCase.rssInfo.OpenRssOriginalUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssList.LoadArticleImageToFeedItemUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssList.LoadArticlesListUseCase
 import ru.iandreyshev.parserrss.models.useCase.rssList.UpdateRssUseCase
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 import ru.iandreyshev.parserrss.ui.adapter.IItemIcon
 
 object UseCaseFactory : IUseCaseFactory {
@@ -84,7 +84,7 @@ object UseCaseFactory : IUseCaseFactory {
                     listener as OpenArticleUseCase.IListener
             )
             FEED_OPEN_RSS_INFO -> OpenRssInfoUseCase(
-                    data as ViewRss?,
+                    data as Rss?,
                     listener as OpenRssInfoUseCase.IListener
             )
             RSS_PAGE_LOAD_ARTICLES_LIST -> LoadArticlesListUseCase(
@@ -94,7 +94,7 @@ object UseCaseFactory : IUseCaseFactory {
                     listener as LoadArticlesListUseCase.IListener
             )
             RSS_INFO_LOAD_DATA -> LoadRssInfoUseCase(
-                    data as ViewRss?,
+                    data as Rss?,
                     listener as LoadRssInfoUseCase.IListener
             )
         }

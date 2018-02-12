@@ -6,7 +6,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import ru.iandreyshev.parserrss.models.viewModels.ViewRss
+import ru.iandreyshev.parserrss.models.rss.Rss
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
@@ -16,7 +16,7 @@ class LoadRssInfoUseCaseTest {
     fun callLoadDataIfRssNotNull() {
         val title = "Title"
         val description = "Description"
-        val rss = ViewRss(title = title, description = description)
+        val rss = Rss(title = title, description = description)
         val listener: LoadRssInfoUseCase.IListener = mock()
 
         LoadRssInfoUseCase(rss, listener)
