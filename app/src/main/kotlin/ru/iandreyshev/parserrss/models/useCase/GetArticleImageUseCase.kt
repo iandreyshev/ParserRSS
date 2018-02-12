@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.models.useCase
 
-import android.util.Log
 import ru.iandreyshev.parserrss.models.imageProps.IImageProperties
 import ru.iandreyshev.parserrss.models.repository.IRepository
 import ru.iandreyshev.parserrss.models.rss.ArticleImage

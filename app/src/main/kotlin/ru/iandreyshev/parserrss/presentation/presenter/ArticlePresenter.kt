@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.presentation.presenter
 
-import android.net.Uri
 import ru.iandreyshev.parserrss.presentation.view.IArticleView
 
 import com.arellomobile.mvp.InjectViewState
@@ -15,6 +14,7 @@ import ru.iandreyshev.parserrss.models.useCase.article.LoadArticleImageUseCase
 import ru.iandreyshev.parserrss.models.useCase.article.OpenArticleOriginalUseCase
 import ru.iandreyshev.parserrss.models.counter.ProcessCounter
 import ru.iandreyshev.parserrss.models.extention.bitmap
+import ru.iandreyshev.parserrss.models.extention.uri
 import ru.iandreyshev.parserrss.presentation.presenter.extention.openInBrowser
 import ru.iandreyshev.parserrss.presentation.presenter.extention.toast
 import ru.iandreyshev.parserrss.presentation.presenter.extention.uiThread
@@ -38,11 +38,14 @@ class ArticlePresenter(articleId: Long) : MvpPresenter<IArticleView>() {
             }
         }
 
-        override fun openOriginal(path: Uri?) = uiThread {
-            if (path != null) {
-                openInBrowser(path)
-            } else {
-                toast(R.string.toast_invalid_url)
+        override fun openOriginal(addressString: String?) {
+            val address = addressString?.uri
+            uiThread {
+                if (address != null) {
+                    openInBrowser(address)
+                } else {
+                    toast(R.string.toast_invalid_url)
+                }
             }
         }
 

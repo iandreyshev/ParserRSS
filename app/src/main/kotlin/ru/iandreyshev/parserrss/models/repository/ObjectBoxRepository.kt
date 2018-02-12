@@ -1,6 +1,5 @@
 package ru.iandreyshev.parserrss.models.repository
 
-import android.util.Log
 import java.util.HashSet
 
 import io.objectbox.BoxStore

@@ -8,12 +8,12 @@ enum class UseCaseType {
     FEED_LOAD_ALL_RSS,
     FEED_OPEN_RSS_INFO,
 
-    // ArticleEntity activity
+    // Article activity
     ARTICLE_LOAD_DATA,
     ARTICLE_LOAD_IMAGE,
     ARTICLE_OPEN_ORIGINAL,
 
-    // RssEntity page
+    // Rss page
     RSS_PAGE_LOAD_ARTICLES_LIST,
     RSS_PAGE_LOAD_ICON,
     RSS_PAGE_OPEN_ARTICLE,

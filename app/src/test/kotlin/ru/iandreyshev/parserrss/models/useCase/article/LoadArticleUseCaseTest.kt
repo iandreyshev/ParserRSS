@@ -18,8 +18,8 @@ class LoadArticleUseCaseTest {
         private const val RSS_DESCRIPTION = "RssEntity description"
 
         private const val ARTICLE_ID: Long = 15
-        private const val ARTICLE_TITLE = "ArticleEntity title"
-        private const val ARTICLE_DESCRIPTION = "ArticleEntity description"
+        private const val ARTICLE_TITLE = "Article title"
+        private const val ARTICLE_DESCRIPTION = "Article description"
     }
 
     private lateinit var mRss: Rss

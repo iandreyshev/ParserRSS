@@ -6,14 +6,10 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import ru.iandreyshev.parserrss.MocksFactory
+import ru.iandreyshev.parserrss.models.extention.uri
 import ru.iandreyshev.parserrss.models.rss.Article
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 class OpenArticleOriginalUseCaseTest {
 
     companion object {
@@ -39,14 +35,13 @@ class OpenArticleOriginalUseCaseTest {
 
     @Test
     fun returnArticleUrlIfFound() {
-        val validUrl = "article.url"
-        val article = Article(originUrl = validUrl)
+        val article = Article(originUrl = "http://article.url/path")
 
         whenever(mFactory.repository.getArticleById(ARTICLE_ID)).thenReturn(article)
 
         createUseCase().start()
 
-        verify(mListener).openOriginal(argThat { path.toString() == validUrl })
+        verify(mListener).openOriginal(argThat { this == article.originUrl })
     }
 
     @Test
