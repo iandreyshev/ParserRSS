@@ -106,7 +106,7 @@ class InsertRssUseCaseTest {
             whenever(mFactory.repository.isFull).thenReturn(false)
             whenever(mFactory.repository.maxArticlesInRssCount).thenReturn(MAX_RSS_ARTICLES)
             whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke() }
-            whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)
+            whenever(mFactory.requestHandler.sentUrlString).thenReturn(VALID_URL)
             whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
             whenever(mFactory.requestHandler.bodyAsString).thenReturn(EMPTY_RSS_STRING)
             whenever(mFactory.parser.parse(EMPTY_RSS_STRING)).thenReturn(mEmptyRss)

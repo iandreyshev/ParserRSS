@@ -2,6 +2,7 @@ package ru.iandreyshev.parserrss.ui.activity
 
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatDialogFragment
 import android.view.Menu
 import android.view.MenuItem
@@ -143,7 +144,7 @@ class FeedActivity : BaseActivity(), IFeedView, IOnArticleClickListener, AddRssD
     override fun openDialog(newDialog: AppCompatDialogFragment, isSingleOnly: Boolean) {
         val current = supportFragmentManager.findFragmentByTag(DIALOG_TAG)
 
-        if (isSingleOnly && current != null) {
+        if (isSingleOnly && current is AlertDialog && current.isShowing) {
             return
         }
 

@@ -32,6 +32,8 @@ abstract class HttpRequestHandler : IHttpRequestResult {
     var connectionTimeoutMs: Long = DEFAULT_MAX_CONNECTION_TIMEOUT_MS
     var writeTimeoutMs: Long = DEFAULT_MAX_WRITE_TIMEOUT_MS
 
+    open var sentUrlString: String = EMPTY_URL
+        protected set
     override var urlString: String = EMPTY_URL
         protected set
     override var state: State = State.NOT_SEND
@@ -45,7 +47,8 @@ abstract class HttpRequestHandler : IHttpRequestResult {
         }
 
     open fun send(url: String?): State {
-        val httpUrl = parseUrl(url ?: urlString)
+        urlString = url ?: urlString
+        val httpUrl = parseUrl(url ?: sentUrlString)
 
         state = if (httpUrl == null) {
             State.BAD_URL
@@ -103,16 +106,16 @@ abstract class HttpRequestHandler : IHttpRequestResult {
     }
 
     private fun parseUrl(url: String): HttpUrl? {
-        urlString = url.trim()
+        sentUrlString = url.trim()
                 .replace('\\', '/')
 
-        val result = HttpUrl.parse(urlString)
-                ?: HttpUrl.parse(DEFAULT_PROTOCOL + urlString)
+        val result = HttpUrl.parse(sentUrlString)
+                ?: HttpUrl.parse(DEFAULT_PROTOCOL + sentUrlString)
 
-        urlString = result?.toString() ?: urlString
+        sentUrlString = result?.toString() ?: sentUrlString
 
-        if (!urlString.isEmpty() && urlString.last() == '/') {
-            urlString = urlString.dropLast(1)
+        if (!sentUrlString.isEmpty() && sentUrlString.last() == '/') {
+            sentUrlString = sentUrlString.dropLast(1)
         }
 
         return result

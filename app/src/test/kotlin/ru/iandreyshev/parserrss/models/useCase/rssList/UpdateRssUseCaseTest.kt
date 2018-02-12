@@ -62,7 +62,6 @@ class UpdateRssUseCaseTest {
         val rssString = ""
         val rss = Rss(url = VALID_URL)
 
-
         whenever(mFactory.repository.getRssById(any())).thenReturn(rss)
         whenever(mFactory.repository.isRssWithUrlExist(VALID_URL)).thenReturn(true)
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
@@ -86,7 +85,7 @@ class UpdateRssUseCaseTest {
         whenever(mFactory.repository.runInTx(any())).then { it.firstArgAsFun.invoke()  }
         whenever(mFactory.requestHandler.send(VALID_URL)).thenReturn(HttpRequestHandler.State.SUCCESS)
         whenever(mFactory.requestHandler.bodyAsString).thenReturn(rssString)
-        whenever(mFactory.requestHandler.urlString).thenReturn(VALID_URL)
+        whenever(mFactory.requestHandler.sentUrlString).thenReturn(VALID_URL)
         whenever(mFactory.parser.parse(rssString)).thenReturn(rss)
 
         createUseCase(RSS_ID).start()

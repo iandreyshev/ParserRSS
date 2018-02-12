@@ -48,12 +48,12 @@ abstract class DownloadRssUseCase(
             return
         }
 
-        parseRss().let {
-            when (it) {
+        parseRss().let { rss ->
+            when (rss) {
                 null -> onParserError()
                 else -> {
-                    it.url = mRequestHandler.urlString
-                    onSuccess(it)
+                    rss.url = mRequestHandler.sentUrlString
+                    onSuccess(rss)
                 }
             }
         }

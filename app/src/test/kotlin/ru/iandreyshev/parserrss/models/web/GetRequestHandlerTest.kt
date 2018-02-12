@@ -135,7 +135,7 @@ class GetRequestHandlerTest {
         val handler = mBadConnectionHandler
         handler.send(notTrimUrl)
 
-        assertEquals(url, handler.urlString)
+        assertEquals(url, handler.sentUrlString)
     }
 
     @Test
@@ -144,7 +144,7 @@ class GetRequestHandlerTest {
         val handler = mBadConnectionHandler
         handler.send(urlWithoutEndSlash + "/")
 
-        assertEquals(urlWithoutEndSlash, handler.urlString)
+        assertEquals(urlWithoutEndSlash, handler.sentUrlString)
     }
 
     @Test
@@ -154,19 +154,19 @@ class GetRequestHandlerTest {
 
         firstHandler.send("domain.com/zero/first/..")
         secondHandler.send("domain.com/zero")
-        assertEquals(firstHandler.urlString, secondHandler.urlString)
+        assertEquals(firstHandler.sentUrlString, secondHandler.sentUrlString)
 
         firstHandler.send("domain.com/zero/first/../")
         secondHandler.send("domain.com/zero")
-        assertEquals(firstHandler.urlString, secondHandler.urlString)
+        assertEquals(firstHandler.sentUrlString, secondHandler.sentUrlString)
 
         firstHandler.send("domain.com/zero/first/..")
         secondHandler.send("domain.com/zero/")
-        assertEquals(firstHandler.urlString, secondHandler.urlString)
+        assertEquals(firstHandler.sentUrlString, secondHandler.sentUrlString)
 
         firstHandler.send("domain.com/zero/first/../")
         secondHandler.send("domain.com/zero/")
-        assertEquals(firstHandler.urlString, secondHandler.urlString)
+        assertEquals(firstHandler.sentUrlString, secondHandler.sentUrlString)
     }
 
     @Test
@@ -174,7 +174,7 @@ class GetRequestHandlerTest {
         val handler = mBadConnectionHandler
         handler.send("http://valid.url\\path\\")
 
-        assertEquals("http://valid.url/path", handler.urlString)
+        assertEquals("http://valid.url/path", handler.sentUrlString)
     }
 
     private fun getMockedClient(request: Request, response: Response): OkHttpClient {
