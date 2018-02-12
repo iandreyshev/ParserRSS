@@ -13,7 +13,7 @@ import ru.iandreyshev.parserrss.models.repository.ArticleImage
 import ru.iandreyshev.parserrss.models.web.HttpRequestHandler
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = "app/src/main/AndroidManifest.xml")
+@Config(manifest = Config.NONE)
 class LoadArticleImageUseCaseTest {
 
     companion object {

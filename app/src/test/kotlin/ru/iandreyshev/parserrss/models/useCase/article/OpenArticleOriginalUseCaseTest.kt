@@ -13,7 +13,7 @@ import ru.iandreyshev.parserrss.MocksFactory
 import ru.iandreyshev.parserrss.models.repository.Article
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = "app/src/main/AndroidManifest.xml")
+@Config(manifest = Config.NONE)
 class OpenArticleOriginalUseCaseTest {
 
     companion object {

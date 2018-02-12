@@ -135,7 +135,7 @@ class GetRequestHandlerTest {
 
     @Test
     fun trimUrlStringAfterSend() {
-        val url = "http://url.com/"
+        val url = "http://url.com"
         val notTrimUrl = "   $url   "
         val handler = mBadConnectionHandler
         handler.send(notTrimUrl)

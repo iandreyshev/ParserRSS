@@ -103,17 +103,17 @@ abstract class HttpRequestHandler : IHttpRequestResult {
     }
 
     private fun parseUrl(url: String): HttpUrl? {
-        var resultUrlString = url
-                .trim()
+        urlString = url.trim()
                 .replace('\\', '/')
 
-        if (!resultUrlString.isEmpty() && resultUrlString.last() == '/') {
-            resultUrlString = resultUrlString.dropLast(1)
-        }
+        val result = HttpUrl.parse(urlString)
+                ?: HttpUrl.parse(DEFAULT_PROTOCOL + urlString)
 
-        val result = HttpUrl.parse(resultUrlString)
-                ?: HttpUrl.parse(DEFAULT_PROTOCOL + resultUrlString)
-        urlString = result.toString()
+        urlString = result?.toString() ?: urlString
+
+        if (!urlString.isEmpty() && urlString.last() == '/') {
+            urlString = urlString.dropLast(1)
+        }
 
         return result
     }

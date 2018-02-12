@@ -9,12 +9,14 @@ import org.junit.runner.RunWith
 
 import org.junit.Assert.*
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 import java.io.File
 import java.util.ArrayList
 import java.util.HashSet
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class RepositoryTest {
 
     companion object {

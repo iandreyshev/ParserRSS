@@ -14,7 +14,7 @@ import ru.iandreyshev.parserrss.models.repository.Article
 import ru.iandreyshev.parserrss.models.repository.Rss
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = "app/src/main/AndroidManifest.xml")
+@Config(manifest = Config.NONE)
 class LoadArticleUseCaseTest {
 
     companion object {

@@ -11,7 +11,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = "app/src/main/AndroidManifest.xml")
+@Config(manifest = Config.NONE)
 class RssTest {
 
     companion object {
